@@ -19,6 +19,27 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 rosbuild_find_ros_package(json_prolog)
 rosbuild_find_ros_package(ias_knowledge_base)
 
+set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
+fix_ros_destination_path(OWL_PATH_PREFIX)
+
+file(GLOB inputs owl/*.in)
+
+foreach( _in ${inputs} )
+  string(REPLACE ".in" "" _out ${_in})
+  configure_file( ${_in} ${_out} )
+endforeach( _in )
+
+# replace path to local OWL files
+rosbuild_find_ros_package(suturo_knowledge_foodreasoner)
+set( LOCAL_PACKAGE_PATH ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )
+fix_ros_destination_path(LOCAL_PACKAGE_PATH)
+
+file(GLOB inputs prolog/*.in)
+foreach( _in ${inputs} )
+  string(REPLACE ".in" "" _out ${_in})
+  configure_file( ${_in} ${_out} )
+endforeach( _in )
+
 #uncomment if you have defined messages
 #rosbuild_genmsg()
 #uncomment if you have defined services
