@@ -1,0 +1,15 @@
+<package>
+  <description brief="suturo_knowledge_foodreasoner">
+	Provides reasoning over edible objects.
+  </description>
+  <author>viki</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.suturo.de</url>
+
+  <depend package="json_prolog"/>
+  <depend package="ias_knowledge_base"/>
+
+</package>
+
+
