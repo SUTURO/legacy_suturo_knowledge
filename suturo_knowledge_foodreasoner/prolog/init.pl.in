@@ -1,0 +1,4 @@
+%% SUTURO Knowledge - Knowledge initialization
+
+% :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/food.owl', false, false, true).
+
