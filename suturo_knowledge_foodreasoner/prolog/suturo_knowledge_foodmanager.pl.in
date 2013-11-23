@@ -1,0 +1,15 @@
+%% SUTURO Knowledge - Food manager interface for python train script
+
+:- module(suturo_knowledge_foodmanager,
+    [
+      get_food/1
+    ]).
+
+%% get_food(Foodlist)
+% 
+% Description
+%
+% @param Foodlist describe me
+%
+get_food(Foodlist) :-
+	true.

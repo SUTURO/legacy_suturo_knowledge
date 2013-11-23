@@ -1,0 +1,16 @@
+%% SUTURO Knowledge - Food query interface
+
+:- module(suturo_knowledge_foodreasoner,
+    [
+      is_edible/2
+    ]).
+
+%% is_edible(ObjectList,EdibleObjectList)
+% 
+% Queries the knowledge database for edibility of the given objects and returns a list of edible objects.
+%
+% @param ObjectList       List of percieved objects, containing id, centroid and object volume
+% @param EdibleObjectList Resulting list of edible objects
+%
+is_edible(ObjectList,EdibleObjectList) :-
+	true.
