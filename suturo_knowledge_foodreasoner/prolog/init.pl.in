@@ -3,6 +3,7 @@
 % dependencies
 
 :- register_ros_package(suturo_knowledge_foodreasoner).
+:- register_ros_package(semweb).
 :- use_module(library('suturo_knowledge_foodreasoner')).
 :- use_module(library('suturo_knowledge_foodmanager')).
 

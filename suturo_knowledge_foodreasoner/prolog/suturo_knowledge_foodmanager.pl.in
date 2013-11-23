@@ -5,6 +5,17 @@
       get_food/1
     ]).
 
+:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('semweb/rdf_db')).
+:- use_module(library('semweb/rdfs')).
+:- use_module(library('thea/owl_parser')).
+:- use_module(library('semweb/owl')).
+:- use_module(library('semweb/rdf_edit')).
+:- use_module(library('semweb/actionmodel')).
+
+:- owl_parser:owl_parse('/home/smurpheus/sutu/stacks/knowrob/ias_semantic_map/owl/ccrl2_semantic_map.owl', false, false, true).
+
+
 %% get_food(Foodlist)
 % 
 % Description
@@ -13,3 +24,5 @@
 %
 get_food(Foodlist) :-
 	true.
+
+
