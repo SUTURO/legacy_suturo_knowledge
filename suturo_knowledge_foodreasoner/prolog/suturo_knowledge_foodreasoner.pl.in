@@ -28,6 +28,6 @@ is_edible([_, _, Volume, _], EdibleObject) :-
 	Min is Y - Z,
 	Max is Y + Z,
 	between(Min, Max, Volume),
-	EdibleObjectList = X.
+	EdibleObject = X.
 
 %is_edible([1337, "test", 50, 2], Solution), writef('%t\n', [Solution]).
