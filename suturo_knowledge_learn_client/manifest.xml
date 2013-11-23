@@ -1,0 +1,17 @@
+<package>
+  <description brief="suturo_knowledge_learn_client">
+
+     suturo_knowledge_learn_client
+
+  </description>
+  <author>Smurpheus</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/suturo_knowledge_learn_client</url>
+  <depend package="rospy"/>
+  <depend package="json_prolog"/>
+  <depend package="message_generation"/>
+
+</package>
+
+
