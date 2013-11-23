@@ -5,12 +5,29 @@
       is_edible/2
     ]).
 
-%% is_edible(ObjectList,EdibleObjectList)
+% TODO replace this with OWL ontology
+edible(lighterbread).
+edible(bread).
+edible(pizza).
+volume(bread, 50, 5).
+volume(lighterbread, 45, 5).
+volume(pizza, 75, 3).
+volume(brick, 100, 10).
+
+
+%% is_edible([_, _, Volume, _],EdibleObject)
 % 
 % Queries the knowledge database for edibility of the given objects and returns a list of edible objects.
 %
-% @param ObjectList       List of percieved objects, containing id, centroid and object volume
-% @param EdibleObjectList Resulting list of edible objects
+% @param [_, _, Volume, _]       List of percieved objects, containing id, label, object volume and object shape
+% @param EdibleObjectList Edible object
 %
-is_edible(ObjectList,EdibleObjectList) :-
-	true.
+is_edible([_, _, Volume, _], EdibleObject) :-
+	edible(X),
+	volume(X, Y, Z),
+	Min is Y - Z,
+	Max is Y + Z,
+	between(Min, Max, Volume),
+	EdibleObjectList = X.
+
+%is_edible([1337, "test", 50, 2], Solution), writef('%t\n', [Solution]).
