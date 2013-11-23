@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     ontologyIRI="http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10">
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="#Edible"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Form"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#SuturoObject"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Variance"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Volume"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasParameter"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasSubparameter"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#isParameterOf"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#isSubparameterOf"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#Box"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#Cylinder"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#False"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#Sphere"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#True"/>
+    </Declaration>
+    <SubClassOf>
+        <Class IRI="#Edible"/>
+        <Class IRI="#SuturoObject"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Form"/>
+        <Class IRI="#SuturoObject"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#SuturoObject"/>
+        <ObjectIntersectionOf>
+            <ObjectExactCardinality cardinality="1">
+                <ObjectProperty IRI="#hasParameter"/>
+                <Class IRI="#Edible"/>
+            </ObjectExactCardinality>
+            <ObjectExactCardinality cardinality="1">
+                <ObjectProperty IRI="#hasParameter"/>
+                <Class IRI="#Form"/>
+            </ObjectExactCardinality>
+            <ObjectExactCardinality cardinality="1">
+                <ObjectProperty IRI="#hasParameter"/>
+                <Class IRI="#Volume"/>
+            </ObjectExactCardinality>
+        </ObjectIntersectionOf>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Variance"/>
+        <Class IRI="#Volume"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Volume"/>
+        <Class IRI="#SuturoObject"/>
+    </SubClassOf>
+    <DisjointClasses>
+        <Class IRI="#Edible"/>
+        <Class IRI="#Form"/>
+    </DisjointClasses>
+    <DisjointClasses>
+        <Class IRI="#Edible"/>
+        <Class IRI="#Volume"/>
+    </DisjointClasses>
+    <DisjointClasses>
+        <Class IRI="#Form"/>
+        <Class IRI="#Volume"/>
+    </DisjointClasses>
+    <ClassAssertion>
+        <Class IRI="#Form"/>
+        <NamedIndividual IRI="#Box"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Form"/>
+        <NamedIndividual IRI="#Cylinder"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Edible"/>
+        <NamedIndividual IRI="#False"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Form"/>
+        <NamedIndividual IRI="#Sphere"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Edible"/>
+        <NamedIndividual IRI="#True"/>
+    </ClassAssertion>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#hasSubparameter"/>
+        <ObjectProperty IRI="#hasParameter"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#isSubparameterOf"/>
+        <ObjectProperty IRI="#isParameterOf"/>
+    </SubObjectPropertyOf>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#isParameterOf"/>
+        <ObjectProperty IRI="#hasParameter"/>
+    </InverseObjectProperties>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#isSubparameterOf"/>
+        <ObjectProperty IRI="#hasSubparameter"/>
+    </InverseObjectProperties>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#hasSubparameter"/>
+    </TransitiveObjectProperty>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#isSubparameterOf"/>
+    </TransitiveObjectProperty>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasParameter"/>
+        <Class IRI="#SuturoObject"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasSubparameter"/>
+        <Class IRI="#Volume"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#isParameterOf"/>
+        <Class IRI="#Edible"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#isParameterOf"/>
+        <Class IRI="#Form"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#isParameterOf"/>
+        <Class IRI="#Volume"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#isSubparameterOf"/>
+        <Class IRI="#Variance"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasParameter"/>
+        <Class IRI="#Edible"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasParameter"/>
+        <Class IRI="#Form"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasParameter"/>
+        <Class IRI="#Volume"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasSubparameter"/>
+        <Class IRI="#Variance"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#isParameterOf"/>
+        <Class IRI="#SuturoObject"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#isSubparameterOf"/>
+        <Class IRI="#Volume"/>
+    </ObjectPropertyRange>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+
