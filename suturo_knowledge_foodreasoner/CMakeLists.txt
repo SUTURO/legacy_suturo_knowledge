@@ -19,7 +19,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 rosbuild_find_ros_package(json_prolog)
 rosbuild_find_ros_package(ias_knowledge_base)
 
-set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
+set( OWL_PATH_PREFIX ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )
 fix_ros_destination_path(OWL_PATH_PREFIX)
 
 file(GLOB inputs owl/*.in)
