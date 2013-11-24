@@ -14,20 +14,24 @@ volume(lighterbread, 45, 5).
 volume(pizza, 75, 3).
 volume(brick, 100, 10).
 
-
-%% is_edible([_, _, Volume, _],EdibleObject)
+%% is_edible(+ObjectList, -EdibleObject)
 % 
 % Queries the knowledge database for edibility of the given objects and returns a list of edible objects.
 %
-% @param [_, _, Volume, _]       List of percieved objects, containing id, label, object volume and object shape
-% @param EdibleObjectList Edible object
+% @param ObjectList       List of percieved objects, containing id, label, object volume and object shape.
+% @param EdibleObjectList List of edible objects.
 %
-is_edible([_, _, Volume, _], EdibleObject) :-
+is_edible(ObjectList, EdibleObjectList) :-
+	findall(EdibleID, get_edible_objects(ObjectList, EdibleID), EdibleObjects),
+	list_to_set(EdibleObjects, EdibleObjectList).
+
+listobject([ID, Label, Volume, Shape], ID, Label, Volume, Shape).
+
+get_edible_objects(ObjectList, ID) :-
+	member(SingleObject, ObjectList),
+	listobject(SingleObject, ID, _, Volume, _),
 	edible(X),
 	volume(X, Y, Z),
 	Min is Y - Z,
 	Max is Y + Z,
-	between(Min, Max, Volume),
-	EdibleObject = X.
-
-%is_edible([1337, "test", 50, 2], Solution), writef('%t\n', [Solution]).
+	between(Min, Max, Volume).
