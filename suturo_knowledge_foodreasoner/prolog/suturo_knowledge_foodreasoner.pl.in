@@ -14,7 +14,7 @@ volume(bread, 50, 5).
 volume(lighterbread, 45, 5).
 volume(pizza, 75, 3).
 volume(brick, 100, 10).
-volume(testobj1, 0.00339, 0.0001).
+volume(testobj1, 0.00339, 0.001).
 
 
 
