@@ -1,204 +1,204 @@
 <?xml version="1.0"?>
 
 
-<!DOCTYPE Ontology [
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
 ]>
 
 
-<Ontology xmlns="http://www.w3.org/2002/07/owl#"
-     xml:base="http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10"
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     ontologyIRI="http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10">
-    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
-    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
-    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
-    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
-    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
-    <Declaration>
-        <Class IRI="#Edible"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Form"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SuturoObject"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Variance"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Volume"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="#hasParameter"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="#hasSubparameter"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="#isParameterOf"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="#isSubparameterOf"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#Box"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#Cylinder"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#False"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#Sphere"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#True"/>
-    </Declaration>
-    <SubClassOf>
-        <Class IRI="#Edible"/>
-        <Class IRI="#SuturoObject"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Form"/>
-        <Class IRI="#SuturoObject"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SuturoObject"/>
-        <ObjectIntersectionOf>
-            <ObjectExactCardinality cardinality="1">
-                <ObjectProperty IRI="#hasParameter"/>
-                <Class IRI="#Edible"/>
-            </ObjectExactCardinality>
-            <ObjectExactCardinality cardinality="1">
-                <ObjectProperty IRI="#hasParameter"/>
-                <Class IRI="#Form"/>
-            </ObjectExactCardinality>
-            <ObjectExactCardinality cardinality="1">
-                <ObjectProperty IRI="#hasParameter"/>
-                <Class IRI="#Volume"/>
-            </ObjectExactCardinality>
-        </ObjectIntersectionOf>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Variance"/>
-        <Class IRI="#Volume"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Volume"/>
-        <Class IRI="#SuturoObject"/>
-    </SubClassOf>
-    <DisjointClasses>
-        <Class IRI="#Edible"/>
-        <Class IRI="#Form"/>
-    </DisjointClasses>
-    <DisjointClasses>
-        <Class IRI="#Edible"/>
-        <Class IRI="#Volume"/>
-    </DisjointClasses>
-    <DisjointClasses>
-        <Class IRI="#Form"/>
-        <Class IRI="#Volume"/>
-    </DisjointClasses>
-    <ClassAssertion>
-        <Class IRI="#Form"/>
-        <NamedIndividual IRI="#Box"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="#Form"/>
-        <NamedIndividual IRI="#Cylinder"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="#Edible"/>
-        <NamedIndividual IRI="#False"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="#Form"/>
-        <NamedIndividual IRI="#Sphere"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="#Edible"/>
-        <NamedIndividual IRI="#True"/>
-    </ClassAssertion>
-    <SubObjectPropertyOf>
-        <ObjectProperty IRI="#hasSubparameter"/>
-        <ObjectProperty IRI="#hasParameter"/>
-    </SubObjectPropertyOf>
-    <SubObjectPropertyOf>
-        <ObjectProperty IRI="#isSubparameterOf"/>
-        <ObjectProperty IRI="#isParameterOf"/>
-    </SubObjectPropertyOf>
-    <InverseObjectProperties>
-        <ObjectProperty IRI="#isParameterOf"/>
-        <ObjectProperty IRI="#hasParameter"/>
-    </InverseObjectProperties>
-    <InverseObjectProperties>
-        <ObjectProperty IRI="#isSubparameterOf"/>
-        <ObjectProperty IRI="#hasSubparameter"/>
-    </InverseObjectProperties>
-    <TransitiveObjectProperty>
-        <ObjectProperty IRI="#hasSubparameter"/>
-    </TransitiveObjectProperty>
-    <TransitiveObjectProperty>
-        <ObjectProperty IRI="#isSubparameterOf"/>
-    </TransitiveObjectProperty>
-    <ObjectPropertyDomain>
-        <ObjectProperty IRI="#hasParameter"/>
-        <Class IRI="#SuturoObject"/>
-    </ObjectPropertyDomain>
-    <ObjectPropertyDomain>
-        <ObjectProperty IRI="#hasSubparameter"/>
-        <Class IRI="#Volume"/>
-    </ObjectPropertyDomain>
-    <ObjectPropertyDomain>
-        <ObjectProperty IRI="#isParameterOf"/>
-        <Class IRI="#Edible"/>
-    </ObjectPropertyDomain>
-    <ObjectPropertyDomain>
-        <ObjectProperty IRI="#isParameterOf"/>
-        <Class IRI="#Form"/>
-    </ObjectPropertyDomain>
-    <ObjectPropertyDomain>
-        <ObjectProperty IRI="#isParameterOf"/>
-        <Class IRI="#Volume"/>
-    </ObjectPropertyDomain>
-    <ObjectPropertyDomain>
-        <ObjectProperty IRI="#isSubparameterOf"/>
-        <Class IRI="#Variance"/>
-    </ObjectPropertyDomain>
-    <ObjectPropertyRange>
-        <ObjectProperty IRI="#hasParameter"/>
-        <Class IRI="#Edible"/>
-    </ObjectPropertyRange>
-    <ObjectPropertyRange>
-        <ObjectProperty IRI="#hasParameter"/>
-        <Class IRI="#Form"/>
-    </ObjectPropertyRange>
-    <ObjectPropertyRange>
-        <ObjectProperty IRI="#hasParameter"/>
-        <Class IRI="#Volume"/>
-    </ObjectPropertyRange>
-    <ObjectPropertyRange>
-        <ObjectProperty IRI="#hasSubparameter"/>
-        <Class IRI="#Variance"/>
-    </ObjectPropertyRange>
-    <ObjectPropertyRange>
-        <ObjectProperty IRI="#isParameterOf"/>
-        <Class IRI="#SuturoObject"/>
-    </ObjectPropertyRange>
-    <ObjectPropertyRange>
-        <ObjectProperty IRI="#isSubparameterOf"/>
-        <Class IRI="#Volume"/>
-    </ObjectPropertyRange>
-</Ontology>
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <Ontology rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasParameter -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasParameter">
+        <rdfs:range rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Edible"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Form"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#SuturoObject"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasSubparameter -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasSubparameter">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Variance"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasParameter"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#isParameterOf -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#isParameterOf">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Edible"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Form"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#SuturoObject"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume"/>
+        <inverseOf rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasParameter"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#isSubparameterOf -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#isSubparameterOf">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Variance"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume"/>
+        <inverseOf rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasSubparameter"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#isParameterOf"/>
+    </ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Edible -->
+
+    <Class rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Edible">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#SuturoObject"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Form"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Form -->
+
+    <Class rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Form">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#SuturoObject"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#SuturoObject -->
+
+    <Class rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#SuturoObject">
+        <rdfs:subClassOf>
+            <Class>
+                <intersectionOf rdf:parseType="Collection">
+                    <Restriction>
+                        <onProperty rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasParameter"/>
+                        <onClass rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Edible"/>
+                        <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                    </Restriction>
+                    <Restriction>
+                        <onProperty rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasParameter"/>
+                        <onClass rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Form"/>
+                        <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                    </Restriction>
+                    <Restriction>
+                        <onProperty rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#hasParameter"/>
+                        <onClass rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume"/>
+                        <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                    </Restriction>
+                </intersectionOf>
+            </Class>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Variance -->
+
+    <Class rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Variance">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume -->
+
+    <Class rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Volume">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#SuturoObject"/>
+    </Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Box -->
+
+    <NamedIndividual rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Box">
+        <rdf:type rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Form"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Cylinder -->
+
+    <NamedIndividual rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Cylinder">
+        <rdf:type rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Form"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#False -->
+
+    <NamedIndividual rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#False">
+        <rdf:type rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Edible"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Sphere -->
+
+    <NamedIndividual rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Sphere">
+        <rdf:type rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Form"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#True -->
+
+    <NamedIndividual rdf:about="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#True">
+        <rdf:type rdf:resource="http://www.semanticweb.org/viki/ontologies/2013/10/untitled-ontology-6http://www.semanticweb.org/jriester/ontologies/2013/10/untitled-ontology-10#Edible"/>
+    </NamedIndividual>
+</rdf:RDF>
 
 
 
