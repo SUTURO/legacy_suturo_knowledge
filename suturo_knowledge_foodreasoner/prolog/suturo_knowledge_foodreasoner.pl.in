@@ -6,15 +6,15 @@
     ]).
 
 % TODO replace this with OWL ontology
-edible(lighterbread).
-edible(bread).
-edible(pizza).
-edible(testobj1).
-volume(bread, 50, 5).
-volume(lighterbread, 45, 5).
-volume(pizza, 75, 3).
-volume(brick, 100, 10).
-volume(testobj1, 0.00339, 0.001).
+edible(pringles).
+edible(milka).
+edible(testobj1). % FINDME for planning testing
+volume(ball, 0.0024, 0.0001).
+volume(pringles, 0.00085, 0.0001).
+volume(tee, 0.00025, 0.00005).
+volume(paket, 0.00515, 0.00025).
+volume(milka, 0.0006, 0.00005).
+volume(testobj1, 0.00339, 0.001). % FINDME for planning testing
 
 
 
