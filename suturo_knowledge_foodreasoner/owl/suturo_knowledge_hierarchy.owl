@@ -30,6 +30,12 @@
     
 
 
+    <!-- http://www.suturo.de/ontology/hierarchy#labelOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#labelOfObject"/>
+    
+
+
     <!-- http://www.suturo.de/ontology/hierarchy#volumeOfObject -->
 
     <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#volumeOfObject"/>
