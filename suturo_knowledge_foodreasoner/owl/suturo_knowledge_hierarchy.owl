@@ -54,9 +54,9 @@
     
 
 
-    <!-- http://www.suturo.de/ontology/hierarchy#varianceOfObject -->
+    <!-- http://www.suturo.de/ontology/hierarchy#varianceOfVolume -->
 
-    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#varianceOfObject">
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#varianceOfVolume">
         <rdfs:subPropertyOf rdf:resource="http://www.suturo.de/ontology/hierarchy#volumeOfObject"/>
     </DatatypeProperty>
     
