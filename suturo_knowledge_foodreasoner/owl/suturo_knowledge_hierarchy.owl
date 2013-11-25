@@ -30,9 +30,35 @@
     
 
 
+    <!-- http://www.suturo.de/ontology/hierarchy#blueOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#blueOfObject"/>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#greenOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#greenOfObject"/>
+    
+
+
     <!-- http://www.suturo.de/ontology/hierarchy#labelOfObject -->
 
     <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#labelOfObject"/>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#redOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#redOfObject"/>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#varianceOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#varianceOfObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.suturo.de/ontology/hierarchy#volumeOfObject"/>
+    </DatatypeProperty>
     
 
 
