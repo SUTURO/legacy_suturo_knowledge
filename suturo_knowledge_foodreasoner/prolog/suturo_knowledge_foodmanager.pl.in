@@ -14,13 +14,7 @@
 :- use_module(library('semweb/actionmodel')).
 
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
-:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/orly.owl', false, false, true).
 
-:- rdf_db:rdf_register_ns(hierarchy, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
-
-% owl_has('http://www.suturo.de/m2/foodDB#Milka', rdf:type, hierarchy:'Edible').
-% owl_has('http://www.suturo.de/m2/foodDB#Milka', rdf:type, hierarchy:'Box').
-% owl_has('http://www.suturo.de/m2/foodDB#Milka', hierarchy:volumeOfObject, literal(type('http://www.w3.org/2001/XMLSchema#float', '6.0E-4'))).
 
 %% get_food(Foodlist)
 % 
