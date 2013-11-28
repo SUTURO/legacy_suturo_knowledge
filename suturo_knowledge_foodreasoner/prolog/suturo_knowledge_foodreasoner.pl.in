@@ -9,13 +9,16 @@
 edible(pringles).
 % edible(milka).
 % edible(testobj1). % FINDME for planning testing
+% edible(gazebo_beer)
 volume(ball, 0.0024, 0.0001).
-volume(pringles, 0.0009, 0.0006).
+volume(pringles, 0.0009, 0.0008).
 % volume(tee, 0.00025, 0.00005).
 volume(glsbox, 0.007, 0.0021).
 volume(kinect, 0.0065, 0.0025)
 % volume(milka, 0.0006, 0.00005).
 volume(testobj1, 0.00339, 0.001). % FINDME for planning testing
+% volume(gazebo_beer, 0.001439, 0.001).  % FINDME for durchschuss
+
 
 
 
