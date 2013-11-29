@@ -35,10 +35,11 @@
     
 
 
-    <!-- http://www.suturo.de/m2/foodDB#Ball -->
+    <!-- http://www.suturo.de/m2/foodDB#Basketball -->
 
     <owl:NamedIndividual rdf:about="http://www.suturo.de/m2/foodDB#Ball">
         <rdf:type rdf:resource="&hierarchy;Sphere"/>
+        <rdf:type rdf:resource="&hierarchy;Ball"/>
         <hierarchy:volumeOfObject rdf:datatype="&xsd;float">0.0024</hierarchy:volumeOfObject>
         <hierarchy:varianceOfVolume rdf:datatype="&xsd;float">1.0E-4</hierarchy:varianceOfVolume>
     </owl:NamedIndividual>
@@ -49,7 +50,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.suturo.de/m2/foodDB#Milka">
         <rdf:type rdf:resource="&hierarchy;Box"/>
-        <rdf:type rdf:resource="&hierarchy;Edible"/>
+        <rdf:type rdf:resource="&hierarchy;Chocolate"/>
         <hierarchy:varianceOfVolume rdf:datatype="&xsd;float">5.0E-5</hierarchy:varianceOfVolume>
         <hierarchy:volumeOfObject rdf:datatype="&xsd;float">6.0E-4</hierarchy:volumeOfObject>
     </owl:NamedIndividual>
@@ -58,8 +59,9 @@
 
     <!-- http://www.suturo.de/m2/foodDB#Paket -->
 
-    <owl:NamedIndividual rdf:about="http://www.suturo.de/m2/foodDB#Paket">
+    <owl:NamedIndividual rdf:about="http://www.suturo.de/m2/foodDB#GLSPaket">
         <rdf:type rdf:resource="&hierarchy;Box"/>
+        <rdf:type rdf:resource="&hierarchy;CardboardBox"/>
         <hierarchy:volumeOfObject rdf:datatype="&xsd;float">0.00515</hierarchy:volumeOfObject>
         <hierarchy:varianceOfVolume rdf:datatype="&xsd;float">2.5E-4</hierarchy:varianceOfVolume>
     </owl:NamedIndividual>
@@ -70,17 +72,18 @@
 
     <owl:NamedIndividual rdf:about="http://www.suturo.de/m2/foodDB#Pringles">
         <rdf:type rdf:resource="&hierarchy;Cylinder"/>
-        <rdf:type rdf:resource="&hierarchy;Edible"/>
+        <rdf:type rdf:resource="&hierarchy;PotatoProduct"/>
         <hierarchy:varianceOfVolume rdf:datatype="&xsd;float">1.0E-4</hierarchy:varianceOfVolume>
         <hierarchy:volumeOfObject rdf:datatype="&xsd;float">8.5E-4</hierarchy:volumeOfObject>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.suturo.de/m2/foodDB#Tee -->
+    <!-- http://www.suturo.de/m2/foodDB#KraeuterTee -->
 
-    <owl:NamedIndividual rdf:about="http://www.suturo.de/m2/foodDB#Tee">
+    <owl:NamedIndividual rdf:about="http://www.suturo.de/m2/foodDB#KraeuterTee">
         <rdf:type rdf:resource="&hierarchy;Box"/>
+        <rdf:type rdf:resource="&hierarchy;Tea"/>
         <hierarchy:volumeOfObject rdf:datatype="&xsd;float">2.5E-4</hierarchy:volumeOfObject>
         <hierarchy:varianceOfVolume rdf:datatype="&xsd;float">5.0E-5</hierarchy:varianceOfVolume>
     </owl:NamedIndividual>
