@@ -38,7 +38,7 @@ get_edible_objects(ObjectList, ID) :-
 	perceived_object(SingleObject, ID, _, VolumeString, _),
 	dfloat_to_float(VolumeString, Volume),
 	owl_individual_of(X, suturo:'Edible'),
-	% owl_individual_of(X, suturo:'shapeOfObject', literal(type(_,Shape))), 
+	% owl_individual_of(X, suturo:Shape), 
 	owl_has(X, suturo:'volumeOfObject', literal(type(_, VolString))),
 	owl_has(X, suturo:'varianceOfVolume', literal(type(_, VarString))),
 	atom_number(VolString, ObjVol),
