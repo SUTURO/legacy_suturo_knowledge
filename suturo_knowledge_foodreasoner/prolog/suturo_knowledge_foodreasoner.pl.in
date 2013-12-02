@@ -5,16 +5,10 @@
       is_edible/2
     ]).
 
-% TODO replace this with OWL ontology
-edible(pringles).
-edible(milka).
-edible(testobj1). % FINDME for planning testing
-volume(ball, 0.0024, 0.0001).
-volume(pringles, 0.00085, 0.0001).
-volume(tee, 0.00025, 0.00005).
-volume(paket, 0.00515, 0.00025).
-volume(milka, 0.0006, 0.00005).
-volume(testobj1, 0.00339, 0.001). % FINDME for planning testing
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/orly.owl', false, false, true).
+
+:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 
 
 
@@ -43,9 +37,13 @@ get_edible_objects(ObjectList, ID) :-
 	member(SingleObject, ObjectList),
 	perceived_object(SingleObject, ID, _, VolumeString, _),
 	dfloat_to_float(VolumeString, Volume),
-	edible(X),
-	volume(X, Y, Z),
-	Min is Y - Z,
-	Max is Y + Z,
+	owl_individual_of(X, suturo:'Edible'),
+	% owl_individual_of(X, suturo:Shape), 
+	owl_has(X, suturo:'volumeOfObject', literal(type(_, VolString))),
+	owl_has(X, suturo:'varianceOfVolume', literal(type(_, VarString))),
+	atom_number(VolString, ObjVol),
+	atom_number(VarString, ObjVar),
+	Min is ObjVol - ObjVar,
+	Max is ObjVol + ObjVar,
 	Min =< Volume,
 	Max >= Volume.

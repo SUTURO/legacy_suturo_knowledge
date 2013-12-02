@@ -30,15 +30,51 @@
     
 
 
+    <!-- http://www.suturo.de/ontology/hierarchy#blueOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#blueOfObject">
+        <rdfs:domain rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#greenOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#greenOfObject">
+        <rdfs:domain rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </DatatypeProperty>
+    
+
+
     <!-- http://www.suturo.de/ontology/hierarchy#labelOfObject -->
 
-    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#labelOfObject"/>
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#labelOfObject">
+        <rdfs:domain rdf:resource="&owl;Thing"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#redOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#redOfObject">
+        <rdfs:domain rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#varianceOfVolume -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#varianceOfVolume">
+        <rdfs:subPropertyOf rdf:resource="http://www.suturo.de/ontology/hierarchy#volumeOfObject"/>
+    </DatatypeProperty>
     
 
 
     <!-- http://www.suturo.de/ontology/hierarchy#volumeOfObject -->
 
-    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#volumeOfObject"/>
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#volumeOfObject">
+        <rdfs:domain rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </DatatypeProperty>
     
 
 
@@ -53,10 +89,74 @@
     
 
 
+    <!-- http://www.suturo.de/ontology/hierarchy#Ball -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Ball">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SportsEquipment"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#BoardGame -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#BoardGame">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Games"/>
+    </Class>
+    
+
+
     <!-- http://www.suturo.de/ontology/hierarchy#Box -->
 
     <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Box">
         <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Shape"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#CardboardBox -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#CardboardBox">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Cards -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Cards">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Games"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Chocolate -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Chocolate">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Sweets"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#ClothBag -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#ClothBag">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Coffee -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Coffee">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Container -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Container">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
     </Class>
     
 
@@ -69,18 +169,128 @@
     
 
 
+    <!-- http://www.suturo.de/ontology/hierarchy#Drinkable -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Drinkable">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Food"/>
+    </Class>
+    
+
+
     <!-- http://www.suturo.de/ontology/hierarchy#Edible -->
 
     <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Edible">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Food"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Entertainment -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Entertainment">
         <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Food -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Food">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Games -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Games">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Entertainment"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Jellybean -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Jellybean">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Sweets"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Lemonade -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Lemonade">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Milk -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Milk">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Nuts -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Nuts">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Snacks"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#PaperBag -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#PaperBag">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#PlasticBag -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#PlasticBag">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#PlasticBox -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#PlasticBox">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#PotatoProduct -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#PotatoProduct">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Snacks"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Racket -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Racket">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SportsEquipment"/>
     </Class>
     
 
 
     <!-- http://www.suturo.de/ontology/hierarchy#Shape -->
 
-    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Shape">
-        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Shape"/>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Snacks -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Snacks">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Edible"/>
     </Class>
     
 
@@ -93,9 +303,49 @@
     
 
 
+    <!-- http://www.suturo.de/ontology/hierarchy#SportsEquipment -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#SportsEquipment">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Entertainment"/>
+    </Class>
+    
+
+
     <!-- http://www.suturo.de/ontology/hierarchy#SuturoObject -->
 
     <Class rdf:about="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Sweets -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Sweets">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Edible"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Tea -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Tea">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#VideoGame -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#VideoGame">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Games"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Water -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Water">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
 </rdf:RDF>
 
 
