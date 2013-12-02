@@ -75,24 +75,30 @@ if __name__ == "__main__":
         centroid['z'] = percepted.perceivedObjs[index].c_centroid.z
         shape_num = percepted.perceivedObjs[index].c_shape
     except KeyboardInterrupt:
-        print("You interrupted waiting for the perception")
+        print("You interrupted waiting for the perception\n")
         sys.exit()
+    # Ask and save the different missing parameters
     label = raw_input("Enter a label for the choosen object: \n")
     edible = raw_input("Is this object edible? Enter yes or no: \n")
+    # Proof wether the Object is edible.
     while edible != "yes" and edible != "no":
         print("You have to enter 'yes' or 'no'")
         edible = raw_input("Is this object edible? Enter yes or no: \n")
     if edible == "yes":
         edible = True
-    else: edible = False
+    else: edible = False7
+    # Ask for the variance and save the given
     variance = ""
     while not variance.isdigit():
         variance = raw_input("Type in the Variance in percent the volume is %f : \n" % volume)
-    raw_input("Do you really want to add the object with the label %s,\n\
+    # Last chance to abort 
+    while edible != "yes" and edible != "no":
+        rly = raw_input("Do you really want to add the object with the label %s,\n\
      the volume: %f \n\
      which is edible: %s \n\
      and has the centroid: %s \n\
      with the id: %d \n\
      shape: %s \n\
      (Enter 'yes' or 'no'): \n" %(label, volume, edible, str(centroid), id, shape[shape_num]))
-    send_object_to_prolog(id, label, volume, variance, shape, centroid, edible)
+    if rly = 'yes':
+        send_object_to_prolog(id, label, volume, variance, shape, centroid, edible)

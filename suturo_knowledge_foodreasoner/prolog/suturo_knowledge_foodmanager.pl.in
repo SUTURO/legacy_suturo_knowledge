@@ -3,6 +3,7 @@
 :- module(suturo_knowledge_foodmanager,
     [
       get_food/1
+      set_food/5
     ]).
 
 :- use_module(library('semweb/rdfs_computable')).
@@ -29,6 +30,15 @@
 % @param Foodlist describe me
 %
 get_food(Foodlist) :-
+	true.
+
+%% set_food(ID, Label, Volume, Variance ,Shape, Edible)
+% 
+% Description
+%
+% @param Foodlist describe me
+%
+set_food(ID, Label, Volume, Variance ,Shape, Edible) :-
 	true.
 
 
