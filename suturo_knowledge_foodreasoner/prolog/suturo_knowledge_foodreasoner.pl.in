@@ -2,7 +2,8 @@
 
 :- module(suturo_knowledge_foodreasoner,
     [
-      is_edible/2
+      is_edible/2,
+      dummyJava/1
     ]).
 
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
@@ -47,3 +48,8 @@ get_edible_objects(ObjectList, ID) :-
 	Max is ObjVol + ObjVar,
 	Min =< Volume,
 	Max >= Volume.
+
+%% This is a test for JNI integration
+dummyJava(Out) :-
+	jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge', ['someUniqueName234'], Bridge),
+	jpl_call(Bridge, 'getName', [], Out).

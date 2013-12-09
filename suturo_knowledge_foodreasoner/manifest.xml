@@ -7,9 +7,14 @@
   <review status="unreviewed" notes=""/>
   <url>http://www.suturo.de</url>
 
+  <depend package="rosjava_jni"/>
   <depend package="json_prolog"/>
   <depend package="knowrob_common"/>
   <depend package="thea"/>
+
+  <export>
+    <java classpath="${prefix}/bin"/>
+  </export>
 
 </package>
 
