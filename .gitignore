@@ -1,4 +1,7 @@
 *.sublime-project
 *.sublime-workspace
+.classpath
+.project
 bin
 build
+*gen
