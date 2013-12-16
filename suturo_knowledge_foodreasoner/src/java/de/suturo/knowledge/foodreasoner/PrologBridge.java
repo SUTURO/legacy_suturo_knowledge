@@ -1,5 +1,14 @@
 package de.suturo.knowledge.foodreasoner;
 
+import java.util.List;
+
+import ros.NodeHandle;
+import ros.Ros;
+import ros.RosException;
+import ros.ServiceClient;
+import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
+import ros.pkg.suturo_perception_msgs.srv.GetClusters;
+
 /**
  * Bridge from Perception to Prolog
  * 
@@ -7,19 +16,51 @@ package de.suturo.knowledge.foodreasoner;
  * 
  */
 public class PrologBridge {
-    private final String name;
 
-    /**
-     * @param name
-     */
-    public PrologBridge(String name) {
-	this.name = name;
+    private static final String OBJECT_SERVICE = "/GetClusters";
+
+    private static final String NODE_NAME = "suturo_knowledge_javaclient";
+
+    static Ros ros;
+    static NodeHandle handle;
+
+    private static void checkInitialized() {
+	ros = Ros.getInstance();
+	if (!ros.isInitialized()) {
+	    ros.init(NODE_NAME);
+	}
+	handle = ros.createNodeHandle();
+	if (!handle.checkMaster()) {
+	    throw new IllegalStateException("BLUREAGFBJORKIMAMALDIBALLOON!");
+	}
+
     }
 
     /**
-     * @return the name
+     * Calls perception service and retrieves list of perceived objects
+     * 
+     * @return true if any objects were found
+     * @throws RosException
      */
-    public String getName() {
-	return this.name;
+    public static boolean updatePerception() throws RosException {
+	checkInitialized();
+	List<PerceivedObject> objects = null;
+	// TODO: This needs refactoring!
+	try {
+
+	    GetClusters.Request req = new GetClusters.Request();
+	    req.s = "get";
+
+	    ServiceClient<GetClusters.Request, GetClusters.Response, GetClusters> cl = handle
+		    .serviceClient(OBJECT_SERVICE, new GetClusters());
+	    objects = cl.call(req).perceivedObjs;
+	    cl.shutdown();
+
+	} catch (RosException e) {
+	    ros.logError("ROSClient: Call to service /GetClusters failed");
+	    throw e;
+	}
+	return objects != null && objects.size() > 0;
     }
+
 }
