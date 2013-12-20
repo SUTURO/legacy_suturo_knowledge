@@ -51,5 +51,4 @@ get_edible_objects(ObjectList, ID) :-
 
 %% This is a test for JNI integration
 dummyJava(Out) :-
-	jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge', ['someUniqueName234'], Bridge),
-	jpl_call(Bridge, 'getName', [], Out).
+	jpl_call('de.suturo.knowledge.foodreasoner.PrologBridge', 'updatePerception', [], Out).

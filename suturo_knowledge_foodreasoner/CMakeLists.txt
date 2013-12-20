@@ -32,6 +32,7 @@ add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 # build java
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
 add_java_source_dir( ${PROJECT_SOURCE_DIR}/src/java )
+#rospack_add_java_executable( DummyJava de.suturo.knowledge.foodreasoner.PrologBridge )
 
 # replace path to local owl files
 set( OWL_PATH_PREFIX ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )

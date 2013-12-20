@@ -15,7 +15,7 @@ import ros.pkg.suturo_perception_msgs.srv.GetClusters;
  * 
  */
 public class GetClustersService {
-    private NodeHandle handle;
+    private final NodeHandle handle;
 
     private final String serviceName;
 
@@ -47,10 +47,11 @@ public class GetClustersService {
     /**
      * Access to GetClusters using given handle and serviceName
      * 
-     * @param instance
+     * @param handle
      * @param serviceName
      */
-    public GetClustersService(NodeHandle instance, String serviceName) {
+    public GetClustersService(NodeHandle handle, String serviceName) {
+	this.handle = handle;
 	this.serviceName = serviceName;
     }
 
