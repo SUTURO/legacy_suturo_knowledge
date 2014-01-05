@@ -51,4 +51,15 @@ get_edible_objects(ObjectList, ID) :-
 
 %% This is a test for JNI integration
 dummyJava(Out) :-
-	jpl_call('de.suturo.knowledge.foodreasoner.PrologBridge', 'updatePerception', [], Out).
+	jpl_call('de.suturo.knowledge.foodreasoner.PrologBridge', 'updatePerception', [], Out_raw),
+	jpl_get(Out_raw,'length',Length),
+	is(Indexe, Length-1),
+	%findall((jpl_get(Out_raw,Index,Perceived_object),
+	%							jpl_get(Perceived_object,'c_volume',C)
+	%							),between(0,Indexe,Index),Out).
+	forall(between(0,Indexe,Index),(jpl_get(Out_raw,Index,Perceived_object),
+								jpl_get(Perceived_object,'c_volume',C), 
+								write(C)
+								)
+			).
+	%jpl_get(Stuff,'c_volume',Out).
