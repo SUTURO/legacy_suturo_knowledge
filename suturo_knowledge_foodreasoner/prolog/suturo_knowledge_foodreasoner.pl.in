@@ -58,8 +58,32 @@ dummyJava(Out) :-
 	%							jpl_get(Perceived_object,'c_volume',C)
 	%							),between(0,Indexe,Index),Out).
 	forall(between(0,Indexe,Index),(jpl_get(Out_raw,Index,Perceived_object),
-								jpl_get(Perceived_object,'c_volume',C), 
-								write(C)
+								%jpl_get(Perceived_object,'c_volume',C)
+								get_perceived_object_infos(Perceived_object, List),
+								writeln(List)
 								)
 			).
 	%jpl_get(Stuff,'c_volume',Out).
+
+get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
+ _recognition_label_2d, _recognition_label_3d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+ _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _c_roi_origin, _c_roi_width,
+ _c_roi_height ]):-
+	jpl_get(Obj_id, 'c_id', _c_id),
+	jpl_get(Obj_id, 'c_centroid', _c_centroid),
+	jpl_get(Obj_id, 'c_volume', _c_volume),
+	jpl_get(Obj_id, 'frame_id', _frame_id),
+	jpl_get(Obj_id, 'recognition_label_2d', _recognition_label_2d),
+	jpl_get(Obj_id, 'recognition_label_3d', _recognition_label_3d),
+	jpl_get(Obj_id, 'c_shape', _c_shape),
+	jpl_get(Obj_id, 'c_color_average_r', _c_color_average_r),
+	jpl_get(Obj_id, 'c_color_average_g', _c_color_average_g),
+	jpl_get(Obj_id, 'c_color_average_b', _c_color_average_b),
+	jpl_get(Obj_id, 'c_color_average_h', _c_color_average_h),
+	jpl_get(Obj_id, 'c_color_average_s', _c_color_average_s),
+	jpl_get(Obj_id, 'c_color_average_v', _c_color_average_v),
+	jpl_get(Obj_id, 'c_hue_histogram', _c_hue_histogram),
+	jpl_get(Obj_id, 'c_hue_histogram_quality', _c_hue_histogram_quality),
+	jpl_get(Obj_id, 'c_roi_origin', _c_roi_origin),
+	jpl_get(Obj_id, 'c_roi_width', _c_roi_width),
+	jpl_get(Obj_id, 'c_roi_height', _c_roi_height).
