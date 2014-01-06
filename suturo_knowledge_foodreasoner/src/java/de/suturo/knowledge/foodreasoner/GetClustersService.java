@@ -19,7 +19,7 @@ public class GetClustersService {
 
     private final String serviceName;
 
-    private static final String DEFAULT_SERVICE_NAME = "/GetClusters";
+    private static final String DEFAULT_SERVICE_NAME = "/suturo/GetClusters";
 
     enum Operation {
 	GET("get");
