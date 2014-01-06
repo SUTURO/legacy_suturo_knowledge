@@ -51,35 +51,18 @@ get_edible_objects(ObjectList, ID) :-
 
 head_element([Head|_], Head).
 %% This is a test for JNI integration
-dummyJava(Out) :-
+dummyJava(PODataList) :-
 	jpl_call('de.suturo.knowledge.foodreasoner.PrologBridge', 'updatePerception', [], Out_raw),
-	%%%%%% Test 3
-	%% jpl_get(Out_raw,'length',Length),
-	%% is(Indexe, Length-1),
-	%% findall((jpl_get(Out_raw,Index,Perceived_object)),between(0,Indexe,Index), ObjectList),
-	%% head_element(ObjectList, Out).
-	%%%%%% Test 2
-	%% jpl_get(Out_raw,'length',Length),
-	%% is(Indexe, Length-1),
-	%% findall((jpl_get(Out_raw,Index,Perceived_object),
-	%% 							%jpl_get(Perceived_object,'c_volume',C)
-	%% 							get_perceived_object_infos(Perceived_object, List)
-	%% 							),between(0,Indexe,Index),Out).
-	%%%%%% Test 1
-	%% jpl_get(Out_raw,'length',Length),
-	%% is(Indexe, Length-1),
-	%% forall(between(0,Indexe,Index),(jpl_get(Out_raw,Index,Perceived_object),
-	%% 							%jpl_get(Perceived_object,'c_volume',C)
-	%% 							get_perceived_object_infos(Perceived_object, List),
-	%% 							writeln(List)
-	%% 							)
-	%% 		).
-	%%%%%% Test 4
-	%% forall(between(0,Indexe,Index),(jpl_get(Out_raw,Index,Perceived_object),
-	%% 							get_perceived_object_infos(Perceived_object, List),
-	%% 							head_element(List, Head),
-	%% 							)
-	%% 		).
+	jpl_get(Out_raw,'length',Length),
+	is(Indizees, Length-1),
+	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
+
+processPerceivedObjects(Out_raw, Indizees, POData) :-
+	numlist(0,Indizees,IndexList),
+	member(Index, IndexList),
+	jpl_get(Out_raw,Index,Perceived_object),
+	get_perceived_object_infos(Perceived_object, POData).
+
 get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _recognition_label_3d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _c_roi_origin, _c_roi_width,
