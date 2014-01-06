@@ -1,301 +1,358 @@
 <?xml version="1.0"?>
 
 
-<!DOCTYPE Ontology [
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
 ]>
 
 
-<Ontology xmlns="http://www.w3.org/2002/07/owl#"
-     xml:base="http://www.suturo.de/ontology/hierarchy"
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     ontologyIRI="http://www.suturo.de/ontology/hierarchy">
-    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
-    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
-    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
-    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
-    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
-    <Import>http://ias.cs.tum.edu/kb/knowrob_objects.owl</Import>
-    <Declaration>
-        <Class IRI="#Ball"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#BoardGame"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Box"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#CardboardBox"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Cards"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Chocolate"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#ClothBag"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Coffee"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Container"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Cylinder"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Drinkable"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Edible"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Entertainment"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Food"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Games"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Jellybean"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Lemonade"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Milk"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Nuts"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PaperBag"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PlasticBag"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PlasticBox"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PotatoProduct"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Racket"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Shape"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Snacks"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Sphere"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SportsEquipment"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SuturoObject"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Sweets"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Tea"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#VideoGame"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#Water"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="#blueOfObject"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="#greenOfObject"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="#labelOfObject"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="#redOfObject"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="#varianceOfVolume"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="#volumeOfObject"/>
-    </Declaration>
-    <SubClassOf>
-        <Class IRI="#Ball"/>
-        <Class IRI="#SportsEquipment"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#BoardGame"/>
-        <Class IRI="#Games"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Box"/>
-        <Class IRI="#Shape"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#CardboardBox"/>
-        <Class IRI="#Container"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Cards"/>
-        <Class IRI="#Games"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Chocolate"/>
-        <Class IRI="#Sweets"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#ClothBag"/>
-        <Class IRI="#Container"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Coffee"/>
-        <Class IRI="#Drinkable"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Container"/>
-        <Class IRI="#SuturoObject"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Cylinder"/>
-        <Class IRI="#Shape"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Drinkable"/>
-        <Class IRI="#Food"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Edible"/>
-        <Class IRI="#Food"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Entertainment"/>
-        <Class IRI="#SuturoObject"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Food"/>
-        <Class IRI="#SuturoObject"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Games"/>
-        <Class IRI="#Entertainment"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Jellybean"/>
-        <Class IRI="#Sweets"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Lemonade"/>
-        <Class IRI="#Drinkable"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Milk"/>
-        <Class IRI="#Drinkable"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Nuts"/>
-        <Class IRI="#Snacks"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PaperBag"/>
-        <Class IRI="#Container"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PlasticBag"/>
-        <Class IRI="#Container"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PlasticBox"/>
-        <Class IRI="#Container"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PotatoProduct"/>
-        <Class IRI="#Snacks"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Racket"/>
-        <Class IRI="#SportsEquipment"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Shape"/>
-        <Class IRI="http://ias.cs.tum.edu/kb/knowrob.owl#ObjectType"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Snacks"/>
-        <Class IRI="#Edible"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Sphere"/>
-        <Class IRI="#Shape"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SportsEquipment"/>
-        <Class IRI="#Entertainment"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SuturoObject"/>
-        <Class IRI="http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing-Localized"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Sweets"/>
-        <Class IRI="#Edible"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Tea"/>
-        <Class IRI="#Drinkable"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#VideoGame"/>
-        <Class IRI="#Games"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#Water"/>
-        <Class IRI="#Drinkable"/>
-    </SubClassOf>
-    <SubDataPropertyOf>
-        <DataProperty IRI="#varianceOfVolume"/>
-        <DataProperty IRI="#volumeOfObject"/>
-    </SubDataPropertyOf>
-    <DataPropertyDomain>
-        <DataProperty IRI="#blueOfObject"/>
-        <Class IRI="#SuturoObject"/>
-    </DataPropertyDomain>
-    <DataPropertyDomain>
-        <DataProperty IRI="#greenOfObject"/>
-        <Class IRI="#SuturoObject"/>
-    </DataPropertyDomain>
-    <DataPropertyDomain>
-        <DataProperty IRI="#labelOfObject"/>
-        <Class abbreviatedIRI="owl:Thing"/>
-    </DataPropertyDomain>
-    <DataPropertyDomain>
-        <DataProperty IRI="#redOfObject"/>
-        <Class IRI="#SuturoObject"/>
-    </DataPropertyDomain>
-    <DataPropertyDomain>
-        <DataProperty IRI="#volumeOfObject"/>
-        <Class IRI="#SuturoObject"/>
-    </DataPropertyDomain>
-</Ontology>
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <Ontology rdf:about="http://www.suturo.de/ontology/hierarchy">
+        <imports rdf:resource="http://ias.cs.tum.edu/kb/knowrob_objects.owl"/>
+    </Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#blueOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#blueOfObject">
+        <rdfs:domain rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#greenOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#greenOfObject">
+        <rdfs:domain rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#labelOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#labelOfObject">
+        <rdfs:domain rdf:resource="&owl;Thing"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#redOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#redOfObject">
+        <rdfs:domain rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#varianceOfVolume -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#varianceOfVolume">
+        <rdfs:subPropertyOf rdf:resource="http://www.suturo.de/ontology/hierarchy#volumeOfObject"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#volumeOfObject -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#volumeOfObject">
+        <rdfs:domain rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Ball -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Ball">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SportsEquipment"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#BoardGame -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#BoardGame">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Games"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Box -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Box">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Shape"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#CardboardBox -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#CardboardBox">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Cards -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Cards">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Games"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Chocolate -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Chocolate">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Sweets"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#ClothBag -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#ClothBag">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Coffee -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Coffee">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Container -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Container">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Cylinder -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Cylinder">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Shape"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Drinkable -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Drinkable">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Food"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Edible -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Edible">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Food"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Entertainment -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Entertainment">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Food -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Food">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SuturoObject"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Games -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Games">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Entertainment"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Jellybean -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Jellybean">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Sweets"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Lemonade -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Lemonade">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Milk -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Milk">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Nuts -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Nuts">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Snacks"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#PaperBag -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#PaperBag">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#PlasticBag -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#PlasticBag">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#PlasticBox -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#PlasticBox">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Container"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#PotatoProduct -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#PotatoProduct">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Snacks"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Racket -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Racket">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#SportsEquipment"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Shape -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Shape">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ObjectType"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Snacks -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Snacks">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Edible"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Sphere -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Sphere">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Shape"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#SportsEquipment -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#SportsEquipment">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Entertainment"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#SuturoObject -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#SuturoObject">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing-Localized"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Sweets -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Sweets">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Edible"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Tea -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Tea">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#VideoGame -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#VideoGame">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Games"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#Water -->
+
+    <Class rdf:about="http://www.suturo.de/ontology/hierarchy#Water">
+        <rdfs:subClassOf rdf:resource="http://www.suturo.de/ontology/hierarchy#Drinkable"/>
+    </Class>
+</rdf:RDF>
 
 
 
