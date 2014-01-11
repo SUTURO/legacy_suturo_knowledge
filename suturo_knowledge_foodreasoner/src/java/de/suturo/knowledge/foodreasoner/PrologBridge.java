@@ -61,14 +61,18 @@ public class PrologBridge {
 	PerceivedObject[] pos = cluster.getClusters().toArray(
 		new PerceivedObject[0]);
 	for (PerceivedObject po : pos) {
-
 	    Stamped<Point3d> poMap = new Stamped<Point3d>();
 	    Stamped<Point3d> poOdom = new Stamped<Point3d>();
 	    Stamped<Point3d> poPoint = getStamped3DPoint(po);
-	    tf.transformPoint("/map", poPoint, poMap);
-	    tf.transformPoint("/odom_combined", poPoint, poOdom);
-	    mapCoords.put(Long.valueOf(po.c_id), poMap.getData());
-	    odomCoords.put(Long.valueOf(po.c_id), poOdom.getData());
+	    try {
+		tf.transformPoint("/map", poPoint, poMap);
+		tf.transformPoint("/odom_combined", poPoint, poOdom);
+		mapCoords.put(Long.valueOf(po.c_id), poMap.getData());
+		odomCoords.put(Long.valueOf(po.c_id), poOdom.getData());
+	    } catch (Exception e) {
+		ros.logError("tf failed hard:" + e.getMessage());
+	    }
+
 	}
 	return pos;
     }
