@@ -11,6 +11,58 @@
 
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 
+edible(pringles).
+edible(milka).
+edible(testobj1). % FINDME for planning testing
+volume(ball, 0.0024, 0.0001).
+volume(pringles, 0.00085, 0.0001).
+volume(tee, 0.00025, 0.00005).
+volume(paket, 0.00515, 0.00025).
+volume(milka, 0.0006, 0.00005).
+volume(testobj1, 0.00339, 0.001). % FINDME for planning testing
+
+container_object(ediblebox).
+container_object(nonediblebox).
+
+containerFor(ediblebox, edible).
+containerFor(nonediblebox, nonedible).
+
+name(ediblebox, edibleBox).
+name(nonediblebox, nonEdibleBox).
+
+type(ediblebox, container).
+type(nonediblebox, container).
+
+centroid_x(ediblebox, 1).
+centroid_y(ediblebox, 1).
+centroid_z(ediblebox, 1).
+centroid_x(nonediblebox, 1).
+centroid_y(nonediblebox, 2).
+centroid_z(nonediblebox, 1).
+centroid_x(pringles, 1).
+centroid_y(pringles, 3).
+centroid_z(pringles, 1).
+centroid_x(milka, 1).
+centroid_y(milka, 4).
+centroid_z(milka, 1).
+centroid_x(testobj1, 1).
+centroid_y(testobj1, 5).
+centroid_z(testobj1, 1).
+
+frameId(ediblebox, Jim).
+frameId(nonediblebox, Bo).
+frameId(pringles, Bob).
+frameId(milka, Kelso).
+frameId(testonj1, Fubar).
+
+
+onTable(ediblebox).
+onTable(nonediblebox).
+onTable(pringles).
+onTable(milka).
+onTable(testobj1).
+
+
 
 
 %% is_edible(+ObjectList, -EdibleObject)
@@ -48,6 +100,29 @@ get_edible_objects(ObjectList, ID) :-
 	Max is ObjVol + ObjVar,
 	Min =< Volume,
 	Max >= Volume.
+
+%% Accessor predicate for containers
+container_object(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
+
+%% Returns edible objects on table ids
+edibleOn(_, Out) :-
+%	findall(perceived_object, onTable(X), Out).
+	Out=[[edible,pringles,box,[1,3,1],'Bob'],[edible,milka,box,[1,4,1],'Kelso']].
+%% Returns containers on table ids
+containerOn(_, Out) :-
+%	findall(container_object, onTable(X), Out).
+	Out=[[edible,ediblebox,container,[1,1,1],'Jim'],[nonedible,nonediblebox,container,[1,2,1],'Bo']].
+%% Die Perception wird abgefragt und die Semantic Map aktualisiert
+%gibt momentan 3 objekte aus
+updatePerception(Out) :-
+%	findall(perceived_object, edible(X), Out).
+	Out=[[edible,pringles,box,[1,3,1],'Bob'],[edible,milka,box,[1,4,1],'Kelso'],[edible,testobject1,sphere,[1,5,1],'Fubar']].
+
+%% Abfrage ob Object in Box platziert wurde
+%gibt momentan eine leere Liste aus
+placedObjectInBox(_, _, Out) :-
+%	findall(X,volume(tee, 0, X),Out).
+	Out=[].
 
 head_element([Head|_], Head).
 %% This is a test for JNI integration
