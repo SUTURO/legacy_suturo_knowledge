@@ -19,6 +19,7 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 # ROS packages
 rosbuild_find_ros_package(json_prolog)
 rosbuild_find_ros_package(ias_knowledge_base)
+rosbuild_find_ros_package(knowrob_objects)
 rosbuild_find_ros_package(jpl)
 rosbuild_find_ros_package(rosjava_jni)
 
@@ -37,6 +38,9 @@ add_java_source_dir( ${PROJECT_SOURCE_DIR}/src/java )
 # replace path to local owl files
 set( OWL_PATH_PREFIX ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )
 fix_ros_destination_path(OWL_PATH_PREFIX)
+set( KNOWROB_PATH_PREFIX ${knowrob_objects_PACKAGE_PATH} )
+fix_ros_destination_path(KNOWROB_PATH_PREFIX)
+
 
 file(GLOB inputs owl/*.in)
 
