@@ -101,6 +101,7 @@ get_edible_objects(ObjectList, ID) :-
 	Min =< Volume,
 	Max >= Volume.
 
+
 %% Accessor predicate for containers
 container_object(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
 
@@ -124,10 +125,24 @@ placedObjectInBox(_, _, Out) :-
 %	findall(X,volume(tee, 0, X),Out).
 	Out=[].
 
-head_element([Head|_], Head).
+
+%% create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
+%%     rdf_instance_from_class(ObjClass, ObjInst),
+%%     create_perception_instance(PerceptionTypes, Perception),
+%%     set_object_perception(ObjInst, Perception),
+%%     set_perception_pose(Perception, ObjPose).
+
+%% create_object_perception(_recognition_label_2d, [1,0,0,X,0,1,0,Y,0,0,1,Z], [])
+
+shape(0,'NONE').
+shape(1,'Box').
+shape(2, 'Cylinder').
+shape(3, 'Sphere').
+
 %% This is a test for JNI integration
 dummyJava(PODataList) :-
-	jpl_call('de.suturo.knowledge.foodreasoner.PrologBridge', 'updatePerception', [], Out_raw),
+	jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge),
+	jpl_call(PrologBridge, 'updatePerception', [], Out_raw),
 	jpl_get(Out_raw,'length',Length),
 	is(Indizees, Length-1),
 	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
@@ -138,16 +153,19 @@ processPerceivedObjects(Out_raw, Indizees, POData) :-
 	jpl_get(Out_raw,Index,Perceived_object),
 	get_perceived_object_infos(Perceived_object, POData).
 
+%% get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
+%%  _recognition_label_2d, _recognition_label_3d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+%%  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _c_roi_origin, _c_roi_width,
+%%  _c_roi_height ]):-
 get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
- _recognition_label_2d, _recognition_label_3d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
- _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _c_roi_origin, _c_roi_width,
- _c_roi_height ]):-
+ _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+ _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality]) :-
 	jpl_get(Obj_id, 'c_id', _c_id),
 	jpl_get(Obj_id, 'c_centroid', _c_centroid),
 	jpl_get(Obj_id, 'c_volume', _c_volume),
 	jpl_get(Obj_id, 'frame_id', _frame_id),
 	jpl_get(Obj_id, 'recognition_label_2d', _recognition_label_2d),
-	jpl_get(Obj_id, 'recognition_label_3d', _recognition_label_3d),
+%%	jpl_get(Obj_id, 'recognition_label_3d', _recognition_label_3d),
 	jpl_get(Obj_id, 'c_shape', _c_shape),
 	jpl_get(Obj_id, 'c_color_average_r', _c_color_average_r),
 	jpl_get(Obj_id, 'c_color_average_g', _c_color_average_g),
@@ -156,7 +174,7 @@ get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
 	jpl_get(Obj_id, 'c_color_average_s', _c_color_average_s),
 	jpl_get(Obj_id, 'c_color_average_v', _c_color_average_v),
 	jpl_get(Obj_id, 'c_hue_histogram', _c_hue_histogram),
-	jpl_get(Obj_id, 'c_hue_histogram_quality', _c_hue_histogram_quality),
-	jpl_get(Obj_id, 'c_roi_origin', _c_roi_origin),
-	jpl_get(Obj_id, 'c_roi_width', _c_roi_width),
-	jpl_get(Obj_id, 'c_roi_height', _c_roi_height).
+	jpl_get(Obj_id, 'c_hue_histogram_quality', _c_hue_histogram_quality).
+%%	jpl_get(Obj_id, 'c_roi_origin', _c_roi_origin),
+%%	jpl_get(Obj_id, 'c_roi_width', _c_roi_width),
+%%	jpl_get(Obj_id, 'c_roi_height', _c_roi_height).
