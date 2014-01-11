@@ -22,6 +22,7 @@ rosbuild_find_ros_package(ias_knowledge_base)
 rosbuild_find_ros_package(knowrob_objects)
 rosbuild_find_ros_package(jpl)
 rosbuild_find_ros_package(rosjava_jni)
+rosbuild_find_ros_package(tfjava)
 
 # Java-Prolog bridge
 add_jni_path(${jpl_PACKAGE_PATH}/prolog)
@@ -29,6 +30,7 @@ add_ld_preload(/usr/lib/libswipl.so)
 add_ld_preload(/usr/lib/libpl.so)
 add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
+add_classpath(${tfjava_PACKAGE_PATH}/bin)
 
 # build java
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
