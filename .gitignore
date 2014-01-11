@@ -5,3 +5,5 @@
 bin
 build
 *gen
+/tfjava/
+/rosjava_jni/
