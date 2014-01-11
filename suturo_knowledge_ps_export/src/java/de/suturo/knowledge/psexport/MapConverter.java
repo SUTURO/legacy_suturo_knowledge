@@ -6,7 +6,6 @@ import ros.Ros;
 import ros.RosException;
 import ros.communication.Time;
 import ros.pkg.geometry_msgs.msg.Pose;
-import ros.pkg.geometry_msgs.msg.Quaternion;
 import ros.pkg.moveit_msgs.msg.CollisionObject;
 import ros.pkg.shape_msgs.msg.SolidPrimitive;
 
@@ -37,13 +36,7 @@ public class MapConverter {
 		    100);
 	    CollisionObject obj = generateDummyCollisionObject();
 	    pub.publish(obj);
-
-	    Thread.sleep(1000);
-
 	} catch (RosException e) {
-	    e.printStackTrace();
-
-	} catch (InterruptedException e) {
 	    e.printStackTrace();
 
 	} finally {
@@ -69,7 +62,7 @@ public class MapConverter {
 	pose.position.x = 0.65;
 	pose.position.y = 0.3;
 	pose.position.z = 0.621;
-	pose.orientation = createMsgForQuaternion(0, 0, -Math.PI / 4);
+	pose.orientation = Util.createMsgForQuaternion(0, 0, -Math.PI / 4);
 	obj.primitive_poses.add(pose);
 	return obj;
     }
@@ -87,28 +80,4 @@ public class MapConverter {
 
     }
 
-    private static Quaternion createMsgForQuaternion(double roll, double pitch,
-	    double yaw) {
-	double QUATERNION_TOLERANCE = 0.1f;
-	double halfYaw = yaw * 0.5;
-	double halfPitch = pitch * 0.5;
-	double halfRoll = roll * 0.5;
-	double cosYaw = Math.cos(halfYaw);
-	double sinYaw = Math.sin(halfYaw);
-	double cosPitch = Math.cos(halfPitch);
-	double sinPitch = Math.sin(halfPitch);
-	double cosRoll = Math.cos(halfRoll);
-	double sinRoll = Math.sin(halfRoll);
-	Quaternion q = new Quaternion();
-	q.x = sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw;
-	q.y = cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw;
-	q.z = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw;
-	q.w = cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw;
-	double length2 = q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
-	if (Math.abs(length2 - 1) > QUATERNION_TOLERANCE) {
-	    throw new UnsupportedOperationException(
-		    "Non normalized quaternion found. Normalize not yet implemented");
-	}
-	return q;
-    }
 }
