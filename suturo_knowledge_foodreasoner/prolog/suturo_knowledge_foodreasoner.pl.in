@@ -3,13 +3,14 @@
 :- module(suturo_knowledge_foodreasoner,
     [
       is_edible/2,
-      dummyJava/1
+      get_perceived_objects/1
     ]).
 
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/orly.owl', false, false, true).
 
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 
 edible(pringles).
 edible(milka).
@@ -134,13 +135,77 @@ placedObjectInBox(_, _, Out) :-
 
 %% create_object_perception(_recognition_label_2d, [1,0,0,X,0,1,0,Y,0,0,1,Z], [])
 
+rgb_color_variance(0.1).
+hsv_color_variance(0.1).
+volume_Variance(0.1).
 shape(0,'NONE').
 shape(1,'Box').
 shape(2, 'Cylinder').
 shape(3, 'Sphere').
 
+create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
+    rdf_instance_from_class(ObjClass, ObjInst),
+    create_perception_instance(PerceptionTypes, Perception),
+    set_object_perception(ObjInst, Perception),
+    set_perception_pose(Perception, ObjPose).
+
+check_if_object_available(_c_volume, _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+ _c_color_average_h, _c_color_average_s, _c_color_average_v) :-
+	rdf_has(_recognition_label_2d, _ , _);
+	shape(_c_shape, ShapeString),
+	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
+	rdf_has(X, rdf:type ,Shape),
+	volume_in_range(X, _c_volume),
+	rgb_is_fitting(X,  _c_color_average_r, _c_color_average_g, _c_color_average_b),
+	hsv_is_fitting(X, _c_color_average_h, _c_color_average_s, _c_color_average_v).
+
+
+
+
+volume_in_range(ObjectIdentifier, Volume) :-
+	rdf_has(ObjectIdentifier , 'http://ias.cs.tum.edu/kb/knowrob.owl#volumeOfObject', Obj_Vol),
+	Min is Obj_Vol * (1 - volume_Variance),
+	Max is Obj_Vol * (1 + volume_Variance),
+	Min =< Volume,
+	Max >= Volume.
+
+rgb_is_fitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
+	rdf_has(ObjectIdentifier, suturo:rColorValue , Obj_R_Color),
+	MinR is Obj_R_Color * (1 - rgb_color_variance),
+	MaxR is Obj_R_Color * (1 + rgb_color_variance),
+	MinR =< R_Color,
+	MaxR >= R_Color,
+	rdf_has(ObjectIdentifier, suturo:gColorValue , Obj_G_Color),
+	MinG is Obj_G_Color * (1 - rgb_color_variance),
+	MaxG is Obj_G_Color * (1 + rgb_color_variance),
+	MinG =< G_Color,
+	MaxG >= G_Color,
+	rdf_has(ObjectIdentifier, suturo:bColorValue , Obj_B_Color),
+	MinB is Obj_B_Color * (1 - rgb_color_variance),
+	MaxB is Obj_B_Color * (1 + rgb_color_variance),
+	MinB =< B_Color,
+	MaxB >= B_Color.
+
+hsv_is_fitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
+	rdf_has(ObjectIdentifier, suturo:hColorValue , Obj_H_Value),
+	MinH is Obj_H_Value * (1 - hsv_color_variance),
+	MaxH is Obj_H_Value * (1 + hsv_color_variance),
+	MinH =< H_Value,
+	MaxH >= H_Value,
+	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
+	MinS is Obj_S_Value * (1 - hsv_color_variance),
+	MaxS is Obj_S_Value * (1 + hsv_color_variance),
+	MinS =< S_Value,
+	MaxS >= S_Value,
+	rdf_has(ObjectIdentifier, suturo:vColorValue , Obj_V_Value),
+	MinV is Obj_V_Value * (1 - hsv_color_variance),
+	MaxV is Obj_V_Value * (1 + hsv_color_variance),
+	MinV =< V_Value,
+	MaxV >= V_Value.
+
+
 %% This is a test for JNI integration
-dummyJava(PODataList) :-
+get_perceived_objects(PODataList) :-
 	jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge),
 	jpl_call(PrologBridge, 'updatePerception', [], Out_raw),
 	jpl_get(Out_raw,'length',Length),
