@@ -34,9 +34,8 @@ public class MapConverter {
 	try {
 	    pub = handle.advertise("/collision_object", new CollisionObject(),
 		    100);
-	    CollisionObject obj = generateDummyCollisionObject();
 	    while (ros.ok()) {
-		pub.publish(obj);
+		pub.publish(generateDummyCollisionObject());
 		Thread.sleep(1000);
 	    }
 	} catch (RosException e) {

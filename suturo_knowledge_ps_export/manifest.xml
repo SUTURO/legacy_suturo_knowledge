@@ -10,9 +10,6 @@
   <url>http://www.suturo.de</url>
 
   <depend package="rosjava_jni"/> <!-- Java in ROS -->
-  <depend package="geometry_msgs" />
-  <depend package="shape_msgs"/>
-  <depend package="moveit_msgs" />
 
   <export>
     <java classpath="${prefix}/bin"/>
