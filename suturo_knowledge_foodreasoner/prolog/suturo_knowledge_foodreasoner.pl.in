@@ -3,7 +3,8 @@
 :- module(suturo_knowledge_foodreasoner,
     [
       is_edible/2,
-      get_perceived_objects/1
+      get_perceived_objects_infos/1,
+      save_perception/1
     ]).
 
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
@@ -138,10 +139,17 @@ placedObjectInBox(_, _, Out) :-
 rgb_color_variance(0.1).
 hsv_color_variance(0.1).
 volume_Variance(0.1).
-shape(0,'NONE').
-shape(1,'Box').
+shape(0, 'NONE').
+shape(1, 'Box').
 shape(2, 'Cylinder').
 shape(3, 'Sphere').
+
+
+save_perception(Object) :-
+	get_perceived_objects_infos(DataList),
+	member(Object, DataList),
+	(check_if_object_available(Object) ->
+	writeln('LOl Object there'); writeln('LOl Object NOT there')).
 
 create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
     rdf_instance_from_class(ObjClass, ObjInst),
@@ -149,8 +157,11 @@ create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
     set_object_perception(ObjInst, Perception),
     set_perception_pose(Perception, ObjPose).
 
-check_if_object_available(_c_volume, _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
- _c_color_average_h, _c_color_average_s, _c_color_average_v) :-
+
+
+check_if_object_available([_c_id, _c_centroid, _c_volume, _frame_id,
+ _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+ _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality]) :-
 	rdf_has(_recognition_label_2d, _ , _);
 	shape(_c_shape, ShapeString),
 	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
@@ -203,20 +214,26 @@ hsv_is_fitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
 	MinV =< V_Value,
 	MaxV >= V_Value.
 
-
+head_element([Head| Tail], Head). 
 %% This is a test for JNI integration
-get_perceived_objects(PODataList) :-
+get_perceived_objects_infos(PODataList) :-
 	jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge),
 	jpl_call(PrologBridge, 'updatePerception', [], Out_raw),
 	jpl_get(Out_raw,'length',Length),
 	is(Indizees, Length-1),
-	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
+	findall(POData,processPerceivedObjects(PrologBridge, Out_raw, Indizees, POData), PODataList).
 
-processPerceivedObjects(Out_raw, Indizees, POData) :-
+processPerceivedObjects(PrologBridge, Out_raw, Indizees, [POData|[X_Coord, Y_Coord, Z_Coord]]]) :-
 	numlist(0,Indizees,IndexList),
 	member(Index, IndexList),
 	jpl_get(Out_raw,Index,Perceived_object),
-	get_perceived_object_infos(Perceived_object, POData).
+	get_perceived_object_infos(Perceived_object, POData),
+	head_element(POData, _c_id),
+	writeln(_c_id),
+	jpl_call(PrologBridge, 'getOdomCoords', [_c_id], Map_Raw),
+	jpl_get(Map_Raw,'x', X_Coord),
+	jpl_get(Map_Raw,'y', Y_Coord),
+	jpl_get(Map_Raw,'z', Z_Coord).
 
 %% get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
 %%  _recognition_label_2d, _recognition_label_3d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
