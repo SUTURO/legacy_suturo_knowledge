@@ -4,7 +4,11 @@
     [
       is_edible/2,
       get_perceived_objects_infos/1,
-      save_perception/1
+      save_perception/1,
+      edibleOn/2,
+      containerOn/2,
+      updatePerception/1,
+      placedObjectInBox/3
     ]).
 
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
