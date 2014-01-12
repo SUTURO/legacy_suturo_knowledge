@@ -35,10 +35,15 @@ public class MapConverter {
 	    pub = handle.advertise("/collision_object", new CollisionObject(),
 		    100);
 	    CollisionObject obj = generateDummyCollisionObject();
-	    pub.publish(obj);
+	    while (ros.ok()) {
+		pub.publish(obj);
+		Thread.sleep(1000);
+	    }
 	} catch (RosException e) {
 	    e.printStackTrace();
 
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
 	} finally {
 	    if (pub != null)
 		pub.shutdown();
@@ -47,7 +52,7 @@ public class MapConverter {
 
     private CollisionObject generateDummyCollisionObject() {
 	CollisionObject obj = new CollisionObject();
-	obj.id = "table"; // Eindeutiger Name?
+	obj.id = "somethingELSE"; // Eindeutiger Name?
 	obj.header.stamp = Time.now();
 	obj.header.frame_id = "/base_footprint"; // odom_combined?
 	obj.operation = CollisionObject.ADD;
