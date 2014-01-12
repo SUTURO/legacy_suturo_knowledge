@@ -61,18 +61,9 @@ public class PrologBridge {
 	PerceivedObject[] pos = cluster.getClusters().toArray(
 		new PerceivedObject[0]);
 	for (PerceivedObject po : pos) {
-	    Stamped<Point3d> poMap = new Stamped<Point3d>();
-	    Stamped<Point3d> poOdom = new Stamped<Point3d>();
 	    Stamped<Point3d> poPoint = getStamped3DPoint(po);
-	    try {
-		tf.transformPoint("/map", poPoint, poMap);
-		tf.transformPoint("/odom_combined", poPoint, poOdom);
-		mapCoords.put(Long.valueOf(po.c_id), poMap.getData());
-		odomCoords.put(Long.valueOf(po.c_id), poOdom.getData());
-	    } catch (Exception e) {
-		ros.logError("tf failed hard:" + e.getMessage());
-	    }
-
+	    addTransformPoint("/map", poPoint, mapCoords, po.c_id);
+	    addTransformPoint("/odom_combined", poPoint, odomCoords, po.c_id);
 	}
 	return pos;
     }
@@ -81,6 +72,21 @@ public class PrologBridge {
 	Point cent = po.c_centroid;
 	Point3d point3d = new Point3d(cent.x, cent.y, cent.z);
 	return new Stamped<Point3d>(point3d, po.frame_id, Time.now());
+    }
+
+    private static void addTransformPoint(String target, Stamped<Point3d> in,
+	    Map<Long, Point3d> map, long cID) {
+	if (!handle.getAdvertisedTopics().contains(target)) {
+	    ros.logError("Topic " + target + " not advertised!");
+	    return;
+	}
+	try {
+	    Stamped<Point3d> out = new Stamped<Point3d>();
+	    tf.transformPoint(target, in, out);
+	    map.put(Long.valueOf(cID), out.getData());
+	} catch (Exception e) {
+	    ros.logError("TF failed: " + e);
+	}
     }
 
     /**
