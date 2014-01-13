@@ -150,11 +150,11 @@ shape(2, 'Cylinder').
 shape(3, 'Sphere').
 
 
-save_perception(Object) :-
+save_perception(ObjectInst) :-
 	get_perceived_objects_infos(DataList),
 	member(Object, DataList),
 	(check_if_object_available(Object) ->
-	writeln('LOl Object there'); writeln('LOl Object NOT there')).
+	writeln('LOl Object there'); writeln('Im doing something!'),create_object_perception(Object, [], ['TemporallyExtendedThing'], ObjectInst)).
 
 
 create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
@@ -162,14 +162,29 @@ create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
  X_Coord, Y_Coord, Z_Coord, Odom_FrameId],
   ObjPose, PerceptionTypes, ObjInst) :-
-	shape(_c_shape, ShapeString),
-	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
-    rdf_instance_from_class(Shape, ObjInst),
+
+	%% if shape != 0 
+	(_c_shape =\= 0 ->
+		shape(_c_shape, ShapeString),
+		writeln('Want to concat the strings'),
+		atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Type),
+		atom_concat('Got Type Shape ', Type , Log),
+		writeln(Log);
+    	%%else 
+    	writeln('Want to concat the strings'),
+    	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', 'Thing', Type),
+    	atom_concat('Got Type Thing ', Type , Log),
+		writeln(Log)),
+	writeln('Now want to assert the Object'),
+    (_recognition_label_2d \= '' ->
+    	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst),
+    	rdf_assert(ObjInst, rdf:type, Type); 
+    	rdf_instance_from_class(Type, ObjInst)),
     rdf_assert(ObjInst, rdf:type, knowrob:'HSVAverageColor'),
     rdf_assert(ObjInst, rdf:type, knowrob:'RGBAverageColor'),
     create_perception_instance(PerceptionTypes, Perception),
     set_object_perception(ObjInst, Perception),
-    set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord]).
+    set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]).
 
 
 
@@ -237,21 +252,25 @@ get_perceived_objects_infos(PODataList) :-
 	is(Indizees, Length-1),
 	findall(POData,processPerceivedObjects(PrologBridge, Out_raw, Indizees, POData), PODataList).
 
-processPerceivedObjects(PrologBridge, Out_raw, Indizees, [POData|[X_Coord, Y_Coord, Z_Coord, Odom_FrameId]]) :-
+processPerceivedObjects(PrologBridge, Out_raw, Indizees, Result) :-
 	numlist(0,Indizees,IndexList),
 	member(Index, IndexList),
 	jpl_get(Out_raw,Index,Perceived_object),
 	get_perceived_object_infos(Perceived_object, POData),
 	head_element(POData, _c_id),
-	writeln(_c_id),
-	jpl_call(PrologBridge, 'getOdomCoords', [_c_id], Odom_Raw),
-	jpl_get(Odom_Raw,'pose', Pose_Raw),
-	jpl_get(Pose_Raw,'position', Point_Raw),
-	jpl_get(Point_Raw,'x', X_Coord),
-	jpl_get(Point_Raw,'y', Y_Coord),
-	jpl_get(Point_Raw,'z', Z_Coord),
-	jpl_get(Odom_Raw,'header', Header_Raw),
-	jpl_get(Header_Raw,'frame_id', Odom_FrameId).
+	X_Coord is 1,
+	Y_Coord is 1,
+	Z_Coord is 1,
+	Odom_FrameId is 2,
+	append(POData,[X_Coord, Y_Coord, Z_Coord, Odom_FrameId], Result).
+	%%jpl_call(PrologBridge, 'getOdomCoords', [_c_id], Odom_Raw),
+	%% jpl_get(Odom_Raw,'pose', Pose_Raw),
+	%% jpl_get(Pose_Raw,'position', Point_Raw),
+	%% jpl_get(Point_Raw,'x', X_Coord),
+	%% jpl_get(Point_Raw,'y', Y_Coord),
+	%% jpl_get(Point_Raw,'z', Z_Coord),
+	%% jpl_get(Odom_Raw,'header', Header_Raw),
+	%% jpl_get(Header_Raw,'frame_id', Odom_FrameId).
 
 
 %% get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
