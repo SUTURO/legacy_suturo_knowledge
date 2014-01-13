@@ -237,7 +237,7 @@ get_perceived_objects_infos(PODataList) :-
 	is(Indizees, Length-1),
 	findall(POData,processPerceivedObjects(PrologBridge, Out_raw, Indizees, POData), PODataList).
 
-processPerceivedObjects(PrologBridge, Out_raw, Indizees, [POData|X_Coord, Y_Coord, Z_Coord, Odom_FrameId]) :-
+processPerceivedObjects(PrologBridge, Out_raw, Indizees, [POData|[X_Coord, Y_Coord, Z_Coord, Odom_FrameId]]) :-
 	numlist(0,Indizees,IndexList),
 	member(Index, IndexList),
 	jpl_get(Out_raw,Index,Perceived_object),
