@@ -29,8 +29,8 @@ public class PrologBridge {
     private static NodeHandle handle;
     private static GetClustersService cluster;
 
-    private final Map<Long, Point3d> mapCoords = new HashMap<Long, Point3d>();
-    private final Map<Long, Point3d> odomCoords = new HashMap<Long, Point3d>();
+    private final Map<Long, Stamped<Point3d>> mapCoords = new HashMap<Long, Stamped<Point3d>>();
+    private final Map<Long, Stamped<Point3d>> odomCoords = new HashMap<Long, Stamped<Point3d>>();
 
     private static void checkInitialized() {
 	ros = Ros.getInstance();
@@ -75,7 +75,7 @@ public class PrologBridge {
     }
 
     private static void addTransformPoint(String target, Stamped<Point3d> in,
-	    Map<Long, Point3d> map, long cID) {
+	    Map<Long, Stamped<Point3d>> map, long cID) {
 	if (!handle.getAdvertisedTopics().contains(target)) {
 	    ros.logError("Topic " + target + " not advertised!");
 	    return;
@@ -83,7 +83,7 @@ public class PrologBridge {
 	try {
 	    Stamped<Point3d> out = new Stamped<Point3d>();
 	    tf.transformPoint(target, in, out);
-	    map.put(Long.valueOf(cID), out.getData());
+	    map.put(Long.valueOf(cID), out);
 	} catch (Exception e) {
 	    ros.logError("TF failed: " + e);
 	}
@@ -96,7 +96,7 @@ public class PrologBridge {
      *            ID of corresponding PerceivedObject
      * @return Point3d object
      */
-    public Point3d getMapCoords(long c_id) {
+    public Stamped<Point3d> getMapCoords(long c_id) {
 	return this.mapCoords.get(Long.valueOf(c_id));
     }
 
@@ -107,7 +107,7 @@ public class PrologBridge {
      *            ID of corresponding PerceivedObject
      * @return Point3d object
      */
-    public Point3d getOdomCoords(long c_id) {
+    public Stamped<Point3d> getOdomCoords(long c_id) {
 	return this.odomCoords.get(Long.valueOf(c_id));
     }
 }
