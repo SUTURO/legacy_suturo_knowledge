@@ -6,6 +6,7 @@
 :- register_ros_package(semweb).
 %:- register_ros_package(jriesterKitchenTest).
 %:- use_module(library('jriesterKitchenTest')).
+:- register_ros_package(knowrob_objects).
 :- use_module(library('suturo_knowledge_foodreasoner')).
 %:- use_module(library('suturo_knowledge_foodmanager')).
 
