@@ -202,7 +202,8 @@ assert_rgb_colors(ObjInst, H_Color, S_Color, V_Color) :-
 check_if_object_available([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality]) :-
-	rdf_has(_recognition_label_2d, _ , _);
+	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst)
+	rdf_has(ObjInst, _ , _);
 	shape(_c_shape, ShapeString),
 	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
 	rdf_has(X, rdf:type ,Shape),
@@ -269,6 +270,7 @@ processPerceivedObjects(PrologBridge, Out_raw, Indizees, Result) :-
 	jpl_get(Out_raw,Index,Perceived_object),
 	get_perceived_object_infos(Perceived_object, POData),
 	head_element(POData, _c_id),
+	%%%%%%%%%%%%%%%%%%%% TODO: DELETE faked coordinates if odem is working find
 	X_Coord is 1,
 	Y_Coord is 1,
 	Z_Coord is 1,
