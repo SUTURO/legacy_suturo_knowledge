@@ -16,7 +16,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <Ontology rdf:about="http://www.suturo.de/ontology/hierarchy">
-        <imports rdf:resource="file:///home/smurpheus/rosbuild_ws/stacks/knowrob/knowrob_objects/owl//knowrob_objects.owl"/>
+        <imports rdf:resource="&local_path;knowrob_objects.owl"/>
     </Ontology>
     
 
