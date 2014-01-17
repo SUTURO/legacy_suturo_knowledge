@@ -132,7 +132,7 @@ placedObjectInBox(_, _, Out) :-
 %	findall(X,volume(tee, 0, X),Out).
 	Out=[].
 
-rage_
+%%rage_
 %% create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
 %%     rdf_instance_from_class(ObjClass, ObjInst),
 %%     create_perception_instance(PerceptionTypes, Perception),
@@ -202,7 +202,7 @@ assert_rgb_colors(ObjInst, H_Color, S_Color, V_Color) :-
 check_if_object_available([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality]) :-
-	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst)
+	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst),
 	rdf_has(ObjInst, _ , _);
 	shape(_c_shape, ShapeString),
 	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
@@ -223,35 +223,37 @@ volume_in_range(ObjectIdentifier, Volume) :-
 
 rgb_is_fitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
 	rdf_has(ObjectIdentifier, suturo:rColorValue , Obj_R_Color),
-	MinR is Obj_R_Color * (1 - rgb_color_variance),
-	MaxR is Obj_R_Color * (1 + rgb_color_variance),
+	rgb_color_variance(RGBVariance),
+	MinR is Obj_R_Color * (1 - RGBVariance),
+	MaxR is Obj_R_Color * (1 + RGBVariance),
 	MinR =< R_Color,
 	MaxR >= R_Color,
 	rdf_has(ObjectIdentifier, suturo:gColorValue , Obj_G_Color),
-	MinG is Obj_G_Color * (1 - rgb_color_variance),
-	MaxG is Obj_G_Color * (1 + rgb_color_variance),
+	MinG is Obj_G_Color * (1 - RGBVariance),
+	MaxG is Obj_G_Color * (1 + RGBVariance),
 	MinG =< G_Color,
 	MaxG >= G_Color,
 	rdf_has(ObjectIdentifier, suturo:bColorValue , Obj_B_Color),
-	MinB is Obj_B_Color * (1 - rgb_color_variance),
-	MaxB is Obj_B_Color * (1 + rgb_color_variance),
+	MinB is Obj_B_Color * (1 - RGBVariance),
+	MaxB is Obj_B_Color * (1 + RGBVariance),
 	MinB =< B_Color,
 	MaxB >= B_Color.
 
 hsv_is_fitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
 	rdf_has(ObjectIdentifier, suturo:hColorValue , Obj_H_Value),
-	MinH is Obj_H_Value * (1 - hsv_color_variance),
-	MaxH is Obj_H_Value * (1 + hsv_color_variance),
+	hsv_color_variance(HSVVariance),
+	MinH is Obj_H_Value * (1 - HSVVariance),
+	MaxH is Obj_H_Value * (1 + HSVVariance),
 	MinH =< H_Value,
 	MaxH >= H_Value,
 	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
-	MinS is Obj_S_Value * (1 - hsv_color_variance),
-	MaxS is Obj_S_Value * (1 + hsv_color_variance),
+	MinS is Obj_S_Value * (1 - HSVVariance),
+	MaxS is Obj_S_Value * (1 + HSVVariance),
 	MinS =< S_Value,
 	MaxS >= S_Value,
 	rdf_has(ObjectIdentifier, suturo:vColorValue , Obj_V_Value),
-	MinV is Obj_V_Value * (1 - hsv_color_variance),
-	MaxV is Obj_V_Value * (1 + hsv_color_variance),
+	MinV is Obj_V_Value * (1 - HSVVariance),
+	MaxV is Obj_V_Value * (1 + HSVVariance),
 	MinV =< V_Value,
 	MaxV >= V_Value.
 
