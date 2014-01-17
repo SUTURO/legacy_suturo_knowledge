@@ -182,22 +182,25 @@ create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
     	rdf_instance_from_class(Type, ObjInst)),
     assert_rgb_colors(ObjInst, _c_color_average_r, _c_color_average_g, _c_color_average_b),
     assert_rgb_colors(ObjInst, _c_color_average_h, _c_color_average_s, _c_color_average_v),
-   	rdf_assert(ObjInst, knowrob:'volumeOfObject', _c_volume),
+   	rdf_assert(ObjInst, knowrob:'volumeOfObject', literal(_c_volume)),
     create_perception_instance(PerceptionTypes, Perception),
     set_object_perception(ObjInst, Perception),
     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]).
 
 assert_rgb_colors(ObjInst, R_Color, G_Color, B_Color) :-
 	rdf_assert(ObjInst, rdf:type, knowrob:'RGBAverageColor'),
-	rdf_assert(ObjInst, suturo:'rColorValue', R_Color),
-	rdf_assert(ObjInst, suturo:'gColorValue', G_Color),
-	rdf_assert(ObjInst, suturo:'bColorValue', B_Color).
+	writeln(R_Color),
+	writeln(G_Color),
+	writeln(B_Color),
+	rdf_assert(ObjInst, suturo:'rColorValue', literal( R_Color)),
+	rdf_assert(ObjInst, suturo:'gColorValue', literal( G_Color)),
+	rdf_assert(ObjInst, suturo:'bColorValue', literal( B_Color)).
 
 assert_rgb_colors(ObjInst, H_Color, S_Color, V_Color) :-
 	rdf_assert(ObjInst, rdf:type, knowrob:'HSVAverageColor'),
-	rdf_assert(ObjInst, suturo:'HColorValue', H_Color),
-	rdf_assert(ObjInst, suturo:'SColorValue', S_Color),
-	rdf_assert(ObjInst, suturo:'VColorValue', V_Color).
+	rdf_assert(ObjInst, suturo:'HColorValue', literal(H_Color)),
+	rdf_assert(ObjInst, suturo:'SColorValue', literal(S_Color)),
+	rdf_assert(ObjInst, suturo:'VColorValue', literal(V_Color)).
 
 check_if_object_available([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
