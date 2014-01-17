@@ -113,18 +113,18 @@ get_edible_objects(ObjectList, ID) :-
 container_object(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
 
 %% Returns edible objects on table ids
-edibleOn(_, Out) :-
+graspableOn(_, Out) :-
 %	findall(perceived_object, onTable(X), Out).
-	Out=[[edible,pringles,box,[1,3,1],'Bob'],[edible,milka,box,[1,4,1],'Kelso']].
+	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox']].
 %% Returns containers on table ids
 containerOn(_, Out) :-
 %	findall(container_object, onTable(X), Out).
-	Out=[[edible,ediblebox,container,[1,1,1],'Jim'],[nonedible,nonediblebox,container,[1,2,1],'Bo']].
+	Out=[[edible,ediblebox,container,[1,1,1],'Jim',11.5,'doesNotApply'],[nonedible,nonediblebox,container,[1,2,1],'Bo',11.5,'doesNotApply']].
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
 %gibt momentan 3 objekte aus
 updatePerception(Out) :-
 %	findall(perceived_object, edible(X), Out).
-	Out=[[edible,pringles,box,[1,3,1],'Bob'],[edible,milka,box,[1,4,1],'Kelso'],[edible,testobject1,sphere,[1,5,1],'Fubar']].
+	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox'],[edible,testobject1,sphere,[1,5,1],'Fubar',11.5,'ediblebox']].
 
 %% Abfrage ob Object in Box platziert wurde
 %gibt momentan eine leere Liste aus
