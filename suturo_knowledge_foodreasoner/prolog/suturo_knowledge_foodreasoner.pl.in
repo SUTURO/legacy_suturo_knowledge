@@ -185,7 +185,8 @@ create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
    	rdf_assert(ObjInst, knowrob:'volumeOfObject', literal(_c_volume)),
     create_perception_instance(PerceptionTypes, Perception),
     set_object_perception(ObjInst, Perception),
-    set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]).
+    set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
+    rdf_assert(Perception, suturo:'frameID', literal(Odom_FrameId)).
 
 assert_rgb_colors(ObjInst, R_Color, G_Color, B_Color) :-
 	rdf_assert(ObjInst, rdf:type, knowrob:'RGBAverageColor'),

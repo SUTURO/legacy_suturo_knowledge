@@ -98,10 +98,14 @@
     <!-- http://www.suturo.de/ontology/hierarchy#newtonMeter -->
 
     <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#newtonMeter">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:range rdf:resource="&xsd;double"/>
     </DatatypeProperty>
 
+    <!-- http://www.suturo.de/ontology/hierarchy#frameID -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#frameID">
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </DatatypeProperty>
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
