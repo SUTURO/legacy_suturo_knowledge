@@ -93,8 +93,14 @@
         <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#volumeOfObject"/>
         <rdfs:range rdf:resource="&xsd;float"/>
     </DatatypeProperty>
-    
 
+    
+    <!-- http://www.suturo.de/ontology/hierarchy#newtonMeter -->
+
+    <DatatypeProperty rdf:about="http://www.suturo.de/ontology/hierarchy#newtonMeter">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </DatatypeProperty>
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
