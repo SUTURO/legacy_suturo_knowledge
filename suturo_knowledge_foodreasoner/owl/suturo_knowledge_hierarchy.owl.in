@@ -2,7 +2,7 @@
 
 
 <!DOCTYPE rdf:RDF [
-    <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
+    <!ENTITY knowrob_path 'file://@KNOWROB_PATH_PREFIX@/owl/'>
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
@@ -17,7 +17,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <Ontology rdf:about="http://www.suturo.de/ontology/hierarchy">
-        <imports rdf:resource="&local_path;knowrob_objects.owl"/>
+        <imports rdf:resource="&knowrob_path;knowrob_objects.owl"/>
     </Ontology>
     
 
