@@ -5,7 +5,6 @@
       is_edible/2,
       get_perceived_objects_infos/1,
       save_perception/1,
-      edibleOn/2,
       containerOn/2,
       updatePerception/1,
       placedObjectInBox/3
@@ -154,7 +153,8 @@ save_perception(ObjectInst) :-
 	get_perceived_objects_infos(DataList),
 	member(Object, DataList),
 	(check_if_object_available(Object) ->
-	writeln('LOl Object there'); writeln('Im doing something!'),create_object_perception(Object, [], ['TemporallyExtendedThing'], ObjectInst)).
+	writeln('LOl Object there'); writeln('Im doing something!'),
+	create_object_perception(Object, [], ['TemporallyExtendedThing'], ObjectInst)).
 
 
 create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
@@ -166,16 +166,13 @@ create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
 	%% if shape != 0 
 	(_c_shape =\= 0 ->
 		shape(_c_shape, ShapeString),
-		writeln('Want to concat the strings'),
 		atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Type),
 		atom_concat('Got Type Shape ', Type , Log),
 		writeln(Log);
     	%%else 
-    	writeln('Want to concat the strings'),
     	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', 'Thing', Type),
     	atom_concat('Got Type Thing ', Type , Log),
 		writeln(Log)),
-	writeln('Now want to assert the Object'),
     (_recognition_label_2d \= '' ->
     	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst),
     	rdf_assert(ObjInst, rdf:type, Type); 
@@ -190,9 +187,6 @@ create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
 
 assert_rgb_colors(ObjInst, R_Color, G_Color, B_Color) :-
 	rdf_assert(ObjInst, rdf:type, knowrob:'RGBAverageColor'),
-	writeln(R_Color),
-	writeln(G_Color),
-	writeln(B_Color),
 	rdf_assert(ObjInst, suturo:'rColorValue', literal( R_Color)),
 	rdf_assert(ObjInst, suturo:'gColorValue', literal( G_Color)),
 	rdf_assert(ObjInst, suturo:'bColorValue', literal( B_Color)).
@@ -203,20 +197,55 @@ assert_rgb_colors(ObjInst, H_Color, S_Color, V_Color) :-
 	rdf_assert(ObjInst, suturo:'SColorValue', literal(S_Color)),
 	rdf_assert(ObjInst, suturo:'VColorValue', literal(V_Color)).
 
+
 check_if_object_available([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality]) :-
-	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst),
-	rdf_has(ObjInst, _ , _);
-	shape(_c_shape, ShapeString),
+	shape_is_fitting(ObjectIdentifier, _c_shape) , 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v) ; 
+
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	shape_is_fitting(ObjectIdentifier, _c_shape), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	shape_is_fitting(ObjectIdentifier, _c_shape), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	shape_is_fitting(ObjectIdentifier, _c_shape), 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
+
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
+
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	shape_is_fitting(ObjectIdentifier, _c_shape);
+
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v).
+
+
+recognition_label_existing(ObjectIdentifier, Label) :-
+	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', Label, ObjectIdentifier),
+	rdf_has(ObjectIdentifier, _ , _).
+
+shape_is_fitting(ObjectIdentifier, Shape_Raw) :-
+	shape(Shape_Raw, ShapeString),
 	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
-	rdf_has(X, rdf:type ,Shape),
-	volume_in_range(X, _c_volume),
-	rgb_is_fitting(X,  _c_color_average_r, _c_color_average_g, _c_color_average_b),
-	hsv_is_fitting(X, _c_color_average_h, _c_color_average_s, _c_color_average_v).
-
-
-
+	rdf_has(ObjectIdentifier, rdf:type ,Shape).
 
 volume_in_range(ObjectIdentifier, Volume) :-
 	rdf_has(ObjectIdentifier , 'http://ias.cs.tum.edu/kb/knowrob.owl#volumeOfObject', Obj_Vol),
@@ -261,7 +290,7 @@ hsv_is_fitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
 	MinV =< V_Value,
 	MaxV >= V_Value.
 
-head_element([Head| Tail], Head). 
+head_element([Head| _], Head). 
 %% This is a test for JNI integration
 get_perceived_objects_infos(PODataList) :-
 	jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge),
