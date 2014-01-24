@@ -5,4 +5,5 @@
 :- register_ros_package(suturo_knowledge_foodreasoner).
 :- register_ros_package(semweb).
 :- register_ros_package(knowrob_objects).
+:- register_ros_package(comp_spatial).
 :- use_module(library('suturo_knowledge_foodreasoner')).

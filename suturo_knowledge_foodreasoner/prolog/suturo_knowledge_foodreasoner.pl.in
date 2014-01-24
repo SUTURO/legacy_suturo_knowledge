@@ -9,6 +9,7 @@
       placedObjectInBox/3
     ]).
 :- use_module(library('knowrob_objects')).
+:- use_module(library('comp_spatial')).
 :- owl_parser:owl_parse('@IAI_MAPS_PACKAGE_PATH@/owl/room.owl', false, false, true).
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
 
@@ -29,22 +30,27 @@ dfloat_to_float(StringDoubleFloat, Float) :-
 container_object(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
 
 %% Returns edible objects on table ids
-graspableOn(_, Out) :-
-%	findall(perceived_object, onTable(X), Out).
-	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox']].
+graspableOn(TableInstanceName, Out) :-
+	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+%Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox']].
+
 %% Returns containers on table ids
-containerOn(_, Out) :-
-%	findall(container_object, onTable(X), Out).
-	Out=[[edible,ediblebox,container,[1,1,1],'Jim',11.5,'doesNotApply'],[nonedible,nonediblebox,container,[1,2,1],'Bo',11.5,'doesNotApply']].
+containerOn(TableInstanceName, Out) :-
+	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+%Out=[[edible,ediblebox,container,[1,1,1],'Jim',11.5,'doesNotApply'],[nonedible,nonediblebox,container,[1,2,1],'Bo',11.5,'doesNotApply']].
+
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
 %gibt momentan 3 objekte aus
 updatePerception(Out) :-
+	get_perceived_objects_infos(Out).
 %	findall(perceived_object, edible(X), Out).
-	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox'],[edible,testobject1,sphere,[1,5,1],'Fubar',11.5,'ediblebox']].
+%	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox'],[edible,testobject1,sphere,[1,5,1],'Fubar',11.5,'ediblebox']].
 
 %% Abfrage ob Object in Box platziert wurde
 %gibt momentan eine leere Liste aus
 placedObjectInBox(_, _, Out) :-
+% placedObjectInBox(ObjectInstanceName, BoxInstanceName, Out) :-
+
 %	findall(X,volume(tee, 0, X),Out).
 	Out=[].
 
