@@ -4,6 +4,7 @@
     [
       getPerceivedObjectsInfos/1,
       savePerception/1,
+      graspableOn/2,
       containerOn/2,
       updatePerception/1,
       placedObjectInBox/3
@@ -21,17 +22,17 @@ volumeVariance(0.1).
 
 %% Returns edible objects on table ids
 graspableOn(TableInstanceName, Out) :-
-	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+	findall(ObjInst, on_Physical(X, TableInstanceName), Out).
 
 %% Returns containers on table ids
 containerOn(TableInstanceName, Out) :-
-	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+	findall(ObjInst, on_Physical(X, TableInstanceName), Out).
 
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
 updatePerception(Out) :-
 	savePerception(ObjectList),
 	length(ObjectList, Out),
-	sendPlanningScene(ObjectList).
+	sendPlanningScene(Out).
 
 %% Abfrage ob Object in Box platziert wurde
 %gibt momentan eine leere Liste aus
