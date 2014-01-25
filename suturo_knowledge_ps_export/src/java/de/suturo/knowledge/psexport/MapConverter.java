@@ -7,7 +7,9 @@ import ros.NodeHandle;
 import ros.Publisher;
 import ros.Ros;
 import ros.RosException;
+import ros.communication.Time;
 import ros.pkg.moveit_msgs.msg.CollisionObject;
+import de.suturo.knowledge.psexport.CollisionObjectWrapper.Operation;
 
 /**
  * Takes input from a knowrob semantic map, transforms it into Planning Scene
@@ -71,6 +73,27 @@ public class MapConverter {
 	 */
 	void addCollisionObject(CollisionObjectWrapper co) {
 		pendingObjects.put(co.getId(), co);
+	}
+
+	/**
+	 * Adds a collision object to the pending scene
+	 * 
+	 * @param dimX
+	 * @param dimY
+	 * @param dimZ
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param frameID
+	 */
+	public void addBox(double dimX, double dimY, double dimZ, double x,
+			double y, double z, String frameID) {
+		CollisionObjectWrapper co = new CollisionObjectWrapper("test",
+				Operation.ADD);
+		co.setFrame(frameID, Time.now());
+		co.addPrimitiveBox(dimX, dimY, dimZ);
+		co.addPose(x, y, z, 0, 0, 0);
+		addCollisionObject(co);
 	}
 
 	/**
