@@ -274,6 +274,36 @@
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">95</hierarchy:gColorValue>
         <hierarchy:bColorValue rdf:datatype="&xsd;byte">100</hierarchy:bColorValue>
     </NamedIndividual>
+
+    <NamedIndividual rdf:about="&hierarchy;w_containerbox">
+        <rdf:type rdf:resource="&knowrob;Box"/>
+        <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.08</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.252</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.395</knowrob:widthOfObject>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">0</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.031</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.63</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">161</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">156</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">156</hierarchy:bColorValue>
+    </NamedIndividual>
+
+    <NamedIndividual rdf:about="&hierarchy;r_containerbox">
+        <rdf:type rdf:resource="&knowrob;Box"/>
+        <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.08</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.252</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.395</knowrob:widthOfObject>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">356</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.92</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.48</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">123</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">9</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">17</hierarchy:bColorValue>
+    </NamedIndividual>
 </rdf:RDF>
 
 
