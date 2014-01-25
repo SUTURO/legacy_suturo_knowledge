@@ -213,8 +213,9 @@ hsv_is_fitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
 	getNumber(Obj_H_Value, H),
 	MinH is (H - HVariance) mod 360,
 	MaxH is (H + HVariance) mod 360,
-	MinH =< H_Value,
-	MaxH >= H_Value,
+	(((H - HVariance) < 0; (H + HVariance) >359) -> 
+		(MinH =< H_Value; MaxH >= H_Value);
+		((MinH =< H_Value), (MaxH >= H_Value)) ),
 	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
 	sv_color_variance(SVVariance),
 	getNumber(Obj_S_Value, S),
