@@ -31,13 +31,13 @@ public class PSConsole {
 					.println("New box coords (Name, FrameID, dimX, dimY, dimZ, posX, posY, posZ) ");
 			String in = br.readLine();
 			String[] split = in.split(",");
-			if (split[0] == null || split[0].isEmpty()) {
+			if (split[0] != null || !split[0].trim().equals("exit")) {
 				break;
 			}
-			if (split[0] != null && !split[0].isEmpty()) {
-				CollisionObjectWrapper.removeObject(split[0].trim()); // remove
+			if (split[0] != null || !split[0].trim().equals("publish")) {
+				conv.publishScene();
 			}
-			generateFromInput(split);
+			conv.addCollisionObject(generateFromInput(split));
 		}
 		conv.shutdown();
 	}

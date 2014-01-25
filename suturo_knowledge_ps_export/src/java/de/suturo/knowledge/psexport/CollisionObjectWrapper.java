@@ -53,9 +53,13 @@ public class CollisionObjectWrapper {
 
 	/**
 	 * Creates a new collision object
+	 * 
+	 * @param id
+	 *            Unique (in ROS instance) ID
 	 */
-	public CollisionObjectWrapper() {
+	public CollisionObjectWrapper(String id) {
 		co = new CollisionObject();
+		this.id = id;
 	}
 
 	/**
@@ -67,8 +71,7 @@ public class CollisionObjectWrapper {
 	 *            Operation
 	 */
 	public CollisionObjectWrapper(String id, Operation op) {
-		this();
-		this.id = id;
+		this(id);
 		this.op = op;
 	}
 
@@ -216,6 +219,13 @@ public class CollisionObjectWrapper {
 			throw new IncompleteValueException(field);
 		}
 		return in;
+	}
+
+	/**
+	 * @return the CollisionObject unique id
+	 */
+	public String getId() {
+		return id;
 	}
 
 	/**
