@@ -2,7 +2,6 @@
 
 :- module(suturo_knowledge_foodreasoner,
     [
-      is_edible/2,
       get_perceived_objects_infos/1,
       save_perception/1,
       containerOn/2,
