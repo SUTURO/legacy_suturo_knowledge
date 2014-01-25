@@ -12,22 +12,10 @@
 :- use_module(library('knowrob_objects')).
 :- owl_parser:owl_parse('@IAI_MAPS_PACKAGE_PATH@/owl/room.owl', false, false, true).
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
-:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/orly.owl', false, false, true).
 
 
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
-
-%% is_edible(+ObjectList, -EdibleObject)
-% 
-% Queries the knowledge database for edibility of the given objects and returns a list of edible objects.
-%
-% @param ObjectList       List of percieved objects, containing id, label, object volume and object shape.
-% @param EdibleObjectList List of edible objects.
-%
-is_edible(ObjectList, EdibleObjectList) :-
-	findall(EdibleID, get_edible_objects(ObjectList, EdibleID), EdibleObjects),
-	list_to_set(EdibleObjects, EdibleObjectList).
 
 %$ Accessor predicate for perceived objects
 perceived_object([ID, Label, Volume, Shape], ID, Label, Volume, Shape).
@@ -37,23 +25,6 @@ dfloat_to_float(StringDoubleFloat, Float) :-
 	atomic_list_concat(List, 'd', StringDoubleFloat),
 	atomic_list_concat(List, 'e', FloatString),
 	atom_number(FloatString, Float).
-
-%% Returns edible object ids
-get_edible_objects(ObjectList, ID) :-
-	member(SingleObject, ObjectList),
-	perceived_object(SingleObject, ID, _, VolumeString, _),
-	dfloat_to_float(VolumeString, Volume),
-	owl_individual_of(X, suturo:'Edible'),
-	% owl_individual_of(X, suturo:Shape), 
-	owl_has(X, suturo:'volumeOfObject', literal(type(_, VolString))),
-	owl_has(X, suturo:'varianceOfVolume', literal(type(_, VarString))),
-	atom_number(VolString, ObjVol),
-	atom_number(VarString, ObjVar),
-	Min is ObjVol - ObjVar,
-	Max is ObjVol + ObjVar,
-	Min =< Volume,
-	Max >= Volume.
-
 
 %% Accessor predicate for containers
 container_object(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
