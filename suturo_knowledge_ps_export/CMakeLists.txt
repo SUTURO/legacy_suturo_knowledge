@@ -23,7 +23,7 @@ add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 # build java
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
 add_java_source_dir( ${PROJECT_SOURCE_DIR}/src/java )
-rospack_add_java_executable( MapConverter de.suturo.knowledge.psexport.MapConverter )
+rospack_add_java_executable( PSConsole de.suturo.knowledge.psexport.PSConsole )
 
 #uncomment if you have defined messages
 #rosbuild_genmsg()
