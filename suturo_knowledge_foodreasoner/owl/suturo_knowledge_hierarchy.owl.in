@@ -200,6 +200,9 @@
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Box"/>
         <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
         <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.169</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.035</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.24</knowrob:widthOfObject>
         <hierarchy:sColorValue rdf:datatype="&xsd;float">0.145</hierarchy:sColorValue>
         <hierarchy:vColorValue rdf:datatype="&xsd;float">0.44</hierarchy:vColorValue>
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">100</hierarchy:gColorValue>
@@ -213,6 +216,9 @@
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food"/>
         <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
         <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.145</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.036</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.143</knowrob:widthOfObject>
         <hierarchy:hColorValue rdf:datatype="&xsd;int">0</hierarchy:hColorValue>
         <hierarchy:sColorValue rdf:datatype="&xsd;float">0.29</hierarchy:sColorValue>
         <hierarchy:vColorValue rdf:datatype="&xsd;float">0.43</hierarchy:vColorValue>
@@ -225,6 +231,9 @@
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Box"/>
         <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
         <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.197</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.037</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.132</knowrob:widthOfObject>
         <hierarchy:hColorValue rdf:datatype="&xsd;int">30</hierarchy:hColorValue>
         <hierarchy:sColorValue rdf:datatype="&xsd;float">0.16</hierarchy:sColorValue>
         <hierarchy:vColorValue rdf:datatype="&xsd;float">0.32</hierarchy:vColorValue>
@@ -238,6 +247,9 @@
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food"/>
         <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
         <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.13</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.037</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.195</knowrob:widthOfObject>
         <hierarchy:hColorValue rdf:datatype="&xsd;int">8</hierarchy:hColorValue>
         <hierarchy:sColorValue rdf:datatype="&xsd;float">0.55</hierarchy:sColorValue>
         <hierarchy:vColorValue rdf:datatype="&xsd;float">0.45</hierarchy:vColorValue>
@@ -250,6 +262,9 @@
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Box"/>
         <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
         <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.135</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.035</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.185</knowrob:widthOfObject>
         <hierarchy:hColorValue rdf:datatype="&xsd;int">350</hierarchy:hColorValue>
         <hierarchy:sColorValue rdf:datatype="&xsd;float">0.2</hierarchy:sColorValue>
         <hierarchy:vColorValue rdf:datatype="&xsd;float">0.46</hierarchy:vColorValue>
