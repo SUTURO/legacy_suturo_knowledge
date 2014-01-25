@@ -2,25 +2,20 @@
 
 :- module(suturo_knowledge_foodreasoner,
     [
-      is_edible/2
+      is_edible/2,
+      get_perceived_objects_infos/1,
+      save_perception/1,
+      containerOn/2,
+      updatePerception/1,
+      placedObjectInBox/3
     ]).
-
-% TODO replace this with OWL ontology
-edible(pringles).
-% edible(milka).
-% edible(testobj1). % FINDME for planning testing
-% edible(gazebo_beer).
-volume(ball, 0.0024, 0.0001).
-volume(pringles, 0.0009, 0.0008).
-% volume(tee, 0.00025, 0.00005).
-volume(glsbox, 0.007, 0.0021).
-volume(kinect, 0.0065, 0.0025).
-% volume(milka, 0.0006, 0.00005).
-volume(testobj1, 0.00339, 0.001). % FINDME for planning testing
-% volume(gazebo_beer, 0.001439, 0.001).  % FINDME for durchschuss
+:- use_module(library('knowrob_objects')).
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/orly.owl', false, false, true).
 
 
-
+:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 
 %% is_edible(+ObjectList, -EdibleObject)
 % 
@@ -47,9 +42,259 @@ get_edible_objects(ObjectList, ID) :-
 	member(SingleObject, ObjectList),
 	perceived_object(SingleObject, ID, _, VolumeString, _),
 	dfloat_to_float(VolumeString, Volume),
-	edible(X),
-	volume(X, Y, Z),
-	Min is Y - Z,
-	Max is Y + Z,
+	owl_individual_of(X, suturo:'Edible'),
+	% owl_individual_of(X, suturo:Shape), 
+	owl_has(X, suturo:'volumeOfObject', literal(type(_, VolString))),
+	owl_has(X, suturo:'varianceOfVolume', literal(type(_, VarString))),
+	atom_number(VolString, ObjVol),
+	atom_number(VarString, ObjVar),
+	Min is ObjVol - ObjVar,
+	Max is ObjVol + ObjVar,
 	Min =< Volume,
 	Max >= Volume.
+
+
+%% Accessor predicate for containers
+container_object(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
+
+%% Returns edible objects on table ids
+graspableOn(_, Out) :-
+%	findall(perceived_object, onTable(X), Out).
+	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox']].
+%% Returns containers on table ids
+containerOn(_, Out) :-
+%	findall(container_object, onTable(X), Out).
+	Out=[[edible,ediblebox,container,[1,1,1],'Jim',11.5,'doesNotApply'],[nonedible,nonediblebox,container,[1,2,1],'Bo',11.5,'doesNotApply']].
+%% Die Perception wird abgefragt und die Semantic Map aktualisiert
+%gibt momentan 3 objekte aus
+updatePerception(Out) :-
+%	findall(perceived_object, edible(X), Out).
+	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox'],[edible,testobject1,sphere,[1,5,1],'Fubar',11.5,'ediblebox']].
+
+%% Abfrage ob Object in Box platziert wurde
+%gibt momentan eine leere Liste aus
+placedObjectInBox(_, _, Out) :-
+%	findall(X,volume(tee, 0, X),Out).
+	Out=[].
+
+%%rage_
+%% create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
+%%     rdf_instance_from_class(ObjClass, ObjInst),
+%%     create_perception_instance(PerceptionTypes, Perception),
+%%     set_object_perception(ObjInst, Perception),
+%%     set_perception_pose(Perception, ObjPose).
+
+%% create_object_perception(_recognition_label_2d, [1,0,0,X,0,1,0,Y,0,0,1,Z], [])
+
+rgb_color_variance(A) :- A is round(0.1 * 255).
+h_color_variance(A) :- A is round(0.1 * 359).
+sv_color_variance(A) :- A is 0.1.
+volume_Variance(0.1).
+shape(0, 'NONE').
+shape(1, 'Box').
+shape(2, 'Cylinder').
+shape(3, 'Sphere').
+
+
+save_perception(ObjectInst) :-
+	get_perceived_objects_infos(DataList),
+	member(Object, DataList),
+	(check_if_object_available(Object) ->
+	writeln('LOl Object there'); writeln('Im doing something!')).%,
+	%create_object_perception(Object, [], ['TemporallyExtendedThing'], ObjectInst)).
+
+
+create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
+ _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+ _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
+ X_Coord, Y_Coord, Z_Coord, Odom_FrameId],
+  ObjPose, PerceptionTypes, ObjInst) :-
+
+	%% if shape != 0 
+	(_c_shape =\= 0 ->
+		shape(_c_shape, ShapeString),
+		atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Type),
+		atom_concat('Got Type Shape ', Type , Log),
+		writeln(Log);
+    	%%else 
+    	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', 'Thing', Type),
+    	atom_concat('Got Type Thing ', Type , Log),
+		writeln(Log)),
+    (_recognition_label_2d \= '' ->
+    	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst),
+    	rdf_assert(ObjInst, rdf:type, Type); 
+    	rdf_instance_from_class(Type, ObjInst)),
+    assert_rgb_colors(ObjInst, _c_color_average_r, _c_color_average_g, _c_color_average_b),
+    assert_rgb_colors(ObjInst, _c_color_average_h, _c_color_average_s, _c_color_average_v),
+   	rdf_assert(ObjInst, knowrob:'volumeOfObject', literal(_c_volume)),
+    create_perception_instance(PerceptionTypes, Perception),
+    set_object_perception(ObjInst, Perception),
+    set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
+    rdf_assert(Perception, suturo:'frameID', literal(Odom_FrameId)).
+
+assert_rgb_colors(ObjInst, R_Color, G_Color, B_Color) :-
+	rdf_assert(ObjInst, rdf:type, knowrob:'RGBAverageColor'),
+	rdf_assert(ObjInst, suturo:'rColorValue', literal( R_Color)),
+	rdf_assert(ObjInst, suturo:'gColorValue', literal( G_Color)),
+	rdf_assert(ObjInst, suturo:'bColorValue', literal( B_Color)).
+
+assert_rgb_colors(ObjInst, H_Color, S_Color, V_Color) :-
+	rdf_assert(ObjInst, rdf:type, knowrob:'HSVAverageColor'),
+	rdf_assert(ObjInst, suturo:'HColorValue', literal(H_Color)),
+	rdf_assert(ObjInst, suturo:'SColorValue', literal(S_Color)),
+	rdf_assert(ObjInst, suturo:'VColorValue', literal(V_Color)).
+
+
+check_if_object_available([_c_id, _c_centroid, _c_volume, _frame_id,
+ _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+ _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _]) :-
+	writeln('First Test shape rgb and hsv'),
+	shape_is_fitting(ObjectIdentifier, _c_shape) , 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+	writeln('Second Test volume rgb and hsv'),
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v) ; 
+	writeln('Third Test volume shape and hsv'),
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	shape_is_fitting(ObjectIdentifier, _c_shape), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+	writeln('Fourth Test recognition_label rgb and hsv'),
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+	writeln('Fifth Test recognition_label shape and hsv'),
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	shape_is_fitting(ObjectIdentifier, _c_shape), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+	writeln('Sixth Test recognition_label shape and rgb'),
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	shape_is_fitting(ObjectIdentifier, _c_shape), 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
+	writeln('Seventh Test recognition_label volume and rgb'),
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
+	writeln('Eightth Test recognition_label volume and shape'),
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	shape_is_fitting(ObjectIdentifier, _c_shape);
+	writeln('Nineth Test recognition_label volume and hsv'),
+	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
+	volume_in_range(ObjectIdentifier, _c_volume), 
+	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v).
+
+
+recognition_label_existing(ObjectIdentifier, Label) :-
+	atom_concat('http://www.suturo.de/ontology/hierarchy#', Label, ObjectIdentifier),
+	rdf_has(ObjectIdentifier, _ , _).
+
+shape_is_fitting(ObjectIdentifier, Shape_Raw) :-
+	shape(Shape_Raw, ShapeString),
+	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
+	rdf_has(ObjectIdentifier, rdf:type ,Shape).
+
+volume_in_range(ObjectIdentifier, Volume) :-
+	rdf_has(ObjectIdentifier , knowrob:'volumeOfObject', Obj_Vol),
+	getNumber(Obj_Vol, VOL),
+	volume_Variance(Var),
+	Min is VOL * (1 - Var),
+	Max is VOL * (1 + Var),
+	Min =< Volume,
+	Max >= Volume.
+
+rgb_is_fitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
+	rdf_has(ObjectIdentifier, suturo:rColorValue , Obj_R_Color),
+	rgb_color_variance(RGBVariance),
+	getNumber(Obj_R_Color, R),
+	MinR is R - RGBVariance,
+	MaxR is R + RGBVariance,
+	MinR =< R_Color,
+	MaxR >= R_Color,
+	rdf_has(ObjectIdentifier, suturo:gColorValue , Obj_G_Color),
+	getNumber(Obj_G_Color, G),	
+	MinG is G - RGBVariance,
+	MaxG is G + RGBVariance,
+	MinG =< G_Color,
+	MaxG >= G_Color,
+	rdf_has(ObjectIdentifier, suturo:bColorValue , Obj_B_Color),
+	getNumber(Obj_B_Color, B),	
+	MinB is B - RGBVariance,
+	MaxB is B + RGBVariance,
+	MinB =< B_Color,
+	MaxB >= B_Color.
+
+getNumber(literal(type(_, A)), B) :- atom_number(A,B).
+
+hsv_is_fitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
+	rdf_has(ObjectIdentifier, suturo:hColorValue , Obj_H_Value),
+	h_color_variance(HVariance),
+	getNumber(Obj_H_Value, H),
+	MinH is (H - HVariance) mod 360,
+	MaxH is (H + HVariance) mod 360,
+	MinH =< H_Value,
+	MaxH >= H_Value,
+	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
+	sv_color_variance(SVVariance),
+	getNumber(Obj_S_Value, S),
+	MinS is S - SVVariance,
+	MaxS is S + SVVariance,
+	MinS =< S_Value,
+	MaxS >= S_Value,
+	rdf_has(ObjectIdentifier, suturo:vColorValue , Obj_V_Value),
+	getNumber(Obj_V_Value, V),
+	MinV is V - SVVariance,
+	MaxV is V + SVVariance,
+	MinV =< V_Value,
+	MaxV >= V_Value.
+
+head_element([Head| _], Head). 
+%% This is a test for JNI integration
+get_perceived_objects_infos(PODataList) :-
+	jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge),
+	jpl_call(PrologBridge, 'updatePerception', [], Out_raw),
+	jpl_get(Out_raw,'length',Length),
+	is(Indizees, Length-1),
+	findall(POData,processPerceivedObjects(PrologBridge, Out_raw, Indizees, POData), PODataList).
+
+processPerceivedObjects(PrologBridge, Out_raw, Indizees, Result) :-
+	numlist(0,Indizees,IndexList),
+	member(Index, IndexList),
+	jpl_get(Out_raw,Index,Perceived_object),
+	get_perceived_object_infos(Perceived_object, POData),
+	head_element(POData, _c_id),
+	jpl_call(PrologBridge, 'getOdomCoords', [_c_id], Odom_Raw),
+	jpl_call(Odom_Raw, 'getData', [], Point_Raw),
+	jpl_get(Point_Raw,'x', X_Coord),
+	jpl_get(Point_Raw,'y', Y_Coord),
+	jpl_get(Point_Raw,'z', Z_Coord),
+	jpl_get(Odom_Raw,'frameID', Odom_FrameId),
+	append(POData,[X_Coord, Y_Coord, Z_Coord, Odom_FrameId], Result).
+
+
+%% get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
+%%  _recognition_label_2d, _recognition_label_3d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+%%  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _c_roi_origin, _c_roi_width,
+%%  _c_roi_height ]):-
+get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
+ _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+ _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality]) :-
+	jpl_get(Obj_id, 'c_id', _c_id),
+	jpl_get(Obj_id, 'c_centroid', _c_centroid),
+	jpl_get(Obj_id, 'c_volume', _c_volume),
+	jpl_get(Obj_id, 'frame_id', _frame_id),
+	jpl_get(Obj_id, 'recognition_label_2d', _recognition_label_2d),
+%%	jpl_get(Obj_id, 'recognition_label_3d', _recognition_label_3d),
+	jpl_get(Obj_id, 'c_shape', _c_shape),
+	jpl_get(Obj_id, 'c_color_average_r', _c_color_average_r),
+	jpl_get(Obj_id, 'c_color_average_g', _c_color_average_g),
+	jpl_get(Obj_id, 'c_color_average_b', _c_color_average_b),
+	jpl_get(Obj_id, 'c_color_average_h', _c_color_average_h),
+	jpl_get(Obj_id, 'c_color_average_s', _c_color_average_s),
+	jpl_get(Obj_id, 'c_color_average_v', _c_color_average_v),
+	jpl_get(Obj_id, 'c_hue_histogram', _c_hue_histogram),
+	jpl_get(Obj_id, 'c_hue_histogram_quality', _c_hue_histogram_quality).
+%%	jpl_get(Obj_id, 'c_roi_origin', _c_roi_origin),
+%%	jpl_get(Obj_id, 'c_roi_width', _c_roi_width),
+%%	jpl_get(Obj_id, 'c_roi_height', _c_roi_height).

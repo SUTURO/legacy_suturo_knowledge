@@ -4,5 +4,9 @@
 
 :- register_ros_package(suturo_knowledge_foodreasoner).
 :- register_ros_package(semweb).
+:- register_ros_package(knowrob_objects).
 :- use_module(library('suturo_knowledge_foodreasoner')).
-:- use_module(library('suturo_knowledge_foodmanager')).
+
+
+%$ rosrun rosprolog rosprolog ias_knowledge_base
+%?- owl_parse('./rosbuild_ws/stacks/iai_maps/owl/room.owl.in', false, false, true).

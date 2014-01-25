@@ -1,4 +1,9 @@
 *.sublime-project
 *.sublime-workspace
+.classpath
+.project
 bin
 build
+*gen
+/tfjava/
+/rosjava_jni/
