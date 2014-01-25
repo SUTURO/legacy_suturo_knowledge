@@ -45,7 +45,6 @@ fix_ros_destination_path(OWL_PATH_PREFIX)
 set( KNOWROB_PATH_PREFIX ${knowrob_objects_PACKAGE_PATH} )
 fix_ros_destination_path(KNOWROB_PATH_PREFIX)
 
-
 file(GLOB inputs owl/*.in)
 
 foreach( _in ${inputs} )
@@ -56,7 +55,11 @@ endforeach( _in )
 # replace path to local prolog files
 rosbuild_find_ros_package(suturo_knowledge_foodreasoner)
 set( LOCAL_PACKAGE_PATH ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )
+rosbuild_find_ros_package(iai_maps)
+set( IAI_MAPS_PACKAGE_PATH ${iai_maps_PACKAGE_PATH} )
 fix_ros_destination_path(LOCAL_PACKAGE_PATH)
+fix_ros_destination_path(IAI_MAPS_PACKAGE_PATH)
+
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )

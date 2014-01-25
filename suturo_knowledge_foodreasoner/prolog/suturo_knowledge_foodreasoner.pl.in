@@ -10,6 +10,7 @@
       placedObjectInBox/3
     ]).
 :- use_module(library('knowrob_objects')).
+:- owl_parser:owl_parse('@IAI_MAPS_PACKAGE_PATH@/owl/room.owl', false, false, true).
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/orly.owl', false, false, true).
 
