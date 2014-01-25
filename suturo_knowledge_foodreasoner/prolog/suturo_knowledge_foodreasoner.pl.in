@@ -17,60 +17,6 @@
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 
-edible(pringles).
-edible(milka).
-edible(testobj1). % FINDME for planning testing
-volume(ball, 0.0024, 0.0001).
-volume(pringles, 0.00085, 0.0001).
-volume(tee, 0.00025, 0.00005).
-volume(paket, 0.00515, 0.00025).
-volume(milka, 0.0006, 0.00005).
-volume(testobj1, 0.00339, 0.001). % FINDME for planning testing
-
-container_object(ediblebox).
-container_object(nonediblebox).
-
-containerFor(ediblebox, edible).
-containerFor(nonediblebox, nonedible).
-
-name(ediblebox, edibleBox).
-name(nonediblebox, nonEdibleBox).
-
-type(ediblebox, container).
-type(nonediblebox, container).
-
-centroid_x(ediblebox, 1).
-centroid_y(ediblebox, 1).
-centroid_z(ediblebox, 1).
-centroid_x(nonediblebox, 1).
-centroid_y(nonediblebox, 2).
-centroid_z(nonediblebox, 1).
-centroid_x(pringles, 1).
-centroid_y(pringles, 3).
-centroid_z(pringles, 1).
-centroid_x(milka, 1).
-centroid_y(milka, 4).
-centroid_z(milka, 1).
-centroid_x(testobj1, 1).
-centroid_y(testobj1, 5).
-centroid_z(testobj1, 1).
-
-frameId(ediblebox, Jim).
-frameId(nonediblebox, Bo).
-frameId(pringles, Bob).
-frameId(milka, Kelso).
-frameId(testonj1, Fubar).
-
-
-onTable(ediblebox).
-onTable(nonediblebox).
-onTable(pringles).
-onTable(milka).
-onTable(testobj1).
-
-
-
-
 %% is_edible(+ObjectList, -EdibleObject)
 % 
 % Queries the knowledge database for edibility of the given objects and returns a list of edible objects.
@@ -250,7 +196,7 @@ shape_is_fitting(ObjectIdentifier, Shape_Raw) :-
 	rdf_has(ObjectIdentifier, rdf:type ,Shape).
 
 volume_in_range(ObjectIdentifier, Volume) :-
-	rdf_has(ObjectIdentifier , 'http://ias.cs.tum.edu/kb/knowrob.owl#volumeOfObject', Obj_Vol),
+	rdf_has(ObjectIdentifier , knowrob:'volumeOfObject', Obj_Vol),
 	getNumber(Obj_Vol, VOL),
 	volume_Variance(Var),
 	Min is VOL * (1 - Var),
@@ -318,20 +264,13 @@ processPerceivedObjects(PrologBridge, Out_raw, Indizees, Result) :-
 	jpl_get(Out_raw,Index,Perceived_object),
 	get_perceived_object_infos(Perceived_object, POData),
 	head_element(POData, _c_id),
-	%%%%%%%%%%%%%%%%%%%% TODO: DELETE faked coordinates if odem is working find
-	X_Coord is 1,
-	Y_Coord is 1,
-	Z_Coord is 1,
-	Odom_FrameId is 2,
+	jpl_call(PrologBridge, 'getOdomCoords', [_c_id], Odom_Raw),
+	jpl_call(Odom_Raw, 'getData', [], Point_Raw),
+	jpl_get(Point_Raw,'x', X_Coord),
+	jpl_get(Point_Raw,'y', Y_Coord),
+	jpl_get(Point_Raw,'z', Z_Coord),
+	jpl_get(Odom_Raw,'frameID', Odom_FrameId),
 	append(POData,[X_Coord, Y_Coord, Z_Coord, Odom_FrameId], Result).
-	%%jpl_call(PrologBridge, 'getOdomCoords', [_c_id], Odom_Raw),
-	%% jpl_get(Odom_Raw,'pose', Pose_Raw),
-	%% jpl_get(Pose_Raw,'position', Point_Raw),
-	%% jpl_get(Point_Raw,'x', X_Coord),
-	%% jpl_get(Point_Raw,'y', Y_Coord),
-	%% jpl_get(Point_Raw,'z', Z_Coord),
-	%% jpl_get(Odom_Raw,'header', Header_Raw),
-	%% jpl_get(Header_Raw,'frame_id', Odom_FrameId).
 
 
 %% get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
