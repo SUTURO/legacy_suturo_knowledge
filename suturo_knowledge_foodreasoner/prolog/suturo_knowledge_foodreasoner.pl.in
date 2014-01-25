@@ -79,10 +79,20 @@ shape(3, 'Sphere').
 save_perception(ObjectInst) :-
 	get_perceived_objects_infos(DataList),
 	member(Object, DataList),
-	(check_if_object_available(Object) ->
-	writeln('LOl Object there'); writeln('Im doing something!')),
-	create_object_perception(Object, [], ['TemporallyExtendedThing'], ObjectInst)).
+	(check_if_object_available(Object, Instance) ->
+	(writeln('LOl Object there'),
+		create_perception_instance_to_object(Object, Instance)); 
+	(writeln('Im doing something!'),
+		create_object_perception(Object, [], ['TemporallyExtendedThing'], ObjectInst))).
 
+create_perception_instance_to_object([_c_id, _c_centroid, _c_volume, _frame_id,
+ _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
+ _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
+ X_Coord, Y_Coord, Z_Coord, Odom_FrameId], ObjInst) :-
+	create_perception_instance(PerceptionTypes, Perception),
+    set_object_perception(ObjInst, Perception),
+    set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
+    rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
 
 create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
@@ -106,28 +116,28 @@ create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
     	rdf_instance_from_class(Type, ObjInst)),
     assert_rgb_colors(ObjInst, _c_color_average_r, _c_color_average_g, _c_color_average_b),
     assert_rgb_colors(ObjInst, _c_color_average_h, _c_color_average_s, _c_color_average_v),
-   	rdf_assert(ObjInst, knowrob:'volumeOfObject', literal(_c_volume)),
+   	rdf_assert(ObjInst, knowrob:'volumeOfObject', literal(type('http://www.w3.org/2001/XMLSchema#int',_c_volume))),
     create_perception_instance(PerceptionTypes, Perception),
     set_object_perception(ObjInst, Perception),
     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
-    rdf_assert(Perception, suturo:'frameID', literal(Odom_FrameId)).
+    rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
 
 assert_rgb_colors(ObjInst, R_Color, G_Color, B_Color) :-
 	rdf_assert(ObjInst, rdf:type, knowrob:'RGBAverageColor'),
-	rdf_assert(ObjInst, suturo:'rColorValue', literal( R_Color)),
-	rdf_assert(ObjInst, suturo:'gColorValue', literal( G_Color)),
-	rdf_assert(ObjInst, suturo:'bColorValue', literal( B_Color)).
+	rdf_assert(ObjInst, suturo:'rColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',R_Color))),
+	rdf_assert(ObjInst, suturo:'gColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',G_Color))),
+	rdf_assert(ObjInst, suturo:'bColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',B_Color))).
 
 assert_rgb_colors(ObjInst, H_Color, S_Color, V_Color) :-
 	rdf_assert(ObjInst, rdf:type, knowrob:'HSVAverageColor'),
-	rdf_assert(ObjInst, suturo:'HColorValue', literal(H_Color)),
-	rdf_assert(ObjInst, suturo:'SColorValue', literal(S_Color)),
-	rdf_assert(ObjInst, suturo:'VColorValue', literal(V_Color)).
+	rdf_assert(ObjInst, suturo:'HColorValue', literal(type('http://www.w3.org/2001/XMLSchema#int',H_Color))),
+	rdf_assert(ObjInst, suturo:'SColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',S_Color))),
+	rdf_assert(ObjInst, suturo:'VColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',V_Color))).
 
 
 check_if_object_available([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
- _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _]) :-
+ _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _], ObjectIdentifier) :-
 	writeln('First Test shape rgb and hsv'),
 	shape_is_fitting(ObjectIdentifier, _c_shape) , 
 	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
