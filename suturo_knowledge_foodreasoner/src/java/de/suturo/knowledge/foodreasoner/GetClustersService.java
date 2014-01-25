@@ -21,7 +21,14 @@ public class GetClustersService {
 
 	private static final String DEFAULT_SERVICE_NAME = "/suturo/GetClusters";
 
+	/**
+	 * Enum to determine the operation
+	 * 
+	 * @author Moritz
+	 * 
+	 */
 	enum Operation {
+		/** Get recognized objects */
 		GET("get");
 
 		private String op;
@@ -30,6 +37,7 @@ public class GetClustersService {
 			this.op = op;
 		}
 
+		/** Return operation specific short representing the operation */
 		String getOp() {
 			return this.op;
 		}

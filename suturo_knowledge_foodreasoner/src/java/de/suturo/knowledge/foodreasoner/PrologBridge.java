@@ -80,6 +80,11 @@ public class PrologBridge {
 			Map<Long, Stamped<Point3d>> map, long cID) {
 		try {
 			Stamped<Point3d> out = new Stamped<Point3d>();
+			out.setData(new Point3d());
+			if (tf.lookupTransform(target, in.frameID, in.timeStamp) == null) {
+				ros.logWarn("Frame with ID " + target + " not found!");
+				return;
+			}
 			tf.transformPoint(target, in, out);
 			map.put(Long.valueOf(cID), out);
 		} catch (RuntimeException e) {
