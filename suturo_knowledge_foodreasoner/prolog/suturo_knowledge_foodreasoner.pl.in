@@ -11,8 +11,11 @@
 :- use_module(library('knowrob_objects')).
 :- use_module(library('comp_spatial')).
 :- owl_parser:owl_parse('@IAI_MAPS_PACKAGE_PATH@/owl/room.owl', false, false, true).
-:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_knowledge_hierarchy.owl', false, false, true).
-
+:- current_prolog_flag(argv, Args), last(Args, Arg),
+   string_concat('@LOCAL_PACKAGE_PATH@/owl/', Arg, File),
+   (string_concat(_, '.owl', File) ->
+   		owl_parser:owl_parse(File, false, false, true);
+   		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/lab_hierarchy.owl', false, false, true)).
 
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
