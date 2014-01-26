@@ -1,3 +1,0 @@
-<launch>
-  <node name="json_prolog" pkg="rosprolog" type="run_with_prolog_env" args="suturo_knowledge_foodreasoner $(find json_prolog)/bin/json_prolog" />
-</launch>
