@@ -48,7 +48,7 @@ containerOn(TableInstanceName, Out) :-
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
 updatePerception(Out) :-
 	savePerception(ObjectList),
-	Out is length(ObjectList),
+	length(ObjectList, Out),
 	sendPlanningScene(ObjectList).
 %	findall(perceived_object, edible(X), Out).
 %	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox'],[edible,testobject1,sphere,[1,5,1],'Fubar',11.5,'ediblebox']].
@@ -191,7 +191,8 @@ shapeIsFitting(ObjectIdentifier, Shape_Raw) :-
 
 volumeInRange(ObjectIdentifier, Volume) :-
 	rdf_has(ObjectIdentifier , knowrob:'volumeOfObject', Obj_Vol),
-	getNumber(Obj_Vol, VOL),
+	strip_literal_type(Obj_Vol, VOL_Raw),
+	atom_number(VOL_Raw, Vol),
 	volumeVariance(Var),
 	Min is VOL * (1 - Var),
 	Max is VOL * (1 + Var),
@@ -201,30 +202,33 @@ volumeInRange(ObjectIdentifier, Volume) :-
 rgbIsFitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
 	rdf_has(ObjectIdentifier, suturo:rColorValue , Obj_R_Color),
 	rgbColorVariance(RGBVariance),
-	getNumber(Obj_R_Color, R),
+	strip_literal_type(Obj_R_Color, R_Raw),
+	atom_number(R_Raw, R),
 	MinR is R - RGBVariance,
 	MaxR is R + RGBVariance,
 	MinR =< R_Color,
 	MaxR >= R_Color,
 	rdf_has(ObjectIdentifier, suturo:gColorValue , Obj_G_Color),
-	getNumber(Obj_G_Color, G),	
+	strip_literal_type(Obj_G_Color, G_Raw),
+	atom_number(G_Raw, G),
 	MinG is G - RGBVariance,
 	MaxG is G + RGBVariance,
 	MinG =< G_Color,
 	MaxG >= G_Color,
 	rdf_has(ObjectIdentifier, suturo:bColorValue , Obj_B_Color),
-	getNumber(Obj_B_Color, B),	
+	strip_literal_type(Obj_B_Color, B_Raw),
+	atom_number(B_Raw, B),	
 	MinB is B - RGBVariance,
 	MaxB is B + RGBVariance,
 	MinB =< B_Color,
 	MaxB >= B_Color.
 
-getNumber(literal(type(_, A)), B) :- atom_number(A,B).
 
 hsvIsFitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
 	rdf_has(ObjectIdentifier, suturo:hColorValue , Obj_H_Value),
 	hColorVariance(HVariance),
-	getNumber(Obj_H_Value, H),
+	strip_literal_type(Obj_H_Value, H_Raw),
+	atom_number(H_Raw, H),
 	MinH is (H - HVariance) mod 360,
 	MaxH is (H + HVariance) mod 360,
 	(((H - HVariance) < 0; (H + HVariance) >359) -> 
@@ -232,13 +236,15 @@ hsvIsFitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
 		((MinH =< H_Value), (MaxH >= H_Value)) ),
 	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
 	svColorVariance(SVVariance),
-	getNumber(Obj_S_Value, S),
+	strip_literal_type(Obj_S_Value, S_Raw),
+	atom_number(S_Raw, S),
 	MinS is S - SVVariance,
 	MaxS is S + SVVariance,
 	MinS =< S_Value,
 	MaxS >= S_Value,
 	rdf_has(ObjectIdentifier, suturo:vColorValue , Obj_V_Value),
-	getNumber(Obj_V_Value, V),
+	strip_literal_type(Obj_V_Value, V_Raw),
+	atom_number(V_Raw, V),
 	MinV is V - SVVariance,
 	MaxV is V + SVVariance,
 	MinV =< V_Value,
@@ -300,15 +306,31 @@ sendPlanningScene(ObjectList) :-
 	foreach(member(Object, ObjectList), sendSingleObject(Object)),
 	jpl_call(MapConverter, 'publishScene', [], _).
 
-sendSingleObject(ObjectIdentifier) :-
-	mapconverter(MapConverter),
-	rdf_has(ObjectIdentifier, knowrob:heightOfObject, Height),
-	rdf_has(ObjectIdentifier, knowrob:depthOfObject, Depth),
-	rdf_has(ObjectIdentifier, knowrob:widthOfObject, Width),
+getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
-	rdf_has(ObjectIdentifier, suturo:frameID, FrameID),
+	rdf_has(ObjectIdentifier, suturo:frameID, FrameID_Raw),
+	strip_literal_type(FrameID_Raw, FrameID),
 	rdf_has(ObjectIdentifier, knowrob:eventOccursAt, RotationMatrix),
 	rdf_has(RotationMatrix, knowrob:m03, X_Coord),
+	strip_literal_type(X_Coord, X_Raw),
+	atom_number(X_Raw, X),
 	rdf_has(RotationMatrix, knowrob:m13, Y_Coord),
+	strip_literal_type(Y_Coord, Y_Raw),
+	atom_number(Y_Raw, Y),
 	rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
+	strip_literal_type(Z_Coord, Z_Raw),
+	atom_number(Z_Raw, Z),.
+
+sendSingleObject(ObjectIdentifier) :-
+	mapconverter(MapConverter),
+	rdf_has(ObjectIdentifier, knowrob:heightOfObject, OHeight),
+	strip_literal_type(OHeight, Height_Raw),
+	atom_number(Height_Raw, Height),
+	rdf_has(ObjectIdentifier, knowrob:depthOfObject, ODepth),
+	strip_literal_type(ODepth, Depth_Raw),
+	atom_number(Depth_Raw, Depth),
+	rdf_has(ObjectIdentifier, knowrob:widthOfObject, OWidth),
+	strip_literal_type(OWidth, Width_Raw),
+	atom_number(Width_Raw, Width),
+	getLatestCoordinatesOfObject(ObjectIdentifier, X_Coord, Y_Coord, Z_Coord, FrameID),
 	jpl_call(MapConverter, 'addBox', [ObjectIdentifier, Width, Height, Depth, X_Coord, Y_Coord, Z_Coord, FrameID], _).
