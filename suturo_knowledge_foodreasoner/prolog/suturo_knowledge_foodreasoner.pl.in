@@ -2,8 +2,8 @@
 
 :- module(suturo_knowledge_foodreasoner,
     [
-      get_perceived_objects_infos/1,
-      save_perception/1,
+      getPerceivedObjectsInfos/1,
+      savePerception/1,
       containerOn/2,
       updatePerception/1,
       placedObjectInBox/3
@@ -18,18 +18,19 @@
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 
 :- jpl_new('de.suturo.knowledge.psexport.MapConverter',[], Instance), assert(mapconverter(Instance)).
+:- jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge), assert(perception(PrologBridge)).
 
 %$ Accessor predicate for perceived objects
 perceived_object([ID, Label, Volume, Shape], ID, Label, Volume, Shape).
 
 %% This parses float strings from LISP (1.23456789d-123) to prolog float
-dfloat_to_float(StringDoubleFloat, Float) :-
+dfloatToFloat(StringDoubleFloat, Float) :-
 	atomic_list_concat(List, 'd', StringDoubleFloat),
 	atomic_list_concat(List, 'e', FloatString),
 	atom_number(FloatString, Float).
 
 %% Accessor predicate for containers
-container_object(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
+containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
 
 %% Returns edible objects on table ids
 graspableOn(TableInstanceName, Out) :-
@@ -57,34 +58,34 @@ placedObjectInBox(_, _, Out) :-
 	Out=[].
 
 %%rage_
-%% create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
+%% createObjectPerception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
 %%     rdf_instance_from_class(ObjClass, ObjInst),
 %%     create_perception_instance(PerceptionTypes, Perception),
 %%     set_object_perception(ObjInst, Perception),
 %%     set_perception_pose(Perception, ObjPose).
 
-%% create_object_perception(_recognition_label_2d, [1,0,0,X,0,1,0,Y,0,0,1,Z], [])
+%% createObjectPerception(_recognition_label_2d, [1,0,0,X,0,1,0,Y,0,0,1,Z], [])
 
-rgb_color_variance(A) :- A is round(0.2 * 255).
-h_color_variance(A) :- A is round(0.2 * 359).
-sv_color_variance(A) :- A is 0.2.
-volume_Variance(0.1).
+rgbColorVariance(A) :- A is round(0.2 * 255).
+hColorVariance(A) :- A is round(0.2 * 359).
+svColorVariance(A) :- A is 0.2.
+volumeVariance(0.1).
 shape(0, 'NONE').
 shape(1, 'Box').
 shape(2, 'Cylinder').
 shape(3, 'Sphere').
 
 
-save_perception(ObjectInst) :-
-	get_perceived_objects_infos(DataList),
+savePerception(ObjectInst) :-
+	getPerceivedObjectsInfos(DataList),
 	forall(member(Object, DataList),
-		(check_if_object_available(Object, Instance) ->
-		(writeln('LOl Object there'));%,
-			%create_perception_instance_to_object(Object, Instance)); 
+		(checkIfObjectAvailable(Object, Instance) ->
+		(writeln('LOl Object there'),
+			createPerceptionInstanceToObject(Object, Instance)); 
 		(writeln('Im doing something!')))).%,
-			%create_object_perception(Object, [], ['ObjectPerceivedState'], ObjectInst))).
+			%createObjectPerception(Object, [], ['ObjectPerceivedState'], ObjectInst))).
 
-create_perception_instance_to_object([_c_id, _c_centroid, _c_volume, _frame_id,
+createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
  X_Coord, Y_Coord, Z_Coord, Odom_FrameId], ObjInst) :-
@@ -93,7 +94,7 @@ create_perception_instance_to_object([_c_id, _c_centroid, _c_volume, _frame_id,
     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
     rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
 
-create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
+createObjectPerception([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
  X_Coord, Y_Coord, Z_Coord, Odom_FrameId],
@@ -113,89 +114,89 @@ create_object_perception([_c_id, _c_centroid, _c_volume, _frame_id,
     	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst),
     	rdf_assert(ObjInst, rdf:type, Type); 
     	rdf_instance_from_class(Type, ObjInst)),
-    assert_rgb_colors(ObjInst, _c_color_average_r, _c_color_average_g, _c_color_average_b),
-    assert_rgb_colors(ObjInst, _c_color_average_h, _c_color_average_s, _c_color_average_v),
+    assertRGBColors(ObjInst, _c_color_average_r, _c_color_average_g, _c_color_average_b),
+    assertRGBColors(ObjInst, _c_color_average_h, _c_color_average_s, _c_color_average_v),
    	rdf_assert(ObjInst, knowrob:'volumeOfObject', literal(type('http://www.w3.org/2001/XMLSchema#int',_c_volume))),
     create_perception_instance(PerceptionTypes, Perception),
     set_object_perception(ObjInst, Perception),
     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
     rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
 
-assert_rgb_colors(ObjInst, R_Color, G_Color, B_Color) :-
+assertRGBColors(ObjInst, R_Color, G_Color, B_Color) :-
 	rdf_assert(ObjInst, rdf:type, knowrob:'RGBAverageColor'),
 	rdf_assert(ObjInst, suturo:'rColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',R_Color))),
 	rdf_assert(ObjInst, suturo:'gColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',G_Color))),
 	rdf_assert(ObjInst, suturo:'bColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',B_Color))).
 
-assert_rgb_colors(ObjInst, H_Color, S_Color, V_Color) :-
+assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
 	rdf_assert(ObjInst, rdf:type, knowrob:'HSVAverageColor'),
 	rdf_assert(ObjInst, suturo:'HColorValue', literal(type('http://www.w3.org/2001/XMLSchema#int',H_Color))),
 	rdf_assert(ObjInst, suturo:'SColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',S_Color))),
 	rdf_assert(ObjInst, suturo:'VColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',V_Color))).
 
 
-check_if_object_available([_c_id, _c_centroid, _c_volume, _frame_id,
+checkIfObjectAvailable([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _], ObjectIdentifier) :-
 	writeln('First Test shape rgb and hsv'),
-	shape_is_fitting(ObjectIdentifier, _c_shape) , 
-	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
-	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+	shapeIsFitting(ObjectIdentifier, _c_shape) , 
+	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
+	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
 	writeln('Second Test volume rgb and hsv'),
-	volume_in_range(ObjectIdentifier, _c_volume), 
-	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
-	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v) ; 
+	volumeInRange(ObjectIdentifier, _c_volume), 
+	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
+	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v) ; 
 	writeln('Third Test volume shape and hsv'),
-	volume_in_range(ObjectIdentifier, _c_volume), 
-	shape_is_fitting(ObjectIdentifier, _c_shape), 
-	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+	volumeInRange(ObjectIdentifier, _c_volume), 
+	shapeIsFitting(ObjectIdentifier, _c_shape), 
+	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
 	writeln('Fourth Test recognition_label rgb and hsv'),
-	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
-	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
-	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
+	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
+	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
 	writeln('Fifth Test recognition_label shape and hsv'),
-	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
-	shape_is_fitting(ObjectIdentifier, _c_shape), 
-	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
+	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
+	shapeIsFitting(ObjectIdentifier, _c_shape), 
+	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
 	writeln('Sixth Test recognition_label shape and rgb'),
-	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
-	shape_is_fitting(ObjectIdentifier, _c_shape), 
-	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
+	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
+	shapeIsFitting(ObjectIdentifier, _c_shape), 
+	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
 	writeln('Seventh Test recognition_label volume and rgb'),
-	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
-	volume_in_range(ObjectIdentifier, _c_volume), 
-	rgb_is_fitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
+	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
+	volumeInRange(ObjectIdentifier, _c_volume), 
+	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
 	writeln('Eightth Test recognition_label volume and shape'),
-	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
-	volume_in_range(ObjectIdentifier, _c_volume), 
-	shape_is_fitting(ObjectIdentifier, _c_shape);
+	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
+	volumeInRange(ObjectIdentifier, _c_volume), 
+	shapeIsFitting(ObjectIdentifier, _c_shape);
 	writeln('Nineth Test recognition_label volume and hsv'),
-	recognition_label_existing(ObjectIdentifier, _recognition_label_2d), 
-	volume_in_range(ObjectIdentifier, _c_volume), 
-	hsv_is_fitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v).
+	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
+	volumeInRange(ObjectIdentifier, _c_volume), 
+	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v).
 
 
-recognition_label_existing(ObjectIdentifier, Label) :-
+recognitionLabelExisting(ObjectIdentifier, Label) :-
 	atom_concat('http://www.suturo.de/ontology/hierarchy#', Label, ObjectIdentifier),
 	rdf_has(ObjectIdentifier, _ , _).
 
-shape_is_fitting(ObjectIdentifier, Shape_Raw) :-
+shapeIsFitting(ObjectIdentifier, Shape_Raw) :-
 	shape(Shape_Raw, ShapeString),
 	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
 	rdf_has(ObjectIdentifier, rdf:type ,Shape).
 
-volume_in_range(ObjectIdentifier, Volume) :-
+volumeInRange(ObjectIdentifier, Volume) :-
 	rdf_has(ObjectIdentifier , knowrob:'volumeOfObject', Obj_Vol),
 	getNumber(Obj_Vol, VOL),
-	volume_Variance(Var),
+	volumeVariance(Var),
 	Min is VOL * (1 - Var),
 	Max is VOL * (1 + Var),
 	Min =< Volume,
 	Max >= Volume.
 
-rgb_is_fitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
+rgbIsFitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
 	rdf_has(ObjectIdentifier, suturo:rColorValue , Obj_R_Color),
-	rgb_color_variance(RGBVariance),
+	rgbColorVariance(RGBVariance),
 	getNumber(Obj_R_Color, R),
 	MinR is R - RGBVariance,
 	MaxR is R + RGBVariance,
@@ -215,11 +216,10 @@ rgb_is_fitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
 	MaxB >= B_Color.
 
 getNumber(literal(type(_, A)), B) :- atom_number(A,B).
-getLiteralNumber(literal(type(_, A)), B) :- B is A.
 
-hsv_is_fitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
+hsvIsFitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
 	rdf_has(ObjectIdentifier, suturo:hColorValue , Obj_H_Value),
-	h_color_variance(HVariance),
+	hColorVariance(HVariance),
 	getNumber(Obj_H_Value, H),
 	MinH is (H - HVariance) mod 360,
 	MaxH is (H + HVariance) mod 360,
@@ -227,7 +227,7 @@ hsv_is_fitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
 		(MinH =< H_Value; MaxH >= H_Value);
 		((MinH =< H_Value), (MaxH >= H_Value)) ),
 	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
-	sv_color_variance(SVVariance),
+	svColorVariance(SVVariance),
 	getNumber(Obj_S_Value, S),
 	MinS is S - SVVariance,
 	MaxS is S + SVVariance,
@@ -240,21 +240,22 @@ hsv_is_fitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
 	MinV =< V_Value,
 	MaxV >= V_Value.
 
-head_element([Head| _], Head). 
+headElement([Head| _], Head). 
 %% This is a test for JNI integration
-get_perceived_objects_infos(PODataList) :-
-	jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge),
+getPerceivedObjectsInfos(PODataList) :-
+	perception(PrologBridge),
 	jpl_call(PrologBridge, 'updatePerception', [], Out_raw),
 	jpl_get(Out_raw,'length',Length),
 	is(Indizees, Length-1),
-	findall(POData,processPerceivedObjects(PrologBridge, Out_raw, Indizees, POData), PODataList).
+	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
 
-processPerceivedObjects(PrologBridge, Out_raw, Indizees, Result) :-
+processPerceivedObjects(Out_raw, Indizees, Result) :-
+	perception(PrologBridge),
 	numlist(0,Indizees,IndexList),
 	member(Index, IndexList),
 	jpl_get(Out_raw,Index,Perceived_object),
-	get_perceived_object_infos(Perceived_object, POData),
-	head_element(POData, _c_id),
+	getPerceivedObjectInfos(Perceived_object, POData),
+	headElement(POData, _c_id),
 	jpl_call(PrologBridge, 'getOdomCoords', [_c_id], Odom_Raw),
 	jpl_call(Odom_Raw, 'getData', [], Point_Raw),
 	jpl_get(Point_Raw,'x', X_Coord),
@@ -264,11 +265,11 @@ processPerceivedObjects(PrologBridge, Out_raw, Indizees, Result) :-
 	append(POData,[X_Coord, Y_Coord, Z_Coord, Odom_FrameId], Result).
 
 
-%% get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
+%% getPerceivedObjectInfos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
 %%  _recognition_label_2d, _recognition_label_3d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
 %%  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _c_roi_origin, _c_roi_width,
 %%  _c_roi_height ]):-
-get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
+getPerceivedObjectInfos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality]) :-
 	jpl_get(Obj_id, 'c_id', _c_id),
@@ -292,7 +293,7 @@ get_perceived_object_infos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
 
 sendPlanningScene(ObjectList) :-
 	mapconverter(MapConverter),
-	get_perceived_objects_infos(ObjectList),
+	getPerceivedObjectsInfos(ObjectList),
 	foreach(member(Object, ObjectList), sendSingleObject(Object)),
 	jpl_call(MapConverter, 'publishScene', [], _).
 
