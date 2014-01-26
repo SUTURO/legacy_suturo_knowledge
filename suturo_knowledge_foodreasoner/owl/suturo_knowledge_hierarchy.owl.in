@@ -221,12 +221,12 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.145</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.036</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.143</knowrob:widthOfObject>
-        <hierarchy:hColorValue rdf:datatype="&xsd;int">0</hierarchy:hColorValue>
-        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.29</hierarchy:sColorValue>
-        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.43</hierarchy:vColorValue>
-        <hierarchy:rColorValue rdf:datatype="&xsd;byte">110</hierarchy:rColorValue>
-        <hierarchy:gColorValue rdf:datatype="&xsd;byte">78</hierarchy:gColorValue>
-        <hierarchy:bColorValue rdf:datatype="&xsd;byte">76</hierarchy:bColorValue>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">21</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.54</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.519</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">128</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">81</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">57</hierarchy:bColorValue>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;cafetfilter">
@@ -236,12 +236,12 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.197</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.037</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.132</knowrob:widthOfObject>
-        <hierarchy:hColorValue rdf:datatype="&xsd;int">30</hierarchy:hColorValue>
-        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.16</hierarchy:sColorValue>
-        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.32</hierarchy:vColorValue>
-        <hierarchy:rColorValue rdf:datatype="&xsd;byte">82</hierarchy:rColorValue>
-        <hierarchy:gColorValue rdf:datatype="&xsd;byte">78</hierarchy:gColorValue>
-        <hierarchy:bColorValue rdf:datatype="&xsd;byte">70</hierarchy:bColorValue>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">66</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.2886</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.38</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">93</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">96</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">68</hierarchy:bColorValue>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;baguette">
@@ -252,12 +252,12 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.13</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.037</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.195</knowrob:widthOfObject>
-        <hierarchy:hColorValue rdf:datatype="&xsd;int">8</hierarchy:hColorValue>
-        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.55</hierarchy:sColorValue>
-        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.45</hierarchy:vColorValue>
-        <hierarchy:rColorValue rdf:datatype="&xsd;byte">115</hierarchy:rColorValue>
-        <hierarchy:gColorValue rdf:datatype="&xsd;byte">61</hierarchy:gColorValue>
-        <hierarchy:bColorValue rdf:datatype="&xsd;byte">50</hierarchy:bColorValue>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">16</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.637</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.5843</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">149</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">80</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">55</hierarchy:bColorValue>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;wlanadapter">
