@@ -65,9 +65,9 @@ placedObjectInBox(_, _, Out) :-
 
 %% create_object_perception(_recognition_label_2d, [1,0,0,X,0,1,0,Y,0,0,1,Z], [])
 
-rgb_color_variance(A) :- A is round(0.1 * 255).
-h_color_variance(A) :- A is round(0.1 * 359).
-sv_color_variance(A) :- A is 0.1.
+rgb_color_variance(A) :- A is round(0.2 * 255).
+h_color_variance(A) :- A is round(0.2 * 359).
+sv_color_variance(A) :- A is 0.2.
 volume_Variance(0.1).
 shape(0, 'NONE').
 shape(1, 'Box').
@@ -77,12 +77,12 @@ shape(3, 'Sphere').
 
 save_perception(ObjectInst) :-
 	get_perceived_objects_infos(DataList),
-	member(Object, DataList),
-	(check_if_object_available(Object, Instance) ->
-	(writeln('LOl Object there'),
-		create_perception_instance_to_object(Object, Instance)); 
-	(writeln('Im doing something!'),
-		create_object_perception(Object, [], ['TemporallyExtendedThing'], ObjectInst))).
+	forall(member(Object, DataList),
+		(check_if_object_available(Object, Instance) ->
+		(writeln('LOl Object there'));%,
+			%create_perception_instance_to_object(Object, Instance)); 
+		(writeln('Im doing something!')))).%,
+			%create_object_perception(Object, [], ['TemporallyExtendedThing'], ObjectInst))).
 
 create_perception_instance_to_object([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
@@ -294,7 +294,7 @@ sendPlanningScene(ObjectList) :-
 	mapconverter(MapConverter),
 	get_perceived_objects_infos(ObjectList),
 	foreach(member(Object, ObjectList), sendSingleObject(Object)),
-	jpl_call(MapConverter, 'publishScene', [], Result).
+	jpl_call(MapConverter, 'publishScene', [], _).
 
 sendSingleObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
@@ -302,4 +302,4 @@ sendSingleObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _X_Coord, _Y_Coord, _Z_Coord, _Odom_FrameId]) :-
 	mapconverter(MapConverter),
 	atom_number(Key, _c_id),
-	jpl_call(MapConverter, 'addBox', [Key, 0.05, 0.05, 0.05, _X_Coord, _Y_Coord, _Z_Coord, _Odom_FrameId], Result).
+	jpl_call(MapConverter, 'addBox', [Key, 0.05, 0.05, 0.05, _X_Coord, _Y_Coord, _Z_Coord, _Odom_FrameId], _).
