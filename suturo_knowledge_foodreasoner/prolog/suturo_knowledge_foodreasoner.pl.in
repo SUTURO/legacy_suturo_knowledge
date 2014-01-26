@@ -82,13 +82,13 @@ save_perception(ObjectInst) :-
 		(writeln('LOl Object there'));%,
 			%create_perception_instance_to_object(Object, Instance)); 
 		(writeln('Im doing something!')))).%,
-			%create_object_perception(Object, [], ['TemporallyExtendedThing'], ObjectInst))).
+			%create_object_perception(Object, [], ['ObjectPerceivedState'], ObjectInst))).
 
 create_perception_instance_to_object([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
  X_Coord, Y_Coord, Z_Coord, Odom_FrameId], ObjInst) :-
-	create_perception_instance(PerceptionTypes, Perception),
+	create_perception_instance(['ObjectPerceivedState'], Perception),
     set_object_perception(ObjInst, Perception),
     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
     rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
