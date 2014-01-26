@@ -42,6 +42,7 @@ public class MapConverter {
 			handle.logError("Publisher advertisement failed: " + e.getMessage());
 		}
 		pendingObjects = new LinkedHashMap<String, CollisionObjectWrapper>();
+		handle.logInfo("MapConverter initialized");
 	}
 
 	/**
@@ -55,14 +56,18 @@ public class MapConverter {
 		if (presentObjects != null && presentObjects.size() > 0) {
 			presentObjects.keySet().retainAll(pendingObjects.keySet());
 			for (String key : presentObjects.keySet()) {
+				handle.logDebug("Remove object from PS with key: " + key);
 				publisher.publish(CollisionObjectWrapper.removeObject(key));
 			}
 		}
 		for (CollisionObjectWrapper co : pendingObjects.values()) {
+			handle.logDebug("Publish object with key: " + co.getId());
 			publisher.publish(co.toCollisionObject());
 		}
 		presentObjects = pendingObjects;
 		pendingObjects = new LinkedHashMap<String, CollisionObjectWrapper>();
+		handle.logInfo("Published new PlanningScene");
+
 	}
 
 	/**
@@ -78,6 +83,7 @@ public class MapConverter {
 	/**
 	 * Adds a collision object to the pending scene
 	 * 
+	 * @param id
 	 * @param dimX
 	 * @param dimY
 	 * @param dimZ
@@ -86,14 +92,15 @@ public class MapConverter {
 	 * @param z
 	 * @param frameID
 	 */
-	public void addBox(double dimX, double dimY, double dimZ, double x,
-			double y, double z, String frameID) {
-		CollisionObjectWrapper co = new CollisionObjectWrapper("test",
+	public void addBox(String id, double dimX, double dimY, double dimZ,
+			double x, double y, double z, String frameID) {
+		CollisionObjectWrapper co = new CollisionObjectWrapper(id,
 				Operation.ADD);
 		co.setFrame(frameID, Time.now());
 		co.addPrimitiveBox(dimX, dimY, dimZ);
 		co.addPose(x, y, z, 0, 0, 0);
 		addCollisionObject(co);
+		handle.logDebug("Add new object with key " + id);
 	}
 
 	/**

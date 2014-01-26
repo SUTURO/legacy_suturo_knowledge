@@ -31,11 +31,12 @@ public class PSConsole {
 					.println("New box coords (Name, FrameID, dimX, dimY, dimZ, posX, posY, posZ) ");
 			String in = br.readLine();
 			String[] split = in.split(",");
-			if (split[0] != null || !split[0].trim().equals("exit")) {
+			if (split[0] != null && split[0].trim().equals("exit")) {
 				break;
 			}
-			if (split[0] != null || !split[0].trim().equals("publish")) {
+			if (split[0] != null && split[0].trim().equals("publish")) {
 				conv.publishScene();
+				break;
 			}
 			conv.addCollisionObject(generateFromInput(split));
 		}

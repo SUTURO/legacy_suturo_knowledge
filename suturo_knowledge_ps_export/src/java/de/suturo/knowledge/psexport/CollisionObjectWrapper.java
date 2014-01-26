@@ -96,6 +96,9 @@ public class CollisionObjectWrapper {
 	 * @param z
 	 */
 	public void addPrimitiveBox(double x, double y, double z) {
+		if (primitives == null) {
+			primitives = new ArrayList<SolidPrimitive>();
+		}
 		SolidPrimitive sp = new SolidPrimitive();
 		sp.type = SolidPrimitive.BOX;
 		sp.dimensions = new double[3];
@@ -112,6 +115,9 @@ public class CollisionObjectWrapper {
 	 * @param radius
 	 */
 	public void addPrimitiveCone(double height, double radius) {
+		if (primitives == null) {
+			primitives = new ArrayList<SolidPrimitive>();
+		}
 		SolidPrimitive sp = new SolidPrimitive();
 		sp.type = SolidPrimitive.CONE;
 		sp.dimensions = new double[2];
@@ -127,6 +133,9 @@ public class CollisionObjectWrapper {
 	 * @param radius
 	 */
 	public void addPrimitiveCylinder(double height, double radius) {
+		if (primitives == null) {
+			primitives = new ArrayList<SolidPrimitive>();
+		}
 		SolidPrimitive sp = new SolidPrimitive();
 		sp.type = SolidPrimitive.CYLINDER;
 		sp.dimensions = new double[2];
@@ -141,6 +150,9 @@ public class CollisionObjectWrapper {
 	 * @param radius
 	 */
 	public void addPrimitiveSphere(double radius) {
+		if (primitives == null) {
+			primitives = new ArrayList<SolidPrimitive>();
+		}
 		SolidPrimitive sp = new SolidPrimitive();
 		sp.type = SolidPrimitive.SPHERE;
 		sp.dimensions = new double[1];
