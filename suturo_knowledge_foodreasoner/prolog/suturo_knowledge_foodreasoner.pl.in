@@ -43,9 +43,10 @@ containerOn(TableInstanceName, Out) :-
 %Out=[[edible,ediblebox,container,[1,1,1],'Jim',11.5,'doesNotApply'],[nonedible,nonediblebox,container,[1,2,1],'Bo',11.5,'doesNotApply']].
 
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
-%gibt momentan 3 objekte aus
 updatePerception(Out) :-
-	Out=[].
+	savePerception(ObjectList),
+	Out is length(ObjectList),
+	sendPlanningScene(ObjectList).
 %	findall(perceived_object, edible(X), Out).
 %	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox'],[edible,testobject1,sphere,[1,5,1],'Fubar',11.5,'ediblebox']].
 
@@ -78,11 +79,11 @@ shape(3, 'Sphere').
 
 savePerception(ObjectInst) :-
 	getPerceivedObjectsInfos(DataList),
-	forall(member(Object, DataList),
+	findall(Instance,(member(Object, DataList),
 		(checkIfObjectAvailable(Object, Instance) ->
-		(writeln('LOl Object there'),
+		(writeln('Recognized Object'),
 			createPerceptionInstanceToObject(Object, Instance)); 
-		(writeln('Im doing something!')))).%,
+		(writeln('Not a known Object')))), ObjectInst).%,
 			%createObjectPerception(Object, [], ['ObjectPerceivedState'], ObjectInst))).
 
 createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
@@ -293,14 +294,18 @@ getPerceivedObjectInfos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
 
 sendPlanningScene(ObjectList) :-
 	mapconverter(MapConverter),
-	getPerceivedObjectsInfos(ObjectList),
 	foreach(member(Object, ObjectList), sendSingleObject(Object)),
 	jpl_call(MapConverter, 'publishScene', [], _).
 
-sendSingleObject([_c_id, _c_centroid, _c_volume, _frame_id,
- _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
- _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality,
- _X_Coord, _Y_Coord, _Z_Coord, _Odom_FrameId]) :-
+sendSingleObject(ObjectIdentifier) :-
 	mapconverter(MapConverter),
-	atom_number(Key, _c_id),
-	jpl_call(MapConverter, 'addBox', [Key, 0.05, 0.05, 0.05, _X_Coord, _Y_Coord, _Z_Coord, _Odom_FrameId], _).
+	rdf_has(ObjectIdentifier, knowrob:heightOfObject, Height),
+	rdf_has(ObjectIdentifier, knowrob:depthOfObject, Depth),
+	rdf_has(ObjectIdentifier, knowrob:widthOfObject, Width),
+	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
+	rdf_has(ObjectIdentifier, suturo:frameID, FrameID),
+	rdf_has(ObjectIdentifier, knowrob:eventOccursAt, RotationMatrix),
+	rdf_has(RotationMatrix, knowrob:m03, X_Coord),
+	rdf_has(RotationMatrix, knowrob:m13, Y_Coord),
+	rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
+	jpl_call(MapConverter, 'addBox', [ObjectIdentifier, Width, Height, Depth, X_Coord, Y_Coord, Z_Coord, FrameID], _).
