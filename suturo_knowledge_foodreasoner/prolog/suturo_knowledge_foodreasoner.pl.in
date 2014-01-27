@@ -13,7 +13,9 @@
 %% Dependencies
 :- use_module(library('knowrob_objects')).
 :- use_module(library('comp_spatial')).
-
+%% Register owl namespaces
+:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 %% Constants for value tolerance. Feel free to change this.
 rgbColorVariance(A) :- A is round(0.1 * 255).
 hColorVariance(A) :- A is round(0.2 * 359).
@@ -25,10 +27,12 @@ graspableOn(TableInstanceName, Out) :-
 	findall(ObjectInfos, (on_Physical(ObjInst, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'),
 			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
 			grepInfosToPush(ObjInst, OutObj),
-			rdf_has(ObjInst, suturo:'newtonMeter', NM),
+			rdf_has(ObjInst, suturo:'newtonMeter', NM_Raw),
+			strip_literal_type(NM_Raw, NM_String),
+			atom_number(NM_String, NM),
 			append(OutObj, [NM,''], ObjectInfos)), Out).
 
-grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centroid_z],_frameid,_grip-force,_use]) :-
+grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centroid_z],_frameid]) :-
 	_name = ObjectIdentifier,
 	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
 		_edible =true; _edible=false),
@@ -88,9 +92,7 @@ placedObjectInBox(_, _, Out) :-
    		owl_parser:owl_parse(File, false, false, true);
    		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/lab_hierarchy.owl', false, false, true)).
 
-%% Register owl namespaces
-:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+
 
 %% Instanciate Java bridges to Perception and Manipulation
 :- jpl_new('de.suturo.knowledge.psexport.MapConverter',[], Instance), assert(mapconverter(Instance)).
