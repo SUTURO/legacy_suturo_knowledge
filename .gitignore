@@ -2,6 +2,7 @@
 *.sublime-workspace
 .classpath
 .project
+.settings
 bin
 build
 *gen

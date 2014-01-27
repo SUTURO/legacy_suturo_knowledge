@@ -74,14 +74,14 @@ dfloatToFloat(StringDoubleFloat, Float) :-
 %% Accessor predicate for containers
 containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
 
-%% 
+%% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
 savePerception(ObjectInst) :-
 	getPerceivedObjectsInfos(DataList),
 	findall(Instance,(member(Object, DataList),
-		(checkIfObjectAvailable(Object, Instance) ->
+		(recognizedObject(Object, Instance) -> % check if object is recognized
 		(writeln('Recognized Object'),
-			createPerceptionInstanceToObject(Object, Instance)); 
-		(writeln('Not a known Object')))), ObjectInst).%,
+			createPerceptionInstanceToObject(Object, Instance));
+		(writeln('Not a known Object')))), ObjectInst).%
 			%createObjectPerception(Object, [], ['ObjectPerceivedState'], ObjectInst))).
 
 createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
@@ -134,7 +134,7 @@ assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
 	rdf_assert(ObjInst, suturo:'VColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',V_Color))).
 
 
-checkIfObjectAvailable([_c_id, _c_centroid, _c_volume, _frame_id,
+recognizedObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _], ObjectIdentifier) :-
 	writeln('First Test shape rgb and hsv'),
@@ -326,4 +326,4 @@ sendSingleObject(ObjectIdentifier) :-
 	strip_literal_type(OWidth, Width_Raw),
 	atom_number(Width_Raw, Width),
 	getLatestCoordinatesOfObject(ObjectIdentifier, X_Coord, Y_Coord, Z_Coord, FrameID),
-	jpl_call(MapConverter, 'addBox', [ObjectIdentifier, Width, Height, Depth, X_Coord, Y_Coord, Z_Coord, FrameID], _).
+	jpl_call(MapConverter, 'addBox', [ObjectIdentifier, Depth, Width, Height, X_Coord, Y_Coord, Z_Coord, FrameID], _).
