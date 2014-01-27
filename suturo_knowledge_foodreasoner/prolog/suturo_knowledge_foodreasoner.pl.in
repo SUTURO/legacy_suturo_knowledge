@@ -192,7 +192,7 @@ shapeIsFitting(ObjectIdentifier, Shape_Raw) :-
 volumeInRange(ObjectIdentifier, Volume) :-
 	rdf_has(ObjectIdentifier , knowrob:'volumeOfObject', Obj_Vol),
 	strip_literal_type(Obj_Vol, VOL_Raw),
-	atom_number(VOL_Raw, Vol),
+	atom_number(VOL_Raw, VOL),
 	volumeVariance(Var),
 	Min is VOL * (1 - Var),
 	Max is VOL * (1 + Var),
@@ -308,18 +308,15 @@ sendPlanningScene(ObjectList) :-
 
 getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
-	rdf_has(ObjectIdentifier, suturo:frameID, FrameID_Raw),
+	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
 	strip_literal_type(FrameID_Raw, FrameID),
-	rdf_has(ObjectIdentifier, knowrob:eventOccursAt, RotationMatrix),
+	rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
 	rdf_has(RotationMatrix, knowrob:m03, X_Coord),
-	strip_literal_type(X_Coord, X_Raw),
-	atom_number(X_Raw, X),
+	strip_literal_type(X_Coord, X),
 	rdf_has(RotationMatrix, knowrob:m13, Y_Coord),
-	strip_literal_type(Y_Coord, Y_Raw),
-	atom_number(Y_Raw, Y),
+	strip_literal_type(Y_Coord, Y),
 	rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
-	strip_literal_type(Z_Coord, Z_Raw),
-	atom_number(Z_Raw, Z),.
+	strip_literal_type(Z_Coord, Z).
 
 sendSingleObject(ObjectIdentifier) :-
 	mapconverter(MapConverter),
