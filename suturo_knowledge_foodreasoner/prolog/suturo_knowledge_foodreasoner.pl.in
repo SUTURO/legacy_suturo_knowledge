@@ -26,7 +26,7 @@ graspableOn(TableInstanceName, Out) :-
 			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
 			grepInfosToPush(ObjInst, OutObj),
 			rdf_has(ObjInst, suturo:'newtonMeter', NM),
-			append(OutObj, NM, ObjectInfos)), Out).
+			append(OutObj, [NM,''], ObjectInfos)), Out).
 
 grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centroid_z],_frameid,_grip-force,_use]) :-
 	_name = ObjectIdentifier,
@@ -40,7 +40,7 @@ containerOn(TableInstanceName, Out) :-
 			rdfs_individual_of(ObjInst, knowrob:'Box-Container'),
 			grepInfosToPush(ObjInst, OutObj),
 			(storagePlaceFor(ObjInst, knowrob:'FoodOrDrink')->
-			append(OutObj, 'storage-for-food', ObjectInfos);append(OutObj, 'storage-for-stuff', ObjectInfos))), Out).
+			append(OutObj, [0,'storage-for-food'], ObjectInfos);append(OutObj, [0,'storage-for-stuff'], ObjectInfos))), Out).
 
 
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
