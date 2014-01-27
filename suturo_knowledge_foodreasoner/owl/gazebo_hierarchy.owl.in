@@ -285,12 +285,12 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.035</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.185</knowrob:widthOfObject>
         <hierarchy:newtonMeter rdf:datatype="&xsd;double">25</hierarchy:newtonMeter>
-        <hierarchy:hColorValue rdf:datatype="&xsd;int">300</hierarchy:hColorValue>
-        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.104</hierarchy:sColorValue>
-        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.450</hierarchy:vColorValue>
-        <hierarchy:rColorValue rdf:datatype="&xsd;byte">115</hierarchy:rColorValue>
-        <hierarchy:gColorValue rdf:datatype="&xsd;byte">102</hierarchy:gColorValue>
-        <hierarchy:bColorValue rdf:datatype="&xsd;byte">114</hierarchy:bColorValue>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">348</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.197</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.376</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">96</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">77</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">81</hierarchy:bColorValue>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;w_containerbox">

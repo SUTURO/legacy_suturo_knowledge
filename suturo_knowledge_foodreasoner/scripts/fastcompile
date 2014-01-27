@@ -1,0 +1,26 @@
+#!/bin/bash
+SCRIPTS=$(dirname "$0")
+echo
+echo \################################################
+echo \#\ \ \ \ ATTENTION: FAST COMPILE MODE ACTIVATED\ \ \ \ \#
+echo \################################################
+echo
+echo Do not use unless a knowledge person told you to do so!
+echo
+echo \### Switching to fast manifests...
+cd $SCRIPTS/../../suturo_knowledge_ps_export
+mv manifest.xml manifest.xml.original
+mv manifest.xml.fast manifest.xml
+cd $SCRIPTS/../
+mv manifest.xml manifest.xml.original
+mv manifest.xml.fast manifest.xml
+echo \### Building foodreasoner...
+rosmake
+echo \### Switching to original manifests...
+cd $SCRIPTS/../../suturo_knowledge_ps_export
+mv manifest.xml manifest.xml.fast
+mv manifest.xml.original manifest.xml
+cd $SCRIPTS/../
+mv manifest.xml manifest.xml.fast
+mv manifest.xml.original manifest.xml
+echo \### Fastbuild completed!
