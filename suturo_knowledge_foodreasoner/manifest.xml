@@ -8,11 +8,11 @@
   <url>http://www.suturo.de</url>
 
   <depend package="rosjava_jni"/> <!-- Java in ROS -->
-  <!--depend package="suturo_knowledge_ps_export"/--> <!-- Planning scene export -->
+  <depend package="suturo_knowledge_ps_export"/> <!-- Planning scene export -->
   <depend package="suturo_perception_msgs"/> <!-- Communication with perception -->
   <depend package="geometry_msgs" /> <!-- Dependency of perception_msg, so rosjava can build msg classes -->
   <depend package="json_prolog"/> <!-- Java/Prolog bridge -->
-  <!--depend package="iai_maps"/--> <!-- Lab maps -->
+  <depend package="iai_maps"/> <!-- Lab maps -->
   <depend package="knowrob_common"/>
   <depend package="tfjava"/>
   <depend package="thea"/>

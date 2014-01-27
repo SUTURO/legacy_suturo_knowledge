@@ -1,0 +1,319 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY knowrob_path 'file://@KNOWROB_PATH_PREFIX@/owl/'>
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY hierarchy "http://www.suturo.de/ontology/hierarchy#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:hierarchy="http://www.suturo.de/ontology/hierarchy#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
+    <Ontology rdf:about="http://www.suturo.de/ontology/hierarchy">
+        <imports rdf:resource="&knowrob_path;knowrob_objects.owl"/>
+    </Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#bColorValue -->
+
+    <DatatypeProperty rdf:about="&hierarchy;bColorValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;byte"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#frameID -->
+
+    <DatatypeProperty rdf:about="&hierarchy;frameID">
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#gColorValue -->
+
+    <DatatypeProperty rdf:about="&hierarchy;gColorValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;byte"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#hColorValue -->
+
+    <DatatypeProperty rdf:about="&hierarchy;hColorValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#newtonMeter -->
+
+    <DatatypeProperty rdf:about="&hierarchy;newtonMeter">
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#rColorValue -->
+
+    <DatatypeProperty rdf:about="&hierarchy;rColorValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;byte"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#sColorValue -->
+
+    <DatatypeProperty rdf:about="&hierarchy;sColorValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;float"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#vColorValue -->
+
+    <DatatypeProperty rdf:about="&hierarchy;vColorValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;float"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#varianceOfVolume -->
+
+    <DatatypeProperty rdf:about="&hierarchy;varianceOfVolume">
+        <rdfs:subPropertyOf rdf:resource="&knowrob;volumeOfObject"/>
+        <rdfs:range rdf:resource="&xsd;float"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#HSVAverageColor -->
+
+    <Class rdf:about="&hierarchy;HSVAverageColor">
+        <equivalentClass>
+            <Restriction>
+                <onProperty rdf:resource="&hierarchy;sColorValue"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                <onDataRange rdf:resource="&xsd;float"/>
+            </Restriction>
+        </equivalentClass>
+        <equivalentClass>
+            <Restriction>
+                <onProperty rdf:resource="&hierarchy;hColorValue"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                <onDataRange rdf:resource="&xsd;int"/>
+            </Restriction>
+        </equivalentClass>
+        <equivalentClass>
+            <Restriction>
+                <onProperty rdf:resource="&hierarchy;vColorValue"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                <onDataRange rdf:resource="&xsd;float"/>
+            </Restriction>
+        </equivalentClass>
+        <rdfs:subClassOf rdf:resource="&knowrob;Color"/>
+    </Class>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#RGBAverageColor -->
+
+    <Class rdf:about="&hierarchy;RGBAverageColor">
+        <equivalentClass>
+            <Restriction>
+                <onProperty rdf:resource="&hierarchy;rColorValue"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                <onDataRange rdf:resource="&xsd;byte"/>
+            </Restriction>
+        </equivalentClass>
+        <equivalentClass>
+            <Restriction>
+                <onProperty rdf:resource="&hierarchy;gColorValue"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                <onDataRange rdf:resource="&xsd;byte"/>
+            </Restriction>
+        </equivalentClass>
+        <equivalentClass>
+            <Restriction>
+                <onProperty rdf:resource="&hierarchy;bColorValue"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                <onDataRange rdf:resource="&xsd;byte"/>
+            </Restriction>
+        </equivalentClass>
+        <rdfs:subClassOf rdf:resource="&knowrob;Color"/>
+    </Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#dlink -->
+
+    <NamedIndividual rdf:about="&hierarchy;dlink">
+        <rdf:type rdf:resource="&knowrob;Box"/>
+        <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.000936</knowrob:volumeOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.169</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.035</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.24</knowrob:widthOfObject>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">292</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.066</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.47</hierarchy:vColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">120</hierarchy:gColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">113</hierarchy:rColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">121</hierarchy:bColorValue>
+    </NamedIndividual>
+
+    <NamedIndividual rdf:about="&hierarchy;corny">
+        <rdf:type rdf:resource="&knowrob;Box"/>
+        <rdf:type rdf:resource="&knowrob;Food"/>
+        <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.000453</knowrob:volumeOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.145</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.036</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.143</knowrob:widthOfObject>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">21</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.54</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.519</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">128</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">81</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">57</hierarchy:bColorValue>
+    </NamedIndividual>
+
+    <NamedIndividual rdf:about="&hierarchy;cafetfilter">
+        <rdf:type rdf:resource="&knowrob;Box"/>
+        <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.000673</knowrob:volumeOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.197</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.037</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.132</knowrob:widthOfObject>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">66</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.2886</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.38</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">93</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">96</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">68</hierarchy:bColorValue>
+    </NamedIndividual>
+
+    <NamedIndividual rdf:about="&hierarchy;baguette">
+        <rdf:type rdf:resource="&knowrob;Box"/>
+        <rdf:type rdf:resource="&knowrob;Food"/>
+        <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.00064</knowrob:volumeOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.13</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.037</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.195</knowrob:widthOfObject>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">16</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.637</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.5843</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">149</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">80</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">55</hierarchy:bColorValue>
+    </NamedIndividual>
+
+    <NamedIndividual rdf:about="&hierarchy;wlanadapter">
+        <rdf:type rdf:resource="&knowrob;Box"/>
+        <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.000576</knowrob:volumeOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.135</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.035</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.185</knowrob:widthOfObject>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">300</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.104</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.450</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">115</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">102</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">114</hierarchy:bColorValue>
+    </NamedIndividual>
+
+    <NamedIndividual rdf:about="&hierarchy;w_containerbox">
+        <rdf:type rdf:resource="&knowrob;Box"/>
+        <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.0074</knowrob:volumeOfObject>        
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.08</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.252</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.395</knowrob:widthOfObject>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">26</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.162</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.701</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">179</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">163</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">150</hierarchy:bColorValue>
+    </NamedIndividual>
+
+    <NamedIndividual rdf:about="&hierarchy;r_containerbox">
+        <rdf:type rdf:resource="&knowrob;Box"/>
+        <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.0074</knowrob:volumeOfObject>        
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.08</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.252</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.395</knowrob:widthOfObject>
+        <hierarchy:hColorValue rdf:datatype="&xsd;int">358</hierarchy:hColorValue>
+        <hierarchy:sColorValue rdf:datatype="&xsd;float">0.902</hierarchy:sColorValue>
+        <hierarchy:vColorValue rdf:datatype="&xsd;float">0.521</hierarchy:vColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">133</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">13</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">18</hierarchy:bColorValue>
+    </NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+

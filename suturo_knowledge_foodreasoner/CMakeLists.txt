@@ -18,7 +18,7 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 # ROS packages
 rosbuild_find_ros_package(json_prolog)
-#rosbuild_find_ros_package(suturo_knowledge_ps_export)
+rosbuild_find_ros_package(suturo_knowledge_ps_export)
 rosbuild_find_ros_package(ias_knowledge_base)
 rosbuild_find_ros_package(knowrob_objects)
 rosbuild_find_ros_package(jpl)
@@ -32,7 +32,7 @@ add_ld_preload(/usr/lib/libpl.so)
 add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 add_classpath(${tfjava_PACKAGE_PATH}/bin)
-#add_classpath(${suturo_knowledge_ps_export_PACKAGE_PATH}/bin)
+add_classpath(${suturo_knowledge_ps_export_PACKAGE_PATH}/bin)
 
 # build java
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
@@ -45,7 +45,6 @@ fix_ros_destination_path(OWL_PATH_PREFIX)
 set( KNOWROB_PATH_PREFIX ${knowrob_objects_PACKAGE_PATH} )
 fix_ros_destination_path(KNOWROB_PATH_PREFIX)
 
-
 file(GLOB inputs owl/*.in)
 
 foreach( _in ${inputs} )
@@ -56,7 +55,11 @@ endforeach( _in )
 # replace path to local prolog files
 rosbuild_find_ros_package(suturo_knowledge_foodreasoner)
 set( LOCAL_PACKAGE_PATH ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )
+rosbuild_find_ros_package(iai_maps)
+set( IAI_MAPS_PACKAGE_PATH ${iai_maps_PACKAGE_PATH} )
 fix_ros_destination_path(LOCAL_PACKAGE_PATH)
+fix_ros_destination_path(IAI_MAPS_PACKAGE_PATH)
+
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )
