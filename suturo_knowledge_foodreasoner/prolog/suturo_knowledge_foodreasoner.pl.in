@@ -120,7 +120,7 @@ containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], F
 savePerception(ObjectInst) :-
 	getPerceivedObjectsInfos(DataList),
 	findall(Instance,(member(Object, DataList),
-		(recognizedObject(Object, Instance) -> % check if object is recognized
+		(once(recognizedObject(Object, Instance)) -> % check if object is recognized
 		(writeln('Recognized Object'),
 			createPerceptionInstanceToObject(Object, Instance));
 		(writeln('Not a known Object')))), ObjectInst).%
@@ -130,7 +130,7 @@ createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
  X_Coord, Y_Coord, Z_Coord, Odom_FrameId], ObjInst) :-
-	create_perception_instance(['VisualPerception'], Perception),
+	once(create_perception_instance(['VisualPerception'], Perception)),
     set_object_perception(ObjInst, Perception),
     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
     rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
@@ -179,44 +179,44 @@ assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
 recognizedObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _], ObjectIdentifier) :-
-	writeln('Fourth Test recognition_label rgb and hsv'),
+	writeln('First recognition_label rgb and hsv'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v);
 
-	writeln('Seventh Test recognition_label volume and rgb'),
+	writeln('Seond Test recognition_label volume and rgb'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	volumeInRange(ObjectIdentifier, _c_volume), 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
 
-	writeln('Nineth Test recognition_label volume and hsv'),
+	writeln('Third Test recognition_label volume and hsv'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	volumeInRange(ObjectIdentifier, _c_volume), 
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v);
 
-	writeln('First Test shape rgb and hsv'),
+	writeln('Fourth Test shape rgb and hsv'),
 	shapeIsFitting(ObjectIdentifier, _c_shape) , 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Second Test volume rgb and hsv'),
+	writeln('Fifth Test volume rgb and hsv'),
 	volumeInRange(ObjectIdentifier, _c_volume), 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v) ; 
-	writeln('Third Test volume shape and hsv'),
+	writeln('Sixth Test volume shape and hsv'),
 	volumeInRange(ObjectIdentifier, _c_volume), 
 	shapeIsFitting(ObjectIdentifier, _c_shape), 
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
 	 
-	writeln('Fifth Test recognition_label shape and hsv'),
+	writeln('Seventh Test recognition_label shape and hsv'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	shapeIsFitting(ObjectIdentifier, _c_shape), 
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Sixth Test recognition_label shape and rgb'),
+	writeln('Eighth Test recognition_label shape and rgb'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	shapeIsFitting(ObjectIdentifier, _c_shape), 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
 	
-	writeln('Eightth Test recognition_label volume and shape'),
+	writeln('Nineth Test recognition_label volume and shape'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	volumeInRange(ObjectIdentifier, _c_volume), 
 	shapeIsFitting(ObjectIdentifier, _c_shape).
