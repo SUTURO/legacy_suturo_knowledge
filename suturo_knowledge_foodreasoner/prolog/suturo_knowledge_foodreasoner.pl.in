@@ -14,7 +14,7 @@
 :- use_module(library('comp_spatial')).
 
 %% Constants for value tolerance. Feel free to change this.
-rgbColorVariance(A) :- A is round(0.2 * 255).
+rgbColorVariance(A) :- A is round(0.1 * 255).
 hColorVariance(A) :- A is round(0.2 * 359).
 svColorVariance(A) :- A is 0.2.
 volumeVariance(0.1).
@@ -31,7 +31,30 @@ containerOn(TableInstanceName, Out) :-
 updatePerception(Out) :-
 	savePerception(ObjectList),
 	length(ObjectList, Out),
+	hackCreateTable(ObjectList),
 	sendPlanningScene(ObjectList).
+
+list_min([L|Ls], Min) :- foldl(num_num_min, Ls, L, Min).
+
+num_num_min(X, Y, Min) :- Min is min(X, Y).
+
+hackCreateTable(ObjectList) :-
+	%%findall(Y,(member(ObjectIdentifier,ObjectList),getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID)),Y_Coords),
+	%%list_min(Y_Coords, Min_Y),
+	member(Object, ObjectList),
+	getLatestCoordinatesOfObject(Object, X , Y ,Z, FrameID),
+	rdf_has(Object, knowrob:heightOfObject, OHeight),
+	strip_literal_type(OHeight, Height_Raw),
+	atom_number(Height_Raw, Height),
+	Y_Table is Y - Height,
+	createPerceptionInstanceToObject([_, _, _, _,
+ 'kitchen_island_counter_top', _, _, _, _, _, _, _, _, _, 
+ X, Y_Table, Z, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
+
+
+
+
+
 
 %% Abfrage ob Object in Box platziert wurde
 %gibt momentan eine leere Liste aus
@@ -82,13 +105,13 @@ savePerception(ObjectInst) :-
 		(writeln('Recognized Object'),
 			createPerceptionInstanceToObject(Object, Instance));
 		(writeln('Not a known Object')))), ObjectInst).%
-			%createObjectPerception(Object, [], ['ObjectPerceivedState'], ObjectInst))).
+			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
 
 createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
  X_Coord, Y_Coord, Z_Coord, Odom_FrameId], ObjInst) :-
-	create_perception_instance(['ObjectPerceivedState'], Perception),
+	create_perception_instance(['VisualPerception'], Perception),
     set_object_perception(ObjInst, Perception),
     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
     rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
