@@ -286,8 +286,8 @@
         <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
         <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.0074</knowrob:volumeOfObject>        
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.08</knowrob:heightOfObject>
-        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.252</knowrob:depthOfObject>
-        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.395</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.395</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.252</knowrob:widthOfObject>
         <hierarchy:hColorValue rdf:datatype="&xsd;int">26</hierarchy:hColorValue>
         <hierarchy:sColorValue rdf:datatype="&xsd;float">0.162</hierarchy:sColorValue>
         <hierarchy:vColorValue rdf:datatype="&xsd;float">0.701</hierarchy:vColorValue>
@@ -302,8 +302,8 @@
         <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
         <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.0074</knowrob:volumeOfObject>        
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.08</knowrob:heightOfObject>
-        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.252</knowrob:depthOfObject>
-        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.395</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.395</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.252</knowrob:widthOfObject>
         <hierarchy:hColorValue rdf:datatype="&xsd;int">358</hierarchy:hColorValue>
         <hierarchy:sColorValue rdf:datatype="&xsd;float">0.902</hierarchy:sColorValue>
         <hierarchy:vColorValue rdf:datatype="&xsd;float">0.521</hierarchy:vColorValue>
