@@ -1,4 +1,4 @@
-%% SUTURO Knowledge - Food query interface
+%% SUTURO Knowledge - Food reasoning module
 
 :- module(suturo_knowledge_foodreasoner,
     [
@@ -8,20 +8,59 @@
       updatePerception/1,
       placedObjectInBox/3
     ]).
+
+%% Dependencies
 :- use_module(library('knowrob_objects')).
 :- use_module(library('comp_spatial')).
+
+%% Constants for value tolerance. Feel free to change this.
+rgbColorVariance(A) :- A is round(0.2 * 255).
+hColorVariance(A) :- A is round(0.2 * 359).
+svColorVariance(A) :- A is 0.2.
+volumeVariance(0.1).
+
+%% Returns edible objects on table ids
+graspableOn(TableInstanceName, Out) :-
+	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+
+%% Returns containers on table ids
+containerOn(TableInstanceName, Out) :-
+	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+
+%% Die Perception wird abgefragt und die Semantic Map aktualisiert
+updatePerception(Out) :-
+	savePerception(ObjectList),
+	length(ObjectList, Out),
+	sendPlanningScene(ObjectList).
+
+%% Abfrage ob Object in Box platziert wurde
+%gibt momentan eine leere Liste aus
+placedObjectInBox(_, _, Out) :-
+	Out=[].
+
+
+%% Load lab room semantic map
 :- owl_parser:owl_parse('@IAI_MAPS_PACKAGE_PATH@/owl/room.owl', false, false, true).
+%% Load suturo objects (either defaultlab_hierarchy.owl, or load OWL file given as argument)
 :- current_prolog_flag(argv, Args), last(Args, Arg),
    string_concat('@LOCAL_PACKAGE_PATH@/owl/', Arg, File),
    (string_concat(_, '.owl', File) ->
    		owl_parser:owl_parse(File, false, false, true);
    		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/lab_hierarchy.owl', false, false, true)).
 
+%% Register owl namespaces
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 
+%% Instanciate Java bridges to Perception and Manipulation
 :- jpl_new('de.suturo.knowledge.psexport.MapConverter',[], Instance), assert(mapconverter(Instance)).
 :- jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge), assert(perception(PrologBridge)).
+
+%% Constants
+shape(0, 'NONE').
+shape(1, 'Box').
+shape(2, 'Cylinder').
+shape(3, 'Sphere').
 
 %$ Accessor predicate for perceived objects
 perceived_object([ID, Label, Volume, Shape], ID, Label, Volume, Shape).
@@ -35,51 +74,7 @@ dfloatToFloat(StringDoubleFloat, Float) :-
 %% Accessor predicate for containers
 containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
 
-%% Returns edible objects on table ids
-graspableOn(TableInstanceName, Out) :-
-	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
-%Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox']].
-
-%% Returns containers on table ids
-containerOn(TableInstanceName, Out) :-
-	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
-%Out=[[edible,ediblebox,container,[1,1,1],'Jim',11.5,'doesNotApply'],[nonedible,nonediblebox,container,[1,2,1],'Bo',11.5,'doesNotApply']].
-
-%% Die Perception wird abgefragt und die Semantic Map aktualisiert
-updatePerception(Out) :-
-	savePerception(ObjectList),
-	length(ObjectList, Out),
-	sendPlanningScene(ObjectList).
-%	findall(perceived_object, edible(X), Out).
-%	Out=[[edible,pringles,box,[1,3,1],'Bob',11.5,'ediblebox'],[edible,milka,box,[1,4,1],'Kelso',11.5,'ediblebox'],[edible,testobject1,sphere,[1,5,1],'Fubar',11.5,'ediblebox']].
-
-%% Abfrage ob Object in Box platziert wurde
-%gibt momentan eine leere Liste aus
-placedObjectInBox(_, _, Out) :-
-% placedObjectInBox(ObjectInstanceName, BoxInstanceName, Out) :-
-
-%	findall(X,volume(tee, 0, X),Out).
-	Out=[].
-
-%%rage_
-%% createObjectPerception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
-%%     rdf_instance_from_class(ObjClass, ObjInst),
-%%     create_perception_instance(PerceptionTypes, Perception),
-%%     set_object_perception(ObjInst, Perception),
-%%     set_perception_pose(Perception, ObjPose).
-
-%% createObjectPerception(_recognition_label_2d, [1,0,0,X,0,1,0,Y,0,0,1,Z], [])
-
-rgbColorVariance(A) :- A is round(0.2 * 255).
-hColorVariance(A) :- A is round(0.2 * 359).
-svColorVariance(A) :- A is 0.2.
-volumeVariance(0.1).
-shape(0, 'NONE').
-shape(1, 'Box').
-shape(2, 'Cylinder').
-shape(3, 'Sphere').
-
-
+%% 
 savePerception(ObjectInst) :-
 	getPerceivedObjectsInfos(DataList),
 	findall(Instance,(member(Object, DataList),
@@ -317,6 +312,7 @@ getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	strip_literal_type(Y_Coord, Y),
 	rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
 	strip_literal_type(Z_Coord, Z).
+
 
 sendSingleObject(ObjectIdentifier) :-
 	mapconverter(MapConverter),
