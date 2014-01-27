@@ -65,7 +65,9 @@ public class PrologBridge {
 		for (PerceivedObject po : pos) {
 			Stamped<Point3d> poPoint = getStamped3DPoint(po);
 			addTransformPoint("/map", poPoint, mapCoords, po.c_id);
-			addTransformPoint("/odom_combined", poPoint, odomCoords, po.c_id);
+			//FINDME TODO switch back to odom when it doesn't fuck up over time
+			// addTransformPoint("/odom_combined", poPoint, odomCoords, po.c_id);
+			addTransformPoint("/base_link", poPoint, odomCoords, po.c_id);
 		}
 		return pos;
 	}
