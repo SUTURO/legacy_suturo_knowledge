@@ -319,7 +319,7 @@ getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	atom_number(Y_Raw, Y),
 	rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
 	strip_literal_type(Z_Coord, Z_Raw),
-	atom_number(Z_Raw, Z),.
+	atom_number(Z_Raw, Z).
 
 sendSingleObject(ObjectIdentifier) :-
 	mapconverter(MapConverter),
