@@ -1,0 +1,20 @@
+<package>
+  <description brief="suturo_knowledge_ps_export">
+
+     Converts semantic map to planning scene.
+
+  </description>
+  <author>Moritz Horstmann</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.suturo.de</url>
+
+  <depend package="rosjava_jni"/> <!-- Java in ROS -->
+  <!--depend package="geometry_msgs" /-->
+  <!--depend package="moveit_msgs" /-->
+
+  <export>
+    <java classpath="${prefix}/bin"/>
+  </export>
+
+</package>
