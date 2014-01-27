@@ -120,8 +120,8 @@ containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], F
 savePerception(ObjectInst) :-
 	getPerceivedObjectsInfos(DataList),
 	findall(Instance,(member(Object, DataList),
-		once(recognizedObject(Object, Instance),
-		createPerceptionInstanceToObject(Object, Instance))), ObjectInst).%
+		once(recognizedObject(Object, Instance)),
+		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
 			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
 
 createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
