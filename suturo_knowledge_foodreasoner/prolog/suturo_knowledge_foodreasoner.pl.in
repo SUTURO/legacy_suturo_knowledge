@@ -21,11 +21,21 @@ volumeVariance(0.1).
 
 %% Returns edible objects on table ids
 graspableOn(TableInstanceName, Out) :-
-	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+	findall(OutObj, (on_Physical(ObjInst, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'),
+			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
+			grepInfosToPush(ObjInst, OutObj)), Out).
+
+grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centroid_z],_frameid,_grip-force,_use]) :-
+	_name = ObjectIdentifier,
+	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
+		_edible =true; _edible=false),
+	getLatestCoordinatesOfObject(ObjectIdentifier, _centroid_x,_centroid_y,_centroid_z, _frameid).
 
 %% Returns containers on table ids
 containerOn(TableInstanceName, Out) :-
-	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+	findall(ObjInst, (on_Physical(ObjInst, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'),
+			rdfs_individual_of(ObjInst, knowrob:'Box-Container'),
+			grepInfosToPush(ObjInst, OutObj)), Out).
 
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
 updatePerception(Out) :-
@@ -41,15 +51,15 @@ num_num_min(X, Y, Min) :- Min is min(X, Y).
 hackCreateTable(ObjectList) :-
 	%%findall(Y,(member(ObjectIdentifier,ObjectList),getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID)),Y_Coords),
 	%%list_min(Y_Coords, Min_Y),
-	member(Object, ObjectList),
+	headElement( ObjectList, Object),
 	getLatestCoordinatesOfObject(Object, X , Y ,Z, FrameID),
 	rdf_has(Object, knowrob:heightOfObject, OHeight),
 	strip_literal_type(OHeight, Height_Raw),
 	atom_number(Height_Raw, Height),
-	Y_Table is Y - Height,
+	Z_Table is Z - Height,
 	createPerceptionInstanceToObject([_, _, _, _,
  'kitchen_island_counter_top', _, _, _, _, _, _, _, _, _, 
- X, Y_Table, Z, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
+ X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
 
 
 

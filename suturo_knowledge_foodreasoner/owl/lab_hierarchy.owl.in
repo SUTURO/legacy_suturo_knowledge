@@ -183,7 +183,15 @@
         <rdfs:subClassOf rdf:resource="&knowrob;Color"/>
     </Class>
     
-
+    <Class rdf:about="&hierarchy;FoodBox">
+        <rdfs:subClassOf rdf:resource="&knowrob;Box-Container"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="&knowrob;typePrimaryFunction-StoragePlaceFor"/>
+                <someValuesFrom rdf:resource="&knowrob;FoodOrDrink"/>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -284,6 +292,7 @@
         <rdf:type rdf:resource="&knowrob;Box"/>
         <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
         <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <rdf:type rdf:resource="&hierarchy;FoodBox"/>
         <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.0074</knowrob:volumeOfObject>        
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.08</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.395</knowrob:depthOfObject>
@@ -300,6 +309,7 @@
         <rdf:type rdf:resource="&knowrob;Box"/>
         <rdf:type rdf:resource="&hierarchy;HSVAverageColor"/>
         <rdf:type rdf:resource="&hierarchy;RGBAverageColor"/>
+        <rdf:type rdf:resource="&knowrob;Box-Container"/>
         <knowrob:volumeOfObject rdf:datatype="&xsd;float">0.0074</knowrob:volumeOfObject>        
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.08</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.395</knowrob:depthOfObject>
