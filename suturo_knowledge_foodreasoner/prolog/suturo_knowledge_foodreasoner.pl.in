@@ -4,6 +4,7 @@
     [
       getPerceivedObjectsInfos/1,
       savePerception/1,
+      graspableOn/2,
       containerOn/2,
       updatePerception/1,
       placedObjectInBox/3
@@ -37,12 +38,14 @@ containerOn(TableInstanceName, Out) :-
 			rdfs_individual_of(ObjInst, knowrob:'Box-Container'),
 			grepInfosToPush(ObjInst, OutObj)), Out).
 
+
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
 updatePerception(Out) :-
 	savePerception(ObjectList),
 	length(ObjectList, Out),
 	hackCreateTable(ObjectList),
 	sendPlanningScene(ObjectList).
+
 
 list_min([L|Ls], Min) :- foldl(num_num_min, Ls, L, Min).
 
