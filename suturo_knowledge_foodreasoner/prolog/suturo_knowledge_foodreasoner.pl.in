@@ -4,6 +4,7 @@
     [
       getPerceivedObjectsInfos/1,
       savePerception/1,
+      graspableOn/2,
       containerOn/2,
       updatePerception/1,
       placedObjectInBox/3
@@ -12,26 +13,69 @@
 %% Dependencies
 :- use_module(library('knowrob_objects')).
 :- use_module(library('comp_spatial')).
-
+%% Register owl namespaces
+:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 %% Constants for value tolerance. Feel free to change this.
-rgbColorVariance(A) :- A is round(0.2 * 255).
+rgbColorVariance(A) :- A is round(0.1 * 255).
 hColorVariance(A) :- A is round(0.2 * 359).
 svColorVariance(A) :- A is 0.2.
 volumeVariance(0.1).
 
 %% Returns edible objects on table ids
 graspableOn(TableInstanceName, Out) :-
-	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+	findall(ObjectInfos, (on_Physical(ObjInst, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'),
+			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
+			grepInfosToPush(ObjInst, OutObj),
+			rdf_has(ObjInst, suturo:'newtonMeter', NM_Raw),
+			strip_literal_type(NM_Raw, NM_String),
+			atom_number(NM_String, NM),
+			append(OutObj, [NM,''], ObjectInfos)), Out).
+
+grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centroid_z],_frameid]) :-
+	_name = ObjectIdentifier,
+	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
+		_edible =true; _edible=false),
+	getLatestCoordinatesOfObject(ObjectIdentifier, _centroid_x,_centroid_y,_centroid_z, _frameid).
 
 %% Returns containers on table ids
 containerOn(TableInstanceName, Out) :-
-	findall(ObjInst, on_Physical(X, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'), Out).
+	findall(ObjectInfos, (on_Physical(ObjInst, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'),
+			rdfs_individual_of(ObjInst, knowrob:'Box-Container'),
+			grepInfosToPush(ObjInst, OutObj),
+			(storagePlaceFor(ObjInst, knowrob:'FoodOrDrink')->
+			append(OutObj, [0,'storage-for-food'], ObjectInfos);append(OutObj, [0,'storage-for-stuff'], ObjectInfos))), Out).
+
 
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
 updatePerception(Out) :-
 	savePerception(ObjectList),
 	length(ObjectList, Out),
+	hackCreateTable(ObjectList),
 	sendPlanningScene(ObjectList).
+
+
+list_min([L|Ls], Min) :- foldl(num_num_min, Ls, L, Min).
+
+num_num_min(X, Y, Min) :- Min is min(X, Y).
+
+hackCreateTable(ObjectList) :-
+	%%findall(Y,(member(ObjectIdentifier,ObjectList),getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID)),Y_Coords),
+	%%list_min(Y_Coords, Min_Y),
+	headElement( ObjectList, Object),
+	getLatestCoordinatesOfObject(Object, X , Y ,Z, FrameID),
+	rdf_has(Object, knowrob:heightOfObject, OHeight),
+	strip_literal_type(OHeight, Height_Raw),
+	atom_number(Height_Raw, Height),
+	Z_Table is Z - Height,
+	createPerceptionInstanceToObject([_, _, _, _,
+ 'kitchen_island_counter_top', _, _, _, _, _, _, _, _, _, 
+ X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
+
+
+
+
+
 
 %% Abfrage ob Object in Box platziert wurde
 %gibt momentan eine leere Liste aus
@@ -48,13 +92,11 @@ placedObjectInBox(_, _, Out) :-
    		owl_parser:owl_parse(File, false, false, true);
    		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/lab_hierarchy.owl', false, false, true)).
 
-%% Register owl namespaces
-:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+
 
 %% Instanciate Java bridges to Perception and Manipulation
+:- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
 :- jpl_new('de.suturo.knowledge.psexport.MapConverter',[], Instance), assert(mapconverter(Instance)).
-:- jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge), assert(perception(PrologBridge)).
 
 %% Constants
 shape(0, 'NONE').
@@ -78,17 +120,15 @@ containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], F
 savePerception(ObjectInst) :-
 	getPerceivedObjectsInfos(DataList),
 	findall(Instance,(member(Object, DataList),
-		(recognizedObject(Object, Instance) -> % check if object is recognized
-		(writeln('Recognized Object'),
-			createPerceptionInstanceToObject(Object, Instance));
-		(writeln('Not a known Object')))), ObjectInst).%
-			%createObjectPerception(Object, [], ['ObjectPerceivedState'], ObjectInst))).
+		once(recognizedObject(Object, Instance)),
+		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
+			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
 
 createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
  X_Coord, Y_Coord, Z_Coord, Odom_FrameId], ObjInst) :-
-	create_perception_instance(['ObjectPerceivedState'], Perception),
+	once(create_perception_instance(['VisualPerception'], Perception)),
     set_object_perception(ObjInst, Perception),
     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
     rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
@@ -137,42 +177,47 @@ assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
 recognizedObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _], ObjectIdentifier) :-
-	writeln('First Test shape rgb and hsv'),
+	writeln('First recognition_label rgb and hsv'),
+	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
+	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
+	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v);
+
+	writeln('Seond Test recognition_label volume and rgb'),
+	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
+	volumeInRange(ObjectIdentifier, _c_volume), 
+	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
+
+	writeln('Third Test recognition_label volume and hsv'),
+	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
+	volumeInRange(ObjectIdentifier, _c_volume), 
+	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v);
+
+	writeln('Fourth Test shape rgb and hsv'),
 	shapeIsFitting(ObjectIdentifier, _c_shape) , 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Second Test volume rgb and hsv'),
+	writeln('Fifth Test volume rgb and hsv'),
 	volumeInRange(ObjectIdentifier, _c_volume), 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v) ; 
-	writeln('Third Test volume shape and hsv'),
+	writeln('Sixth Test volume shape and hsv'),
 	volumeInRange(ObjectIdentifier, _c_volume), 
 	shapeIsFitting(ObjectIdentifier, _c_shape), 
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Fourth Test recognition_label rgb and hsv'),
-	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Fifth Test recognition_label shape and hsv'),
+	 
+	writeln('Seventh Test recognition_label shape and hsv'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	shapeIsFitting(ObjectIdentifier, _c_shape), 
 	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Sixth Test recognition_label shape and rgb'),
+	writeln('Eighth Test recognition_label shape and rgb'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	shapeIsFitting(ObjectIdentifier, _c_shape), 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
-	writeln('Seventh Test recognition_label volume and rgb'),
+	
+	writeln('Nineth Test recognition_label volume and shape'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	volumeInRange(ObjectIdentifier, _c_volume), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
-	writeln('Eightth Test recognition_label volume and shape'),
-	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	shapeIsFitting(ObjectIdentifier, _c_shape);
-	writeln('Nineth Test recognition_label volume and hsv'),
-	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v).
+	shapeIsFitting(ObjectIdentifier, _c_shape).
 
 
 recognitionLabelExisting(ObjectIdentifier, Label) :-

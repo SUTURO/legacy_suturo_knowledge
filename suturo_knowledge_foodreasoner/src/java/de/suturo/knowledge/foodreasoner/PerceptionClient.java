@@ -20,18 +20,27 @@ import tfjava.TFListener;
  * @author Moritz Horstmann
  * 
  */
-public class PrologBridge {
+public class PerceptionClient {
 
-	private static final String NODE_NAME = "suturo_knowledge_javaclient";
+	private static final String NODE_NAME = "suturo_knowledge_perceptionclient";
 	private static final int DEFAULT_TIMEOUT_MS = 10000;
-	private static TFListener tf = TFListener.getInstance();
 
 	private static Ros ros;
 	private static NodeHandle handle;
 	private static GetClustersService cluster;
+	private static TFListener tf;
 
 	private final Map<Long, Stamped<Point3d>> mapCoords = new HashMap<Long, Stamped<Point3d>>();
 	private final Map<Long, Stamped<Point3d>> odomCoords = new HashMap<Long, Stamped<Point3d>>();
+
+	/**
+	 * Initializes node
+	 */
+	public PerceptionClient() {
+		checkInitialized();
+		tf = TFListenerSafe.getInstance();
+		handle.logInfo("PerceptionClient initialized");
+	}
 
 	private static void checkInitialized() {
 		ros = Ros.getInstance();
@@ -39,11 +48,11 @@ public class PrologBridge {
 			ros.init(NODE_NAME);
 		}
 		handle = ros.createNodeHandle();
+		handle.setMasterRetryTimeout(DEFAULT_TIMEOUT_MS);
 		if (!handle.checkMaster()) {
-			ros.logError("PrologBridge: Ros master not available");
+			ros.logError("PerceptionClient: Ros master not available");
 			throw new IllegalStateException("Ros master not available");
 		}
-
 	}
 
 	/**
@@ -53,11 +62,9 @@ public class PrologBridge {
 	 * @throws RosException
 	 */
 	public PerceivedObject[] updatePerception() throws RosException {
-		checkInitialized();
 		if (cluster == null) {
 			cluster = new GetClustersService(handle);
 		}
-		handle.setMasterRetryTimeout(DEFAULT_TIMEOUT_MS);
 		mapCoords.clear();
 		odomCoords.clear();
 		PerceivedObject[] pos = cluster.getClusters().toArray(
@@ -65,7 +72,10 @@ public class PrologBridge {
 		for (PerceivedObject po : pos) {
 			Stamped<Point3d> poPoint = getStamped3DPoint(po);
 			addTransformPoint("/map", poPoint, mapCoords, po.c_id);
-			addTransformPoint("/odom_combined", poPoint, odomCoords, po.c_id);
+			// FINDME TODO switch back to odom when it doesn't fuck up over time
+			// addTransformPoint("/odom_combined", poPoint, odomCoords,
+			// po.c_id);
+			addTransformPoint("/base_link", poPoint, odomCoords, po.c_id);
 		}
 		return pos;
 	}

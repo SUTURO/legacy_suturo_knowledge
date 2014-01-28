@@ -1,0 +1,23 @@
+<!-- 
+	ATTENTION: THIS IS A FAST MANIFEST. DO NOT USE OR MODIFY	
+-->
+<package>
+  <description brief="suturo_knowledge_foodreasoner">
+	Provides reasoning over edible objects.
+  </description>
+  <author>Moritz Horstmann</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.suturo.de</url>
+
+  <depend package="rosjava_jni"/> <!-- Java in ROS -->
+  <depend package="suturo_knowledge_ps_export"/> <!-- Planning scene export -->
+  <depend package="knowrob_common"/>
+
+  <export>
+    <java classpath="${prefix}/bin"/>
+  </export>
+
+</package>
+
+
