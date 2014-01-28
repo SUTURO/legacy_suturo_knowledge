@@ -21,6 +21,7 @@ import de.suturo.knowledge.psexport.CollisionObjectWrapper.Operation;
 public class MapConverter {
 
 	private static final String NODE_NAME = "suturo_knowledge_psexport";
+	private static final int DEFAULT_TIMEOUT_MS = 10000;
 
 	private static Ros ros;
 	private NodeHandle handle;
@@ -144,6 +145,7 @@ public class MapConverter {
 			ros.init(NODE_NAME);
 		}
 		handle = ros.createNodeHandle();
+		handle.setMasterRetryTimeout(DEFAULT_TIMEOUT_MS);
 		if (!handle.checkMaster()) {
 			ros.logError("MapConverter: Ros master not available");
 			throw new IllegalStateException("Ros master not available");
