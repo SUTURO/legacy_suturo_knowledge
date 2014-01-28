@@ -95,8 +95,8 @@ placedObjectInBox(_, _, Out) :-
 
 
 %% Instanciate Java bridges to Perception and Manipulation
+:- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
 :- jpl_new('de.suturo.knowledge.psexport.MapConverter',[], Instance), assert(mapconverter(Instance)).
-:- jpl_new('de.suturo.knowledge.foodreasoner.PrologBridge',[], PrologBridge), assert(perception(PrologBridge)).
 
 %% Constants
 shape(0, 'NONE').
