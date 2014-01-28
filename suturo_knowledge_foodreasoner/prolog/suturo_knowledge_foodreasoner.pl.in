@@ -49,10 +49,10 @@ containerOn(TableInstanceName, Out) :-
 
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
 updatePerception(Out) :-
-	once(savePerception(ObjectList),
+	once((savePerception(ObjectList),
 	length(ObjectList, Out),
 	hackCreateTable(ObjectList),
-	sendPlanningScene(ObjectList);Out is 0).
+	sendPlanningScene(ObjectList);Out is 0)).
 
 
 list_min([L|Ls], Min) :- foldl(num_num_min, Ls, L, Min).
