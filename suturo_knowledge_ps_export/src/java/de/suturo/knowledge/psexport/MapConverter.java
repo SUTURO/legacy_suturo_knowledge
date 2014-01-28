@@ -58,7 +58,8 @@ public class MapConverter {
 			presentObjects.keySet().retainAll(pendingObjects.keySet());
 			for (String key : presentObjects.keySet()) {
 				handle.logDebug("Remove object from PS with key: " + key);
-				publisher.publish(CollisionObjectWrapper.removeObject(key));
+				publisher.publish(CollisionObjectWrapper.removeObject(key)
+						.toCollisionObject());
 			}
 		}
 		for (CollisionObjectWrapper co : pendingObjects.values()) {
@@ -105,6 +106,15 @@ public class MapConverter {
 	}
 
 	/**
+	 * Removes a collision object from the pending scene
+	 * 
+	 * @param id
+	 */
+	public void removeObject(String id) {
+		addCollisionObject(CollisionObjectWrapper.removeObject(id));
+	}
+
+	/**
 	 * Clean up all ros handles
 	 */
 	public void shutdown() {
@@ -115,29 +125,6 @@ public class MapConverter {
 			handle.shutdown();
 		}
 	}
-
-	// Dummy test code
-	// private CollisionObject generateDummyCollisionObject() {
-	// CollisionObject obj = new CollisionObject();
-	// obj.id = "somethingELSE"; // Eindeutiger Name?
-	// obj.header.stamp = Time.now();
-	// obj.header.frame_id = "/odom_combined";
-	// obj.operation = CollisionObject.ADD;
-	// SolidPrimitive sp = new SolidPrimitive();
-	// sp.type = SolidPrimitive.BOX;
-	// sp.dimensions = new double[3];
-	// sp.dimensions[0] = 0.15; // x
-	// sp.dimensions[1] = 0.07; // y
-	// sp.dimensions[2] = 0.2; // z
-	// obj.primitives.add(sp);
-	// Pose pose = new Pose();
-	// pose.position.x = 0.65;
-	// pose.position.y = 0.3;
-	// pose.position.z = 0.621;
-	// pose.orientation = Util.createMsgForQuaternion(0, 0, -Math.PI / 4);
-	// obj.primitive_poses.add(pose);
-	// return obj;
-	// }
 
 	private void checkInitialized() {
 		ros = Ros.getInstance();

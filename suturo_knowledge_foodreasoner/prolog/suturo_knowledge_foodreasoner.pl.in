@@ -7,7 +7,8 @@
       graspableOn/2,
       containerOn/2,
       updatePerception/1,
-      placedObjectInBox/3
+      placedObjectInBox/3,
+      clearPerceived/0
     ]).
 
 %% Dependencies
@@ -73,14 +74,19 @@ hackCreateTable(ObjectList) :-
  X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
 
 
-
-
-
-
 %% Abfrage ob Object in Box platziert wurde
 %gibt momentan eine leere Liste aus
 placedObjectInBox(_, _, Out) :-
 	Out=[].
+
+%% Clears the database of perceived objects and removes all objects from the Planning Scene
+clearPerceived :-
+	mapconverter(MapConverter),
+	forall(rdf_has(Objects, knowrob:'latestDetectionOfObject',_),
+		   jpl_call(MapConverter, 'removeObject', [Objects], _)),
+	jpl_call(MapConverter, 'publishScene', [], _),
+	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
+
 
 
 %% Load lab room semantic map

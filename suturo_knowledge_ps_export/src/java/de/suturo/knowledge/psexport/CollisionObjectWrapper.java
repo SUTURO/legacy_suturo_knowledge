@@ -44,7 +44,7 @@ public class CollisionObjectWrapper {
 	}
 
 	private final CollisionObject co;
-	private String id;
+	private final String id;
 	private Operation op;
 	private String frameID;
 	private Time time;
@@ -81,11 +81,10 @@ public class CollisionObjectWrapper {
 	 * 
 	 * @param id
 	 *            Unique (in ROS instance) ID
-	 * @return CollisionObject message
+	 * @return CollisionObjectWrapper
 	 */
-	public static CollisionObject removeObject(String id) {
-		return new CollisionObjectWrapper(id, Operation.REMOVE)
-				.toCollisionObject();
+	public static CollisionObjectWrapper removeObject(String id) {
+		return new CollisionObjectWrapper(id, Operation.REMOVE);
 	}
 
 	/**
@@ -212,7 +211,7 @@ public class CollisionObjectWrapper {
 	}
 
 	private static class IncompleteValueException extends Exception {
-		private String missing;
+		private final String missing;
 
 		public String getMissing() {
 			return missing;
