@@ -86,7 +86,8 @@ placedObjectInBox(Object, _, Out) :-
 clearPerceived :-
 	mapconverter(MapConverter),
 	forall(rdf_has(Objects, knowrob:'latestDetectionOfObject',_),
-		   jpl_call(MapConverter, 'removeObject', [Objects], _)),
+		   jpl_call(MapConverter, 'removeObject', [Objects], _),
+		   jpl_call(MapConverter, 'removeAttachedObject', [Objects], _)),
 	jpl_call(MapConverter, 'publishScene', [], _),
 	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
 

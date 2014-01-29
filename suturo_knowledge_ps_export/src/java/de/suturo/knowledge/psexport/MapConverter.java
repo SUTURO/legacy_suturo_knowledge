@@ -31,6 +31,8 @@ public class MapConverter {
 
 	private Map<String, CollisionObjectWrapper> pendingObjects;
 
+	private AttachedObjectClearer aoc;
+
 	/**
 	 * Initializes node
 	 */
@@ -112,6 +114,24 @@ public class MapConverter {
 	 */
 	public void removeObject(String id) {
 		addCollisionObject(CollisionObjectWrapper.removeObject(id));
+	}
+
+	/**
+	 * Removes a collision object from the pending scene
+	 * 
+	 * @param id
+	 */
+	@Deprecated
+	public void removeAttachedObject(String id) {
+		if (aoc == null) {
+			aoc = new AttachedObjectClearer(handle);
+		}
+		try {
+			aoc.clearObject(id);
+		} catch (RosException e) {
+			handle.logError("Could not remove attached object: "
+					+ e.getMessage());
+		}
 	}
 
 	/**
