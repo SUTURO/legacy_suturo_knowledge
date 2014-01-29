@@ -305,9 +305,9 @@
         <hierarchy:hColorValue rdf:datatype="&xsd;int">26</hierarchy:hColorValue>
         <hierarchy:sColorValue rdf:datatype="&xsd;float">0.162</hierarchy:sColorValue>
         <hierarchy:vColorValue rdf:datatype="&xsd;float">0.701</hierarchy:vColorValue>
-        <hierarchy:rColorValue rdf:datatype="&xsd;byte">179</hierarchy:rColorValue>
-        <hierarchy:gColorValue rdf:datatype="&xsd;byte">163</hierarchy:gColorValue>
-        <hierarchy:bColorValue rdf:datatype="&xsd;byte">150</hierarchy:bColorValue>
+        <hierarchy:rColorValue rdf:datatype="&xsd;byte">152</hierarchy:rColorValue>
+        <hierarchy:gColorValue rdf:datatype="&xsd;byte">142</hierarchy:gColorValue>
+        <hierarchy:bColorValue rdf:datatype="&xsd;byte">132</hierarchy:bColorValue>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;r_containerbox">

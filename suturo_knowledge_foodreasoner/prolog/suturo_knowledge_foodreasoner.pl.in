@@ -7,7 +7,8 @@
       graspableOn/2,
       containerOn/2,
       updatePerception/1,
-      placedObjectInBox/3
+      placedObjectInBox/3,
+      clearPerceived/0
     ]).
 
 %% Dependencies
@@ -17,7 +18,7 @@
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 %% Constants for value tolerance. Feel free to change this.
-rgbColorVariance(A) :- A is round(0.1 * 255).
+rgbColorVariance(A) :- A is round(0.2 * 255).
 hColorVariance(A) :- A is round(0.2 * 359).
 svColorVariance(A) :- A is 0.2.
 volumeVariance(0.1).
@@ -49,10 +50,10 @@ containerOn(TableInstanceName, Out) :-
 
 %% Die Perception wird abgefragt und die Semantic Map aktualisiert
 updatePerception(Out) :-
-	savePerception(ObjectList),
+	once((savePerception(ObjectList),
 	length(ObjectList, Out),
 	hackCreateTable(ObjectList),
-	sendPlanningScene(ObjectList).
+	sendPlanningScene(ObjectList);Out is 0)).
 
 
 list_min([L|Ls], Min) :- foldl(num_num_min, Ls, L, Min).
@@ -73,14 +74,22 @@ hackCreateTable(ObjectList) :-
  X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
 
 
+%% This removes the given Object from the PlanningScene
+placedObjectInBox(Object, _, Out) :-
+	mapconverter(MapConverter),
+	jpl_call(MapConverter, 'removeObject', [Object], _),
+	jpl_call(MapConverter, 'publishScene', [], _),
+	rdf_retractall(Object, knowrob:'latestDetectionOfObject',_),
+	Out = [].
 
+%% Clears the database of perceived objects and removes all objects from the Planning Scene
+clearPerceived :-
+	mapconverter(MapConverter),
+	forall(rdf_has(Objects, knowrob:'latestDetectionOfObject',_),
+		   jpl_call(MapConverter, 'removeObject', [Objects], _)),
+	jpl_call(MapConverter, 'publishScene', [], _),
+	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
 
-
-
-%% Abfrage ob Object in Box platziert wurde
-%gibt momentan eine leere Liste aus
-placedObjectInBox(_, _, Out) :-
-	Out=[].
 
 
 %% Load lab room semantic map
