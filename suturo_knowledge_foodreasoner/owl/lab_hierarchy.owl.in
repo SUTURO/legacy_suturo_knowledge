@@ -104,7 +104,7 @@
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:range rdf:resource="&xsd;float"/>
     </DatatypeProperty>
-    
+
 
 
     <!-- http://www.suturo.de/ontology/hierarchy#varianceOfVolume -->
@@ -115,6 +115,28 @@
     </DatatypeProperty>
     
 
+
+    <!-- http://www.suturo.de/ontology/hierarchy#xOffset -->
+
+    <DatatypeProperty rdf:about="&hierarchy;xOffset">
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </DatatypeProperty>
+
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#yOffset -->
+
+    <DatatypeProperty rdf:about="&hierarchy;yOffset">
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </DatatypeProperty>
+
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#zOffset -->
+
+    <DatatypeProperty rdf:about="&hierarchy;zOffset">
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </DatatypeProperty>
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -256,6 +278,7 @@
         <hierarchy:rColorValue rdf:datatype="&xsd;byte">93</hierarchy:rColorValue>
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">96</hierarchy:gColorValue>
         <hierarchy:bColorValue rdf:datatype="&xsd;byte">68</hierarchy:bColorValue>
+        <hierarchy:xOffset rdf:datatype="&xsd;double">0.02</hierarchy:xOffset>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;baguette">
