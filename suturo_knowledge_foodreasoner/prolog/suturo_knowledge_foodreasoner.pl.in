@@ -364,17 +364,17 @@ getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	rdf_has(RotationMatrix, knowrob:m03, X_Coord),
 	strip_literal_type(X_Coord , X1),
 	(rdf_has(ObjectIdentifier, suturo:xOffset, X_Offset) ->
-		strip_literal_type(X_Offset , X2), X is (X1+X2);
+		strip_literal_type(X_Offset , X2), atom_number(X2S, X2), X is (X1+X2);
 		X is X1),
 	rdf_has(RotationMatrix, knowrob:m13, Y_Coord),
 	strip_literal_type(Y_Coord, Y1),
 	(rdf_has(ObjectIdentifier, suturo:yOffset, Y_Offset) ->
-		strip_literal_type(Y_Offset , Y2), Y is (Y1+Y2);
+		strip_literal_type(Y_Offset , Y2), atom_number(Y2S, Y2), Y is (Y1+Y2);
 		Y is Y1),
 	rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
 	strip_literal_type(Z_Coord, Z1),
 	(rdf_has(ObjectIdentifier, suturo:zOffset, Z_Offset) ->
-		strip_literal_type(Z_Offset , Z2), Z is (Z1+Z2);
+		strip_literal_type(Z_Offset , Z2), atom_number(Z2S, Z2), Z is (Z1+Z2);
 		Z is Z1).
 
 
