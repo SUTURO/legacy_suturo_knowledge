@@ -86,7 +86,8 @@ placedObjectInBox(Object, _, Out) :-
 clearPerceived :-
 	mapconverter(MapConverter),
 	forall(rdf_has(Objects, knowrob:'latestDetectionOfObject',_),
-		   jpl_call(MapConverter, 'removeObject', [Objects], _)),
+		   (jpl_call(MapConverter, 'removeObject', [Objects], _),
+		   jpl_call(MapConverter, 'removeAttachedObject', [Objects], _))),
 	jpl_call(MapConverter, 'publishScene', [], _),
 	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
 
@@ -361,11 +362,20 @@ getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	strip_literal_type(FrameID_Raw, FrameID),
 	rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
 	rdf_has(RotationMatrix, knowrob:m03, X_Coord),
-	strip_literal_type(X_Coord, X),
+	strip_literal_type(X_Coord , X1),
+	(rdf_has(ObjectIdentifier, suturo:xOffset, X_Offset) ->
+		strip_literal_type(X_Offset , X2S), atom_number(X2S, X2), X is (X1+X2);
+		X is X1),
 	rdf_has(RotationMatrix, knowrob:m13, Y_Coord),
-	strip_literal_type(Y_Coord, Y),
+	strip_literal_type(Y_Coord, Y1),
+	(rdf_has(ObjectIdentifier, suturo:yOffset, Y_Offset) ->
+		strip_literal_type(Y_Offset , Y2S), atom_number(Y2S, Y2), Y is (Y1+Y2);
+		Y is Y1),
 	rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
-	strip_literal_type(Z_Coord, Z).
+	strip_literal_type(Z_Coord, Z1),
+	(rdf_has(ObjectIdentifier, suturo:zOffset, Z_Offset) ->
+		strip_literal_type(Z_Offset , Z2S), atom_number(Z2S, Z2), Z is (Z1+Z2);
+		Z is Z1).
 
 
 sendSingleObject(ObjectIdentifier) :-
