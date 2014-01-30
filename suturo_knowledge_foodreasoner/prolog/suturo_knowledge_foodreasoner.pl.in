@@ -18,6 +18,10 @@
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 
 %% Constants for value tolerance. Feel free to change this.
+
+%% Number of steps the variance should be increased from 1/steps*variance to full variance. Three steps means
+%% to try 1/3*variance, 2/3*variance and variance
+varianceSteps(10).
 %% RGB Variance as relative offset (rgb +- variance)
 rgbColorVariance(A) :- A is round(0.2 * 255).
 %% H of HSV variance as relative offset (h +- variance)
@@ -158,7 +162,7 @@ grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centr
 savePerception(ObjectInst) :-
 	getPerceivedObjectsInfos(DataList),
 	findall(Instance,(member(Object, DataList),
-		once(recognizedObject(Object, Instance)),
+		once(recognizeLowestVariance(Object, Instance)),
 		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
 			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
 
@@ -206,50 +210,60 @@ assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
 	rdf_assert(ObjInst, suturo:'SColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',S_Color))),
 	rdf_assert(ObjInst, suturo:'VColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',V_Color))).
 
+recognizeLowestVariance(Object, ObjectIdentifier) :-
+	varianceSteps(Steps),
+	between(1, Steps, Step),
+	recognizedObject(Object, Step, ObjectIdentifier).
+
 recognizedObject([_, _, _c_volume, _, _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g,
- _c_color_average_b, _c_color_average_h, _c_color_average_s, _c_color_average_v, _, _, _, _, _, _],
+ _c_color_average_b, _c_color_average_h, _c_color_average_s, _c_color_average_v, _, _, _, _, _, _], Step,
  ObjectIdentifier) :-
-	writeln('First recognition_label rgb and hsv'),
+	write('Step nr: '),
+	writeln(Step),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v);
+	rgbIsFitting(ObjectIdentifier, Step, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
+	hsvIsFitting(ObjectIdentifier, Step, _c_color_average_h, _c_color_average_s, _c_color_average_v),
+	writeln('First recognition_label rgb and hsv');
 
-	writeln('Seond Test recognition_label volume and rgb'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
+	volumeInRange(ObjectIdentifier, Step, _c_volume), 
+	rgbIsFitting(ObjectIdentifier, Step, _c_color_average_r, _c_color_average_g, _c_color_average_b),
+	writeln('Seond Test recognition_label volume and rgb');
 
-	writeln('Third Test recognition_label volume and hsv'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v);
+	volumeInRange(ObjectIdentifier, Step, _c_volume), 
+	hsvIsFitting(ObjectIdentifier, Step, _c_color_average_h, _c_color_average_s, _c_color_average_v),
+	writeln('Third Test recognition_label volume and hsv');
 
-	writeln('Fourth Test shape rgb and hsv'),
 	shapeIsFitting(ObjectIdentifier, _c_shape) , 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Fifth Test volume rgb and hsv'),
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v) ; 
-	writeln('Sixth Test volume shape and hsv'),
-	volumeInRange(ObjectIdentifier, _c_volume), 
+	rgbIsFitting(ObjectIdentifier, Step, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
+	hsvIsFitting(ObjectIdentifier, Step, _c_color_average_h, _c_color_average_s, _c_color_average_v),
+	writeln('Fourth Test shape rgb and hsv');
+
+	volumeInRange(ObjectIdentifier, Step, _c_volume), 
+	rgbIsFitting(ObjectIdentifier, Step, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
+	hsvIsFitting(ObjectIdentifier, Step, _c_color_average_h, _c_color_average_s, _c_color_average_v),
+	writeln('Fifth Test volume rgb and hsv'); 
+
+	volumeInRange(ObjectIdentifier, Step, _c_volume), 
 	shapeIsFitting(ObjectIdentifier, _c_shape), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	 
-	writeln('Seventh Test recognition_label shape and hsv'),
+	hsvIsFitting(ObjectIdentifier, Step, _c_color_average_h, _c_color_average_s, _c_color_average_v),
+	writeln('Sixth Test volume shape and hsv'); 
+
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	shapeIsFitting(ObjectIdentifier, _c_shape), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Eighth Test recognition_label shape and rgb'),
+	hsvIsFitting(ObjectIdentifier, Step, _c_color_average_h, _c_color_average_s, _c_color_average_v),
+	writeln('Seventh Test recognition_label shape and hsv');
+
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	shapeIsFitting(ObjectIdentifier, _c_shape), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
+	rgbIsFitting(ObjectIdentifier, Step, _c_color_average_r, _c_color_average_g, _c_color_average_b),
+	writeln('Eighth Test recognition_label shape and rgb');
 	
-	writeln('Nineth Test recognition_label volume and shape'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	shapeIsFitting(ObjectIdentifier, _c_shape).
+	volumeInRange(ObjectIdentifier, Step, _c_volume), 
+	shapeIsFitting(ObjectIdentifier, _c_shape),
+	writeln('Nineth Test recognition_label volume and shape').
 
 recognitionLabelExisting(ObjectIdentifier, Label) :-
 	atom_concat('http://www.suturo.de/ontology/hierarchy#', Label, ObjectIdentifier),
@@ -260,19 +274,23 @@ shapeIsFitting(ObjectIdentifier, Shape_Raw) :-
 	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
 	rdf_has(ObjectIdentifier, rdf:type ,Shape).
 
-volumeInRange(ObjectIdentifier, Volume) :-
+volumeInRange(ObjectIdentifier, Step, Volume) :-
 	rdf_has(ObjectIdentifier , knowrob:'volumeOfObject', Obj_Vol),
 	strip_literal_type(Obj_Vol, VOL_Raw),
 	atom_number(VOL_Raw, VOL),
-	volumeVariance(Var),
+	volumeVariance(VarRaw),
+	varianceSteps(Steps),
+	Var is (Step/Steps*VarRaw),
 	Min is VOL * (1 - Var),
 	Max is VOL * (1 + Var),
 	Min =< Volume,
 	Max >= Volume.
 
-rgbIsFitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
+rgbIsFitting(ObjectIdentifier, Step, R_Color, G_Color, B_Color) :-
 	rdf_has(ObjectIdentifier, suturo:rColorValue , Obj_R_Color),
-	rgbColorVariance(RGBVariance),
+	rgbColorVariance(RGBVarianceRaw),
+	varianceSteps(Steps),
+	RGBVariance is (Step/Steps*RGBVarianceRaw),
 	strip_literal_type(Obj_R_Color, R_Raw),
 	atom_number(R_Raw, R),
 	MinR is R - RGBVariance,
@@ -294,18 +312,21 @@ rgbIsFitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
 	MinB =< B_Color,
 	MaxB >= B_Color.
 
-hsvIsFitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
+hsvIsFitting(ObjectIdentifier, Step, H_Value, S_Value, V_Value) :-
 	rdf_has(ObjectIdentifier, suturo:hColorValue , Obj_H_Value),
-	hColorVariance(HVariance),
+	hColorVariance(HVarianceRaw),
+	varianceSteps(Steps),
+	HVariance is (Step/Steps*HVarianceRaw),
 	strip_literal_type(Obj_H_Value, H_Raw),
 	atom_number(H_Raw, H),
-	MinH is (H - HVariance) mod 360,
-	MaxH is (H + HVariance) mod 360,
+	MinH is round(H - HVariance) mod 360,
+	MaxH is round(H + HVariance) mod 360,
 	(((H - HVariance) < 0; (H + HVariance) >359) -> 
 		(MinH =< H_Value; MaxH >= H_Value);
 		((MinH =< H_Value), (MaxH >= H_Value)) ),
 	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
-	svColorVariance(SVVariance),
+	svColorVariance(SVVarianceRaw),
+	SVVariance is (Step/Steps*SVVarianceRaw),
 	strip_literal_type(Obj_S_Value, S_Raw),
 	atom_number(S_Raw, S),
 	MinS is S - SVVariance,
