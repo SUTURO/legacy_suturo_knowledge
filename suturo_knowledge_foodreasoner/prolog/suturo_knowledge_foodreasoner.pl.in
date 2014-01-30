@@ -65,10 +65,13 @@ containerOn(_, Out) :-
 %%  -Out (Number): Number of recognized objects (Note: These are CURRENTLY recognized objects and
 %%                 not the amount of recognized objects in the knowledge base)
 updatePerception(Out) :-
-	once((savePerception(ObjectList),
-	length(ObjectList, Out),
-	hackCreateTable(ObjectList),
-	sendPlanningScene(ObjectList);Out is 0)).
+	once(
+		(savePerception(ObjectList),
+		 length(ObjectList, Out),
+		 hackCreateTable(ObjectList),
+		 sendPlanningScene(ObjectList);
+		 Out is 0)
+		).
 
 %% placedObjectInBox(+Object, +Box, -Out)
 %%
@@ -91,7 +94,8 @@ clearPerceived :-
 	mapconverter(MapConverter),
 	forall(rdf_has(Objects, knowrob:'latestDetectionOfObject',_),
 		   (jpl_call(MapConverter, 'removeObject', [Objects], _),
-		   jpl_call(MapConverter, 'removeAttachedObject', [Objects], _))),
+		    jpl_call(MapConverter, 'removeAttachedObject', [Objects], _))
+		   ),
 	jpl_call(MapConverter, 'publishScene', [], _),
 	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
 
@@ -100,9 +104,9 @@ clearPerceived :-
 %% Load suturo objects (either defaultlab_hierarchy.owl, or load OWL file given as argument)
 :- current_prolog_flag(argv, Args), last(Args, Arg),
    string_concat('@LOCAL_PACKAGE_PATH@/owl/', Arg, File),
-   (string_concat(_, '.owl', File) ->
+   string_concat(_, '.owl', File) ->
    		owl_parser:owl_parse(File, false, false, true);
-   		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/lab_hierarchy.owl', false, false, true)).
+   		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/lab_hierarchy.owl', false, false, true).
 
 %% Instanciate Java bridges to Perception and Manipulation
 :- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
@@ -139,9 +143,8 @@ hackCreateTable(ObjectList) :-
 	strip_literal_type(OHeight, Height_Raw),
 	atom_number(Height_Raw, Height),
 	Z_Table is Z - Height,
-	createPerceptionInstanceToObject([_, _, _, _,
- 'kitchen_island_counter_top', _, _, _, _, _, _, _, _, _, 
- X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
+	createPerceptionInstanceToObject([_, _, _, _, 'kitchen_island_counter_top', _, _, _, _, _, _, _, _, _, 
+	 X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
 
 
 grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centroid_z],_frameid]) :-
