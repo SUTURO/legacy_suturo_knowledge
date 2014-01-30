@@ -15,7 +15,6 @@
   <depend package="iai_maps"/> <!-- Lab maps -->
   <depend package="knowrob_common"/>
   <depend package="tfjava"/>
-  <depend package="thea"/>
 
   <export>
     <java classpath="${prefix}/bin"/>
