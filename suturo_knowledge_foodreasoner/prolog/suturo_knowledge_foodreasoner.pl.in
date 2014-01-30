@@ -12,13 +12,19 @@
 %% Dependencies
 :- use_module(library('knowrob_objects')).
 :- use_module(library('comp_spatial')).
+
 %% Register owl namespaces
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+
 %% Constants for value tolerance. Feel free to change this.
+%% RGB Variance as relative offset (rgb +- variance)
 rgbColorVariance(A) :- A is round(0.2 * 255).
+%% H of HSV variance as relative offset (h +- variance)
 hColorVariance(A) :- A is round(0.2 * 359).
+%% S and V of HSV variance in percent / 100
 svColorVariance(A) :- A is 0.2.
+%% volume variance in percent / 100
 volumeVariance(0.1).
 
 %% graspableOn(+TableInstanceName, -Out)
@@ -144,7 +150,7 @@ dfloatToFloat(StringDoubleFloat, Float) :-
 	atom_number(FloatString, Float).
 
 %% Accessor predicate for containers
-containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
+%% containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
 
 list_min([L|Ls], Min) :- foldl(num_num_min, Ls, L, Min).
 
@@ -180,7 +186,6 @@ savePerception(ObjectInst) :-
 			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
 
 
-
 createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
@@ -190,12 +195,9 @@ createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
     rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
 
-createObjectPerception([_c_id, _c_centroid, _c_volume, _frame_id,
- _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
- _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
- X_Coord, Y_Coord, Z_Coord, Odom_FrameId],
-  ObjPose, PerceptionTypes, ObjInst) :-
-
+createObjectPerception([_, _, _c_volume, _, _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g,
+ _c_color_average_b, _c_color_average_h, _c_color_average_s, _c_color_average_v, _, _, X_Coord, Y_Coord, Z_Coord,
+  Odom_FrameId], _, PerceptionTypes, ObjInst) :-
 	%% if shape != 0 
 	(_c_shape =\= 0 ->
 		shape(_c_shape, ShapeString),
@@ -230,6 +232,7 @@ assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
 	rdf_assert(ObjInst, suturo:'SColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',S_Color))),
 	rdf_assert(ObjInst, suturo:'VColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',V_Color))).
 
+<<<<<<< HEAD
 recognizedObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _], ObjectIdentifier) :-
@@ -238,6 +241,11 @@ recognizedObject([_c_id, _c_centroid, _c_volume, _frame_id,
   jpl_call(ProbabilityClassifier, 'classifyPerceivedObject', [_c_color_average_h, _c_volume], ProbClassifyResult),
   writeln(ProbClassifyResult),
   
+=======
+recognizedObject([_, _, _c_volume, _, _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g,
+ _c_color_average_b, _c_color_average_h, _c_color_average_s, _c_color_average_v, _, _, _, _, _, _],
+ ObjectIdentifier) :-
+>>>>>>> Remove ALL THE WARNINGS.
 	writeln('First recognition_label rgb and hsv'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
@@ -374,10 +382,6 @@ processPerceivedObjects(Out_raw, Indizees, Result) :-
 	jpl_get(Odom_Raw,'frameID', Odom_FrameId),
 	append(POData,[X_Coord, Y_Coord, Z_Coord, Odom_FrameId], Result).
 
-%% getPerceivedObjectInfos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
-%%  _recognition_label_2d, _recognition_label_3d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
-%%  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _c_roi_origin, _c_roi_width,
-%%  _c_roi_height ]):-
 getPerceivedObjectInfos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality]) :-
@@ -386,7 +390,6 @@ getPerceivedObjectInfos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
 	jpl_get(Obj_id, 'c_volume', _c_volume),
 	jpl_get(Obj_id, 'frame_id', _frame_id),
 	jpl_get(Obj_id, 'recognition_label_2d', _recognition_label_2d),
-%%	jpl_get(Obj_id, 'recognition_label_3d', _recognition_label_3d),
 	jpl_get(Obj_id, 'c_shape', _c_shape),
 	jpl_get(Obj_id, 'c_color_average_r', _c_color_average_r),
 	jpl_get(Obj_id, 'c_color_average_g', _c_color_average_g),
@@ -396,9 +399,6 @@ getPerceivedObjectInfos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
 	jpl_get(Obj_id, 'c_color_average_v', _c_color_average_v),
 	jpl_get(Obj_id, 'c_hue_histogram', _c_hue_histogram),
 	jpl_get(Obj_id, 'c_hue_histogram_quality', _c_hue_histogram_quality).
-%%	jpl_get(Obj_id, 'c_roi_origin', _c_roi_origin),
-%%	jpl_get(Obj_id, 'c_roi_width', _c_roi_width),
-%%	jpl_get(Obj_id, 'c_roi_height', _c_roi_height).
 
 sendPlanningScene(ObjectList) :-
 	mapconverter(MapConverter),
