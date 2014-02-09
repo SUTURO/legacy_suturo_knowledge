@@ -125,4 +125,8 @@ public class PerceptionClient {
 	public Stamped<Point3d> getOdomCoords(long c_id) {
 		return this.odomCoords.get(Long.valueOf(c_id));
 	}
+	
+	public double classifyObjectColorHue(int avg_hue) {
+    return 0.5;
+  }
 }

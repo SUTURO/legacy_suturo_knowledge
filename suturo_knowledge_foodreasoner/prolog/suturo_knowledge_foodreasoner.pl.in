@@ -187,6 +187,11 @@ assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
 recognizedObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _], ObjectIdentifier) :-
+  writeln('Zero using probability for matching'),
+  perception(PrologBridge),
+  jpl_call(PrologBridge, 'classifyObjectColorHue', [_c_color_average_h], Avghueprob),
+  writeln(Avghueprob),
+  
 	writeln('First recognition_label rgb and hsv'),
 	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
 	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
