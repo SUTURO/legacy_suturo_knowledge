@@ -1,0 +1,13 @@
+<package>
+  <description brief="suturo_knowledge_location">
+
+     Localization utils for SUTURO project.
+
+  </description>
+  <author>Moritz Horstmann</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.suturo.de</url>
+
+  <depend package="iai_maps" />
+</package>
