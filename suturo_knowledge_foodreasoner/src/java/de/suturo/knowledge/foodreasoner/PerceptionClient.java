@@ -2,6 +2,7 @@ package de.suturo.knowledge.foodreasoner;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 import javax.vecmath.Point3d;
 
@@ -32,6 +33,8 @@ public class PerceptionClient {
 
 	private final Map<Long, Stamped<Point3d>> mapCoords = new HashMap<Long, Stamped<Point3d>>();
 	private final Map<Long, Stamped<Point3d>> odomCoords = new HashMap<Long, Stamped<Point3d>>();
+
+  private static ArrayList<ArrayList<String>> objects = new ArrayList<ArrayList<String>>();
 
 	/**
 	 * Initializes node
@@ -128,5 +131,16 @@ public class PerceptionClient {
 	
 	public double classifyObjectColorHue(int avg_hue) {
     return 0.5;
+  }
+
+  public int classifyObjectsList(String inst, String vol, String h, String s, String v) {
+    ArrayList<String> entry = new ArrayList<String>();
+    entry.add(inst);
+    entry.add(vol);
+    entry.add(h);
+    entry.add(s);
+    entry.add(v);
+    objects.add(entry);
+    return objects.size();
   }
 }

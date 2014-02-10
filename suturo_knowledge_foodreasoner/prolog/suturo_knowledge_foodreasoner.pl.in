@@ -146,9 +146,15 @@ getTomStuff(Instance, Obj_Vol_Raw, HValue_Raw, SValue_Raw, VValue_Raw) :-
 	strip_literal_type(VValue,VValue_Raw).
 
 wrapStuff(List) :-
+  perception(PrologBridge),
 	findall([Instance, Obj_Vol, HValue, SValue, VValue],
-		getTomStuff(Instance, Obj_Vol, HValue, SValue, VValue), 
+		(
+      getTomStuff(Instance, Obj_Vol, HValue, SValue, VValue), 
+      jpl_call(PrologBridge, 'classifyObjectsList', [Instance, Obj_Vol, HValue, SValue, VValue], ColRet),
+      writeln(ColRet)
+    ),
 		List).
+
 
 createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
