@@ -134,6 +134,22 @@ savePerception(ObjectInst) :-
 		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
 			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
 
+getTomStuff(Instance, Obj_Vol_Raw, HValue_Raw, SValue_Raw, VValue_Raw) :-
+	rdf_has(Instance, rdf:type, suturo:'HSVAverageColor'),
+	rdf_has(Instance, knowrob:'volumeOfObject', Obj_Vol),
+	strip_literal_type(Obj_Vol,Obj_Vol_Raw),
+	rdf_has(Instance, suturo:'hColorValue', HValue),
+	strip_literal_type(HValue,HValue_Raw),
+	rdf_has(Instance, suturo:'sColorValue', SValue),
+	strip_literal_type(SValue,SValue_Raw),
+	rdf_has(Instance, suturo:'vColorValue', VValue),
+	strip_literal_type(VValue,VValue_Raw).
+
+wrapStuff(List) :-
+	findall([Instance, Obj_Vol, HValue, SValue, VValue],
+		getTomStuff(Instance, Obj_Vol, HValue, SValue, VValue), 
+		List).
+
 createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
