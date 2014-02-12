@@ -114,6 +114,21 @@
         <rdfs:range rdf:resource="&xsd;float"/>
     </DatatypeProperty>
     
+ 
+  <!-- http://www.suturo.de/ontology/hierarchy#statisticalMean -->
+
+    <DatatypeProperty rdf:about="&hierarchy;statisticalMean">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#statisticalStandardDeviation -->
+
+    <DatatypeProperty rdf:about="&hierarchy;statisticalStandardDeviation">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+    </DatatypeProperty>
+    
 
 
     <!-- 
@@ -191,6 +206,40 @@
                 <someValuesFrom rdf:resource="&knowrob;FoodOrDrink"/>
             </Restriction>
         </rdfs:subClassOf>
+    </Class>
+    
+    <Class rdf:about="&hierarchy;ObjectClassification"/>
+    
+    <Class rdf:about="&hierarchy;NormalDistributionClassification">
+        <rdfs:subClassOf rdf:resource="&hierarchy;ObjectClassification"/>
+        <equivalentClass>
+            <Restriction>
+                <onProperty rdf:resource="&hierarchy;statisticalMean"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                <onDataRange rdf:resource="&xsd;float"/>
+            </Restriction>
+        </equivalentClass>
+        <equivalentClass>
+            <Restriction>
+                <onProperty rdf:resource="&hierarchy;statisticalStandardDeviation"/>
+                <qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</qualifiedCardinality>
+                <onDataRange rdf:resource="&xsd;float"/>
+            </Restriction>
+        </equivalentClass>
+    </Class>
+    
+    <Class rdf:about="&hierarchy;ColorHueClassification">
+        <rdfs:subClassOf rdf:resource="&hierarchy;NormalDistributionClassification"/>
+    </Class>
+    <Class rdf:about="&hierarchy;ColorSaturationClassification">
+        <rdfs:subClassOf rdf:resource="&hierarchy;NormalDistributionClassification"/>
+    </Class>
+    <Class rdf:about="&hierarchy;ColorValueClassification">
+        <rdfs:subClassOf rdf:resource="&hierarchy;NormalDistributionClassification"/>
+    </Class>
+    
+    <Class rdf:about="&hierarchy;VolumeClassification">
+        <rdfs:subClassOf rdf:resource="&hierarchy;NormalDistributionClassification"/>
     </Class>
 
     <!-- 
