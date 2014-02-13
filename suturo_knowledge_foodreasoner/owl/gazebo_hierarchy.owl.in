@@ -116,6 +116,36 @@
     
 
 
+    <!-- http://www.suturo.de/ontology/hierarchy#statisticalHueMean -->
+
+    <DatatypeProperty rdf:about="&hierarchy;statisticalHueMean">
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#statisticalHueStandardDeviation -->
+
+    <DatatypeProperty rdf:about="&hierarchy;statisticalHueStandardDeviation">
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.suturo.de/ontology/hierarchy#statisticalVolumeMean -->
+
+    <DatatypeProperty rdf:about="&hierarchy;statisticalVolumeMean">
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </DatatypeProperty>
+    
+    <!-- http://www.suturo.de/ontology/hierarchy#statisticalVolumeStandardDeviation -->
+
+    <DatatypeProperty rdf:about="&hierarchy;statisticalVolumeStandardDeviation">
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </DatatypeProperty>
+    
+
+    
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -221,6 +251,10 @@
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">120</hierarchy:gColorValue>
         <hierarchy:rColorValue rdf:datatype="&xsd;byte">113</hierarchy:rColorValue>
         <hierarchy:bColorValue rdf:datatype="&xsd;byte">121</hierarchy:bColorValue>
+        <hierarchy:statisticalHueMean rdf:datatype="&xsd;double">292.0</hierarchy:statisticalHueMean>
+        <hierarchy:statisticalHueStandardDeviation rdf:datatype="&xsd;double">4.5</hierarchy:statisticalHueDeviation>
+        <hierarchy:statisticalVolumeMean rdf:datatype="&xsd;double">0.000900</hierarchy:statisticalVolumeMean>
+        <hierarchy:statisticalVolumeStandardDeviation rdf:datatype="&xsd;double">0.000050</hierarchy:statisticalVolumeDeviation>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;corny">
@@ -239,6 +273,10 @@
         <hierarchy:rColorValue rdf:datatype="&xsd;byte">115</hierarchy:rColorValue>
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">79</hierarchy:gColorValue>
         <hierarchy:bColorValue rdf:datatype="&xsd;byte">64</hierarchy:bColorValue>
+        <hierarchy:statisticalHueMean rdf:datatype="&xsd;double">21.0</hierarchy:statisticalHueMean>
+        <hierarchy:statisticalHueStandardDeviation rdf:datatype="&xsd;double">4.5</hierarchy:statisticalHueDeviation>
+        <hierarchy:statisticalVolumeMean rdf:datatype="&xsd;double">0.000300</hierarchy:statisticalVolumeMean>
+        <hierarchy:statisticalVolumeStandardDeviation rdf:datatype="&xsd;double">0.000010</hierarchy:statisticalVolumeDeviation>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;cafetfilter">
@@ -256,6 +294,10 @@
         <hierarchy:rColorValue rdf:datatype="&xsd;byte">66</hierarchy:rColorValue>
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">96</hierarchy:gColorValue>
         <hierarchy:bColorValue rdf:datatype="&xsd;byte">70</hierarchy:bColorValue>
+        <hierarchy:statisticalHueMean rdf:datatype="&xsd;double">66.0</hierarchy:statisticalHueMean>
+        <hierarchy:statisticalHueStandardDeviation rdf:datatype="&xsd;double">4.5</hierarchy:statisticalHueDeviation>
+        <hierarchy:statisticalVolumeMean rdf:datatype="&xsd;double">0.000650</hierarchy:statisticalVolumeMean>
+        <hierarchy:statisticalVolumeStandardDeviation rdf:datatype="&xsd;double">0.000010</hierarchy:statisticalVolumeDeviation>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;baguette">
@@ -274,6 +316,10 @@
         <hierarchy:rColorValue rdf:datatype="&xsd;byte">149</hierarchy:rColorValue>
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">80</hierarchy:gColorValue>
         <hierarchy:bColorValue rdf:datatype="&xsd;byte">55</hierarchy:bColorValue>
+        <hierarchy:statisticalHueMean rdf:datatype="&xsd;double">16.0</hierarchy:statisticalHueMean>
+        <hierarchy:statisticalHueStandardDeviation rdf:datatype="&xsd;double">4.5</hierarchy:statisticalHueDeviation>
+        <hierarchy:statisticalVolumeMean rdf:datatype="&xsd;double">0.000640</hierarchy:statisticalVolumeMean>
+        <hierarchy:statisticalVolumeStandardDeviation rdf:datatype="&xsd;double">0.000010</hierarchy:statisticalVolumeDeviation>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;wlanadapter">
@@ -291,6 +337,10 @@
         <hierarchy:rColorValue rdf:datatype="&xsd;byte">96</hierarchy:rColorValue>
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">77</hierarchy:gColorValue>
         <hierarchy:bColorValue rdf:datatype="&xsd;byte">81</hierarchy:bColorValue>
+        <hierarchy:statisticalHueMean rdf:datatype="&xsd;double">348.0</hierarchy:statisticalHueMean>
+        <hierarchy:statisticalHueStandardDeviation rdf:datatype="&xsd;double">4.5</hierarchy:statisticalHueDeviation>
+        <hierarchy:statisticalVolumeMean rdf:datatype="&xsd;double">0.000576</hierarchy:statisticalVolumeMean>
+        <hierarchy:statisticalVolumeStandardDeviation rdf:datatype="&xsd;double">0.000010</hierarchy:statisticalVolumeDeviation>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;w_containerbox">
@@ -308,6 +358,10 @@
         <hierarchy:rColorValue rdf:datatype="&xsd;byte">179</hierarchy:rColorValue>
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">163</hierarchy:gColorValue>
         <hierarchy:bColorValue rdf:datatype="&xsd;byte">150</hierarchy:bColorValue>
+        <hierarchy:statisticalHueMean rdf:datatype="&xsd;double">26.0</hierarchy:statisticalHueMean>
+        <hierarchy:statisticalHueStandardDeviation rdf:datatype="&xsd;double">4.5</hierarchy:statisticalHueDeviation>
+        <hierarchy:statisticalVolumeMean rdf:datatype="&xsd;double">0.007400</hierarchy:statisticalVolumeMean>
+        <hierarchy:statisticalVolumeStandardDeviation rdf:datatype="&xsd;double">0.00010</hierarchy:statisticalVolumeDeviation>
     </NamedIndividual>
 
     <NamedIndividual rdf:about="&hierarchy;r_containerbox">
@@ -325,6 +379,10 @@
         <hierarchy:rColorValue rdf:datatype="&xsd;byte">133</hierarchy:rColorValue>
         <hierarchy:gColorValue rdf:datatype="&xsd;byte">13</hierarchy:gColorValue>
         <hierarchy:bColorValue rdf:datatype="&xsd;byte">18</hierarchy:bColorValue>
+        <hierarchy:statisticalHueMean rdf:datatype="&xsd;double">358.0</hierarchy:statisticalHueMean>
+        <hierarchy:statisticalHueStandardDeviation rdf:datatype="&xsd;double">4.5</hierarchy:statisticalHueDeviation>
+        <hierarchy:statisticalVolumeMean rdf:datatype="&xsd;double">0.007400</hierarchy:statisticalVolumeMean>
+        <hierarchy:statisticalVolumeStandardDeviation rdf:datatype="&xsd;double">0.00010</hierarchy:statisticalVolumeDeviation>
     </NamedIndividual>
 </rdf:RDF>
 
