@@ -112,10 +112,10 @@ clearPerceived :-
 
 
 getObjectProbabilities(Instance, HueMean, HueSD, VolumeMean, VolumeSD) :-
-  rdf_has(Instance, rdf:type, suturo:'statisticalHueMean', HueMeanRaw),
-  rdf_has(Instance, rdf:type, suturo:'statisticalHueStandardDeviation', HueSDRaw),
-  rdf_has(Instance, rdf:type, suturo:'statisticalVolumeMean', VolumeMeanRaw),
-  rdf_has(Instance, rdf:type, suturo:'statisticalVolumeStandardDeviation', VolumeSDRaw),
+  rdf_has(Instance, suturo:'statisticalHueMean', HueMeanRaw),
+  rdf_has(Instance, suturo:'statisticalHueStandardDeviation', HueSDRaw),
+  rdf_has(Instance, suturo:'statisticalVolumeMean', VolumeMeanRaw),
+  rdf_has(Instance, suturo:'statisticalVolumeStandardDeviation', VolumeSDRaw),
   strip_literal_type(HueMeanRaw, HueMean),
   strip_literal_type(HueSDRaw, HueSD),
   strip_literal_type(VolumeMeanRaw, VolumeMean),
