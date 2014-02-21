@@ -26,7 +26,8 @@ class ProbabilityClassifier {
     
     for (int i = 0; i < objects.size(); i++) {
       objects.get(i).probability = 
-          normalDistribution(avgHue, objects.get(i).hueMean, objects.get(i).hueSD);
+          normalDistribution(avgHue, objects.get(i).hueMean, objects.get(i).hueSD) +
+          normalDistribution(volume, objects.get(i).volMean, objects.get(i).volSD) ;
     }
     
     Collections.sort(objects);
