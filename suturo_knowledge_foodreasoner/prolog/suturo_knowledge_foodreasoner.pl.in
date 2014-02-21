@@ -119,6 +119,7 @@ clearPerceived :-
 :- jpl_new('de.suturo.knowledge.foodreasoner.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
 
 
+%% Gets classification information of one object
 getObjectProbabilities(Instance, HueMean, HueSD, VolumeMean, VolumeSD) :-
   rdf_has(Instance, suturo:'statisticalHueMean', HueMeanRaw),
   rdf_has(Instance, suturo:'statisticalHueStandardDeviation', HueSDRaw),
@@ -129,6 +130,7 @@ getObjectProbabilities(Instance, HueMean, HueSD, VolumeMean, VolumeSD) :-
   strip_literal_type(VolumeMeanRaw, VolumeMean),
   strip_literal_type(VolumeSDRaw, VolumeSD).
 
+%% sends all object classification information available to java class
 sendObjectProbabilitiesToJava(List) :-
   probabilityclassifier(ProbabilityClassifier),
   findall([Instance, HueMean, HueSD, VolumeMean, VolumeSD],
@@ -138,7 +140,15 @@ sendObjectProbabilitiesToJava(List) :-
       writeln(ColRet)
     ),
     List).
-  
+ 
+%% print out information about the last object classification
+classificationInfo(List) :-
+  probabilityclassifier(ProbabilityClassifier), 
+  jpl_call(ProbabilityClassifier, 'classificationInfo', [], Ret),
+  writeln(Ret).
+
+
+%% Hand over information for classification to java class
 :- sendObjectProbabilitiesToJava(L).
 
 

@@ -27,7 +27,7 @@ class ProbabilityClassifier {
     for (int i = 0; i < objects.size(); i++) {
       objects.get(i).probability = 
           normalDistribution(avgHue, objects.get(i).hueMean, objects.get(i).hueSD) +
-          normalDistribution(volume, objects.get(i).volMean, objects.get(i).volSD) ;
+          normalDistribution(avgHue, objects.get(i).volMean, objects.get(i).volSD);
     }
     
     Collections.sort(objects);
@@ -78,5 +78,18 @@ class ProbabilityClassifier {
                                                                 volSDD);
     objects.add(entry);
     return "number of objects for classification: " + objects.size();
+  }
+  
+  /**
+   * Returns a String filled with detailed information about the last
+   * classification
+   * @return String with details about the last classification
+   */
+  public String classificationInfo() {
+    String ret = "Classification results:\n";
+    for (PerceptionProbabilities pp : objects) {
+      ret += pp.toString() + "\n";
+    }
+    return ret;
   }
 }
