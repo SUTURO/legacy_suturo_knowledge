@@ -10,4 +10,5 @@
   <url>http://www.suturo.de</url>
 
   <depend package="iai_maps" />
+  <depend package="pr2_navigation_global" />
 </package>
