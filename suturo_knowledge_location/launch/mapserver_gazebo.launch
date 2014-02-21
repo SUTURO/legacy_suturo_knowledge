@@ -1,0 +1,4 @@
+<launch>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find suturo_knowledge_location)/maps/gazebo.yaml" />
+  <include file="$(find suturo_knowledge_location)/launch/amcl_node.launch" />
+</launch>
