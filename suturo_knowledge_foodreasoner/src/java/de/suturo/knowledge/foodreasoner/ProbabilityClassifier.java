@@ -2,13 +2,23 @@ package de.suturo.knowledge.foodreasoner;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
-class ProbabilityClassifier {
+class ProbabilityClassifier implements ObjectClassifier {
 
-  private static ArrayList<PerceptionProbabilities> objects = new ArrayList<PerceptionProbabilities>();
-  
+  private HashMap<String, Double> probData;
+  private ArrayList<ProbabilityObject> probRes;
+  private ArrayList<String> instanceNames;
+
   public ProbabilityClassifier() {
-    
+    System.out.println("Hallo Welt!");
+    ProbabilityData probDataCls = new ProbabilityData();
+    probData = probDataCls.getData();
+    probRes = new ArrayList<ProbabilityObject>();
+    instanceNames = new ArrayList<String>();
+    instanceNames.add("baguette");
+    instanceNames.add("corny");
+    instanceNames.add("dlink");
   }
   
   /**
@@ -19,20 +29,18 @@ class ProbabilityClassifier {
    * @return instance string that's used by prolog
    */
   public String classifyPerceivedObject(int avgHue, double volume) {
-    if (objects == null)
-      return "";
-    if (objects.size() < 1)
-      return "";
-    
-    for (int i = 0; i < objects.size(); i++) {
-      objects.get(i).probability = 
-          normalDistribution(avgHue, objects.get(i).hueMean, objects.get(i).hueSD) +
-          normalDistribution(avgHue, objects.get(i).volMean, objects.get(i).volSD);
+    probRes = new ArrayList<ProbabilityObject>();
+
+    for (String inst : instanceNames) {
+      probRes.add(new ProbabilityObject(inst, 
+          normalDistribution(Math.sin(avgHue * Math.PI / 180), probData.get(inst+"_hue_sin_mean"), probData.get(inst+"_hue_sin_sd")) +
+          normalDistribution(Math.sin(avgHue * Math.PI / 180), probData.get(inst+"_hue_cos_mean"), probData.get(inst+"_hue_cos_sd")) 
+          ));
     }
+
+    Collections.sort(probRes);
     
-    Collections.sort(objects);
-    
-    return objects.get(objects.size()-1).toString();
+    return probRes.get(probRes.size()-1).instance;
   }
   
   /**
@@ -49,46 +57,14 @@ class ProbabilityClassifier {
   }
   
   /**
-   * This will be called by prolog on startup to fill the list of objects that
-   * we need to classify
-   * @param String instance name in prolog
-   * @param String hue mean value
-   * @param String hue standard deviation
-   * @param String volume mean
-   * @param String volume standard deviation
-   */
-  public String appendToObjectsList(String instance, String hueMean, String hueSD, 
-                                 String volMean, String volSD) {
-    double hueMeanD;
-    double hueSDD;
-    double volMeanD;
-    double volSDD;
-    try {
-      hueMeanD = Double.parseDouble(hueMean);
-      hueSDD = Double.parseDouble(hueSD);
-      volMeanD = Double.parseDouble(volMean);
-      volSDD = Double.parseDouble(volSD);
-    } catch (NumberFormatException ex) {
-      return ex.toString();
-    }
-    PerceptionProbabilities entry = new PerceptionProbabilities(instance, 
-                                                                hueMeanD, 
-                                                                hueSDD, 
-                                                                volMeanD, 
-                                                                volSDD);
-    objects.add(entry);
-    return "number of objects for classification: " + objects.size();
-  }
-  
-  /**
    * Returns a String filled with detailed information about the last
    * classification
    * @return String with details about the last classification
    */
   public String classificationInfo() {
     String ret = "Classification results:\n";
-    for (PerceptionProbabilities pp : objects) {
-      ret += pp.toString() + "\n";
+    for (ProbabilityObject po : probRes) {
+      ret += po.toString() + "\n";
     }
     return ret;
   }
