@@ -1,6 +1,5 @@
 package de.suturo.knowledge.location;
 
-import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
 
@@ -10,7 +9,7 @@ import ros.Ros;
 import ros.RosException;
 import ros.communication.Time;
 import ros.pkg.geometry_msgs.msg.PoseStamped;
-import tfjava.Stamped;
+import tfjava.StampedTransform;
 import tfjava.TFListener;
 
 /**
@@ -51,29 +50,24 @@ public class LocationPublisher {
 	}
 
 	private void publish() {
-		Matrix4d matrix = new Matrix4d();
-		Stamped<Matrix4d> in;
-		Stamped<Matrix4d> out = new Stamped<Matrix4d>();
-		out.setData(new Matrix4d());
 		long seq = 0;
 		while (ros.ok()) {
-			in = new Stamped<Matrix4d>(matrix, "/odom_combined", Time.now());
-			if (tf.lookupTransform(target, in.frameID, in.timeStamp) == null) {
+			StampedTransform trans = tf.lookupTransform(target,
+					"/odom_combined", Time.now());
+			if (trans == null) {
 				ros.logWarn("Frame with ID " + target + " not found!");
 			} else {
-				tf.transformPose(target, in, out);
 				PoseStamped pose = new PoseStamped();
 				pose.header.frame_id = target;
 				pose.header.stamp = out.timeStamp;
 				pose.header.seq = ++seq;
-				Quat4d quat = new Quat4d();
+				Quat4d quat = trans.getRotation();
 				out.getData().get(quat);
 				pose.pose.orientation.w = quat.w;
 				pose.pose.orientation.x = quat.x;
 				pose.pose.orientation.y = quat.y;
 				pose.pose.orientation.z = quat.z;
-				Vector3d vec = new Vector3d();
-				out.getData().get(vec);
+				Vector3d vec = trans.getTranslation();
 				pose.pose.position.x = vec.x;
 				pose.pose.position.y = vec.y;
 				pose.pose.position.z = vec.z;
