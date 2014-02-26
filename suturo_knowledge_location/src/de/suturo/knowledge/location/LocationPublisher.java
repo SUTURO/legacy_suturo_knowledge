@@ -52,8 +52,8 @@ public class LocationPublisher {
 	private void publish() {
 		long seq = 0;
 		while (ros.ok()) {
-			StampedTransform trans = tf.lookupTransform(target,
-					"/odom_combined", Time.now());
+			StampedTransform trans = tf.lookupTransform(target, "/base_link",
+					Time.now());
 			if (trans == null) {
 				ros.logWarn("Frame with ID " + target + " not found!");
 			} else {
