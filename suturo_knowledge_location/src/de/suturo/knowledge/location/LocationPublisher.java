@@ -59,10 +59,9 @@ public class LocationPublisher {
 			} else {
 				PoseStamped pose = new PoseStamped();
 				pose.header.frame_id = target;
-				pose.header.stamp = out.timeStamp;
+				pose.header.stamp = trans.timeStamp;
 				pose.header.seq = ++seq;
 				Quat4d quat = trans.getRotation();
-				out.getData().get(quat);
 				pose.pose.orientation.w = quat.w;
 				pose.pose.orientation.x = quat.x;
 				pose.pose.orientation.y = quat.y;
