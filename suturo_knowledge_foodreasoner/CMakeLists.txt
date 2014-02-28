@@ -45,7 +45,6 @@ set( KNOWROB_PATH_PREFIX ${knowrob_objects_PACKAGE_PATH} )
 fix_ros_destination_path(KNOWROB_PATH_PREFIX)
 
 file(GLOB inputs owl/*.in)
-
 foreach( _in ${inputs} )
   string(REPLACE ".in" "" _out ${_in})
   configure_file( ${_in} ${_out} )
@@ -54,6 +53,7 @@ endforeach( _in )
 # replace library owl paths
 
 file(GLOB inputs lib/iai_maps/owl/*.in)
+foreach( _in ${inputs} )
   string(REPLACE ".in" "" _out ${_in})
   configure_file( ${_in} ${_out} )
 endforeach( _in )
