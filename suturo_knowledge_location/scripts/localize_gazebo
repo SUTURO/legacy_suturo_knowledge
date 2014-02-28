@@ -1,7 +1,6 @@
 #!/bin/bash
 roslaunch suturo_knowledge_location mapserver_gazebo.launch &
 rosrun SnapMapICP SnapMapICP &
-rosrun suturo_knowledge_location LocationPublisher &
 trap 'kill $(jobs -p)' EXIT
 for job in `jobs -p`
 do
