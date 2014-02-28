@@ -13,18 +13,6 @@ rosbuild_init()
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
-
-rosbuild_find_ros_package(rosjava_jni)
-rosbuild_find_ros_package(tfjava)
-
-add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
-add_classpath(${tfjava_PACKAGE_PATH}/bin)
-
-# build java
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
-add_java_source_dir( ${PROJECT_SOURCE_DIR}/src/java )
-rospack_add_java_executable( LocationPublisher de.suturo.knowledge.location.LocationPublisher )
 
 #uncomment if you have defined messages
 #rosbuild_genmsg()
