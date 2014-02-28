@@ -51,14 +51,17 @@ foreach( _in ${inputs} )
   configure_file( ${_in} ${_out} )
 endforeach( _in )
 
+# replace library owl paths
+
+file(GLOB inputs lib/iai_maps/owl/*.in)
+  string(REPLACE ".in" "" _out ${_in})
+  configure_file( ${_in} ${_out} )
+endforeach( _in )
+
 # replace path to local prolog files
 rosbuild_find_ros_package(suturo_knowledge_foodreasoner)
 set( LOCAL_PACKAGE_PATH ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )
-rosbuild_find_ros_package(iai_maps)
-set( IAI_MAPS_PACKAGE_PATH ${iai_maps_PACKAGE_PATH} )
 fix_ros_destination_path(LOCAL_PACKAGE_PATH)
-fix_ros_destination_path(IAI_MAPS_PACKAGE_PATH)
-
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )

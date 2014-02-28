@@ -104,7 +104,7 @@ clearPerceived :-
 	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
 
 %% Load lab room semantic map
-:- owl_parser:owl_parse('@IAI_MAPS_PACKAGE_PATH@/owl/room.owl', false, false, true).
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true).
 %% Load suturo objects (either defaultlab_hierarchy.owl, or load OWL file given as argument)
 :- current_prolog_flag(argv, Args), last(Args, Arg),
    string_concat('@LOCAL_PACKAGE_PATH@/owl/', Arg, File),
