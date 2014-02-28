@@ -9,7 +9,6 @@
   <review status="unreviewed" notes=""/>
   <url>http://www.suturo.de</url>
 
-  <depend package="iai_maps" />
   <depend package="SnapMapICP" />
   <depend package="pr2_navigation_global" />
   <depend package="rosjava_jni"/> <!-- Java in ROS -->
