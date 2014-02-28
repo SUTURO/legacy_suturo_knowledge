@@ -39,7 +39,7 @@ add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
 add_java_source_dir( ${PROJECT_SOURCE_DIR}/src/java )
 
 # replace path to local owl files
-set( OWL_PATH_PREFIX ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )
+set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
 fix_ros_destination_path(OWL_PATH_PREFIX)
 set( KNOWROB_PATH_PREFIX ${knowrob_objects_PACKAGE_PATH} )
 fix_ros_destination_path(KNOWROB_PATH_PREFIX)
