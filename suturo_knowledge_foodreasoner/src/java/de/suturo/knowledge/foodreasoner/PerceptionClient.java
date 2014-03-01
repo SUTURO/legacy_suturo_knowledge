@@ -2,6 +2,7 @@ package de.suturo.knowledge.foodreasoner;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
@@ -17,6 +18,7 @@ import ros.pkg.geometry_msgs.msg.Pose;
 import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
 import tfjava.Stamped;
 import tfjava.TFListener;
+import de.suturo.knowledge.psexport.MapConverter;
 
 /**
  * Bridge from Perception to Prolog
@@ -34,9 +36,20 @@ public class PerceptionClient {
 	private static GetClustersService cluster;
 	private static TFListener tf;
 
+	private final Map<String, Long> identifierToID = new HashMap<String, Long>();
 	private final Map<Long, Stamped<Point3d>> mapCoords = new HashMap<Long, Stamped<Point3d>>();
-	private final Map<Long, Stamped<Point3d>> odomCoords = new HashMap<Long, Stamped<Point3d>>();
 	private final Map<Long, Stamped<Pose>> mapCuboid = new HashMap<Long, Stamped<Pose>>();
+
+	private final ObjectClassifier classifier;
+	private final MapConverter mc;
+
+	/**
+	 * Prolog benötigt:
+	 * 
+	 * #identifier<br />
+	 * #koordinaten in map<br />
+	 * #pose in map <br />
+	 */
 
 	/**
 	 * Initializes node
@@ -44,6 +57,9 @@ public class PerceptionClient {
 	public PerceptionClient() {
 		checkInitialized();
 		tf = TFListenerSafe.getInstance();
+		// classifier = new WekaClassifier();
+		classifier = new ProbabilityClassifier();
+		mc = new MapConverter();
 		handle.logInfo("PerceptionClient initialized");
 	}
 
@@ -53,6 +69,7 @@ public class PerceptionClient {
 			ros.init(NODE_NAME);
 		}
 		handle = ros.createNodeHandle();
+		handle.logInfo("Initialize PerceptionClient");
 		handle.setMasterRetryTimeout(DEFAULT_TIMEOUT_MS);
 		if (!handle.checkMaster()) {
 			ros.logError("PerceptionClient: Ros master not available");
@@ -61,18 +78,31 @@ public class PerceptionClient {
 	}
 
 	/**
-	 * Calls perception service and retrieves list of perceived objects
+	 * Calls the perception service and runs classifiers on the results.
 	 * 
-	 * @return true if any objects were found
+	 * @return String array of all recognized identifiers
+	 * 
 	 * @throws RosException
 	 */
-	public PerceivedObject[] updatePerception() throws RosException {
+	public String[] percieve() throws RosException {
+		PerceivedObject[] pos = updatePerception();
+		classifyObjects(pos);
+		publishPlanningScenes();
+		return identifierToID.keySet().toArray(new String[0]);
+	}
+
+	/**
+	 * Calls perception service and retrieves list of perceived objects
+	 * 
+	 * @throws RosException
+	 */
+	private PerceivedObject[] updatePerception() throws RosException {
 		if (cluster == null) {
 			cluster = new GetClustersService(handle);
 		}
 		mapCoords.clear();
 		mapCuboid.clear();
-		odomCoords.clear();
+		identifierToID.clear();
 		PerceivedObject[] pos = cluster.getClusters().toArray(
 				new PerceivedObject[0]);
 		for (PerceivedObject po : pos) {
@@ -81,12 +111,48 @@ public class PerceptionClient {
 					poseToMatrix4d(po.matched_cuboid.pose), po.frame_id,
 					Time.now());
 			addTransformPoint("/map", poPoint, mapCoords, po.c_id);
-			addTransformPoint("/odom_combined", poPoint, odomCoords, po.c_id);
 			addTransformPose("/map", poPose, mapCuboid, po.c_id);
 		}
 		return pos;
 	}
 
+	/**
+	 * Pass perceived objects to classifier and assign c_id with identifier
+	 * 
+	 * @param pos
+	 *            PercievedObject list
+	 */
+	private void classifyObjects(PerceivedObject[] pos) {
+		for (PerceivedObject po : pos) {
+			identifierToID.put(classifier.classifyPerceivedObject(
+					(int) po.c_color_average_h, po.c_volume), Long
+					.valueOf(po.c_id));
+		}
+	}
+
+	/**
+	 * Publishes recognized objects to the planning scene
+	 */
+	private void publishPlanningScenes() {
+		for (Entry<String, Long> entry : identifierToID.entrySet()) {
+			Point pos = mapCuboid.get(entry.getValue()).getData().position;
+			mc.addBox(entry.getKey(), 0, 0, 0, pos.x, pos.y, pos.z, "/map");
+		}
+		mc.publishScene();
+	}
+
+	/**
+	 * Transform stamped pose to a pose in TF frame denoted by target parameter
+	 * 
+	 * @param target
+	 *            Target TF frame ID
+	 * @param poPose
+	 *            Input Pose
+	 * @param map
+	 *            Map to write pose in
+	 * @param cID
+	 *            ID assigned by perception
+	 */
 	private static void addTransformPose(String target,
 			Stamped<Matrix4d> poPose, Map<Long, Stamped<Pose>> map, long cID) {
 		try {
@@ -108,6 +174,13 @@ public class PerceptionClient {
 		}
 	}
 
+	/**
+	 * Utility method to convert a Pose to Matrix4d object
+	 * 
+	 * @param pose
+	 *            Pose object
+	 * @return Matrix4d object
+	 */
 	private static Matrix4d poseToMatrix4d(Pose pose) {
 		Quat4d quat = new Quat4d();
 		quat.w = pose.orientation.w;
@@ -119,6 +192,13 @@ public class PerceptionClient {
 		return new Matrix4d(quat, vec, 1);
 	}
 
+	/**
+	 * Utility method to convert a Matrix4d to Pose object
+	 * 
+	 * @param matrix
+	 *            Matrix4d object
+	 * @return Pose object
+	 */
 	private static Pose matrix4dToPose(Matrix4d matrix) {
 		Quat4d quat = new Quat4d();
 		matrix.get(quat);
@@ -135,22 +215,43 @@ public class PerceptionClient {
 		return pose;
 	}
 
+	/**
+	 * Utility method to convert a PerceivedObject centroid to
+	 * Stamped&lt;Point3d&gt; object
+	 * 
+	 * @param po
+	 *            PerceivedObject object
+	 * @return Stamped&lt;Point3d&gt; object
+	 */
 	private static Stamped<Point3d> getStamped3DPoint(PerceivedObject po) {
 		Point cent = po.c_centroid;
 		Point3d point3d = new Point3d(cent.x, cent.y, cent.z);
 		return new Stamped<Point3d>(point3d, po.frame_id, Time.now());
 	}
 
-	private static void addTransformPoint(String target, Stamped<Point3d> in,
-			Map<Long, Stamped<Point3d>> map, long cID) {
+	/**
+	 * Transform stamped point to a point in TF frame denoted by target
+	 * parameter
+	 * 
+	 * @param target
+	 *            Target TF frame ID
+	 * @param poPose
+	 *            Input Point
+	 * @param map
+	 *            Map to write pose in
+	 * @param cID
+	 *            ID assigned by perception
+	 */
+	private static void addTransformPoint(String target,
+			Stamped<Point3d> poPoint, Map<Long, Stamped<Point3d>> map, long cID) {
 		try {
-			if (tf.lookupTransform(target, in.frameID, in.timeStamp) == null) {
+			if (tf.lookupTransform(target, poPoint.frameID, poPoint.timeStamp) == null) {
 				ros.logWarn("Frame with ID " + target + " not found!");
 				return;
 			}
 			Stamped<Point3d> out = new Stamped<Point3d>();
 			out.setData(new Point3d());
-			tf.transformPoint(target, in, out);
+			tf.transformPoint(target, poPoint, out);
 			map.put(Long.valueOf(cID), out);
 		} catch (RuntimeException e) {
 			throw e;
@@ -162,33 +263,22 @@ public class PerceptionClient {
 	/**
 	 * Retrieve transformed coordinates in map frame context.
 	 * 
-	 * @param c_id
-	 *            ID of corresponding PerceivedObject
+	 * @param identifier
+	 *            Object identifier
 	 * @return Point3d object
 	 */
-	public Stamped<Point3d> getMapCoords(long c_id) {
-		return this.mapCoords.get(Long.valueOf(c_id));
-	}
-
-	/**
-	 * Retrieve transformed coordinates in odom_combined frame context.
-	 * 
-	 * @param c_id
-	 *            ID of corresponding PerceivedObject
-	 * @return Point3d object
-	 */
-	public Stamped<Point3d> getOdomCoords(long c_id) {
-		return this.odomCoords.get(Long.valueOf(c_id));
+	public Stamped<Point3d> getMapCoords(String identifier) {
+		return this.mapCoords.get(identifierToID.get(identifier));
 	}
 
 	/**
 	 * Retrieve transformed pose in map frame context.
 	 * 
-	 * @param c_id
-	 *            ID of corresponding PerceivedObject
+	 * @param identifier
+	 *            Object identifier
 	 * @return Pose object
 	 */
-	public Stamped<Pose> getCuboidPose(long c_id) {
-		return this.mapCuboid.get(Long.valueOf(c_id));
+	public Stamped<Pose> getCuboidPose(String identifier) {
+		return this.mapCuboid.get(identifierToID.get(identifier));
 	}
 }
