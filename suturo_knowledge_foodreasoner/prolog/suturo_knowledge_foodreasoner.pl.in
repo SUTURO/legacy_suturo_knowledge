@@ -117,29 +117,6 @@ clearPerceived :-
 :- jpl_new('de.suturo.knowledge.psexport.MapConverter',[], Instance), assert(mapconverter(Instance)).
 %% Instanciate Java object classifier
 :- jpl_new('de.suturo.knowledge.foodreasoner.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
-
-
-%% Gets classification information of one object
-%%getObjectProbabilities(Instance, HueMean, HueSD, VolumeMean, VolumeSD) :-
-%%  rdf_has(Instance, suturo:'statisticalHueMean', HueMeanRaw),
-%%  rdf_has(Instance, suturo:'statisticalHueStandardDeviation', HueSDRaw),
-%%  rdf_has(Instance, suturo:'statisticalVolumeMean', VolumeMeanRaw),
-%%  rdf_has(Instance, suturo:'statisticalVolumeStandardDeviation', VolumeSDRaw),
-%%  strip_literal_type(HueMeanRaw, HueMean),
-%%  strip_literal_type(HueSDRaw, HueSD),
-%%  strip_literal_type(VolumeMeanRaw, VolumeMean),
-%%  strip_literal_type(VolumeSDRaw, VolumeSD).
-
-%% sends all object classification information available to java class
-%%sendObjectProbabilitiesToJava(List) :-
-%%  probabilityclassifier(ProbabilityClassifier),
-%%  findall([Instance, HueMean, HueSD, VolumeMean, VolumeSD],
-%%    (
-%%      getObjectProbabilities(Instance, HueMean, HueSD, VolumeMean, VolumeSD), 
-%%      jpl_call(ProbabilityClassifier, 'appendToObjectsList', [Instance, HueMean, HueSD, VolumeMean, VolumeSD], ColRet),
-%%      writeln(ColRet)
-%%    ),
-%%    List).
  
 %% print out information about the last object classification
 classificationInfo(List) :-
@@ -192,9 +169,9 @@ grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centr
 
 %% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
 savePerception(ObjectInst) :-
-	getPerceivedObjectsInfos(DataList),
+	getPerceivedObjectsInfos(DataList, RawPerceivedObjects),
 	findall(Instance,(member(Object, DataList),
-		once(recognizeLowestVariance(Object, Instance)),
+		once(recognizeLowestVariance(Object, Instance, RawPerceivedObjects)),
 		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
 			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
 
@@ -243,23 +220,22 @@ assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
 	rdf_assert(ObjInst, suturo:'HColorValue', literal(type('http://www.w3.org/2001/XMLSchema#int',H_Color))),
 	rdf_assert(ObjInst, suturo:'SColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',S_Color))),
 	rdf_assert(ObjInst, suturo:'VColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',V_Color))).
-
-
-recognizeLowestVariance(Object, ObjectIdentifier) :-
+  
+recognizeLowestVariance(Object, ObjectIdentifier, RawPerceivedObjects) :-
 	varianceSteps(Steps),
 	between(1, Steps, Step),
-	recognizedObject(Object, Step, ObjectIdentifier).
+	recognizedObject(Object, Step, ObjectIdentifier, RawPerceivedObjects).
 
 recognizedObject([_c_id, _c_centroid, _c_volume, _frame_id,
  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
- X_Coord, Y_Coord, Z_Coord, Odom_FrameId], Step, ObjectIdentifier) :-
+ X_Coord, Y_Coord, Z_Coord, Odom_FrameId], Step, ObjectIdentifier, RawPerceivedObjects) :-
 	write('Step nr: '),
 	writeln(Step),
 
   writeln('Zero using probability for matching'),
   probabilityclassifier(ProbabilityClassifier),
-  jpl_call(ProbabilityClassifier, 'classifyPerceivedObject', [_c_color_average_h, _c_volume], ObjectIdentifier),
+  jpl_call(ProbabilityClassifier, 'classifyPerceivedObject', [_c_color_average_h, _c_color_average_s, _c_color_average_v, _c_volume, _c_centroid, RawPerceivedObjects], ObjectIdentifier),
   writeln(ObjectIdentifier),
   classificationInfo(L).
   
@@ -267,82 +243,10 @@ recognitionLabelExisting(ObjectIdentifier, Label) :-
 	atom_concat('http://www.suturo.de/ontology/hierarchy#', Label, ObjectIdentifier),
 	rdf_has(ObjectIdentifier, _ , _).
 
-shapeIsFitting(ObjectIdentifier, Shape_Raw) :-
-	shape(Shape_Raw, ShapeString),
-	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
-	rdf_has(ObjectIdentifier, rdf:type ,Shape).
-
-volumeInRange(ObjectIdentifier, Step, Volume) :-
-	rdf_has(ObjectIdentifier , knowrob:'volumeOfObject', Obj_Vol),
-	strip_literal_type(Obj_Vol, VOL_Raw),
-	atom_number(VOL_Raw, VOL),
-	volumeVariance(VarRaw),
-	varianceSteps(Steps),
-	Var is (Step/Steps*VarRaw),
-	Min is VOL * (1 - Var),
-	Max is VOL * (1 + Var),
-	Min =< Volume,
-	Max >= Volume.
-
-rgbIsFitting(ObjectIdentifier, Step, R_Color, G_Color, B_Color) :-
-	rdf_has(ObjectIdentifier, suturo:rColorValue , Obj_R_Color),
-	rgbColorVariance(RGBVarianceRaw),
-	varianceSteps(Steps),
-	RGBVariance is (Step/Steps*RGBVarianceRaw),
-	strip_literal_type(Obj_R_Color, R_Raw),
-	atom_number(R_Raw, R),
-	MinR is R - RGBVariance,
-	MaxR is R + RGBVariance,
-	MinR =< R_Color,
-	MaxR >= R_Color,
-	rdf_has(ObjectIdentifier, suturo:gColorValue , Obj_G_Color),
-	strip_literal_type(Obj_G_Color, G_Raw),
-	atom_number(G_Raw, G),
-	MinG is G - RGBVariance,
-	MaxG is G + RGBVariance,
-	MinG =< G_Color,
-	MaxG >= G_Color,
-	rdf_has(ObjectIdentifier, suturo:bColorValue , Obj_B_Color),
-	strip_literal_type(Obj_B_Color, B_Raw),
-	atom_number(B_Raw, B),	
-	MinB is B - RGBVariance,
-	MaxB is B + RGBVariance,
-	MinB =< B_Color,
-	MaxB >= B_Color.
-
-hsvIsFitting(ObjectIdentifier, Step, H_Value, S_Value, V_Value) :-
-	rdf_has(ObjectIdentifier, suturo:hColorValue , Obj_H_Value),
-	hColorVariance(HVarianceRaw),
-	varianceSteps(Steps),
-	HVariance is (Step/Steps*HVarianceRaw),
-	strip_literal_type(Obj_H_Value, H_Raw),
-	atom_number(H_Raw, H),
-	MinH is round(H - HVariance) mod 360,
-	MaxH is round(H + HVariance) mod 360,
-	(((H - HVariance) < 0; (H + HVariance) >359) -> 
-		(MinH =< H_Value; MaxH >= H_Value);
-		((MinH =< H_Value), (MaxH >= H_Value)) ),
-	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
-	svColorVariance(SVVarianceRaw),
-	SVVariance is (Step/Steps*SVVarianceRaw),
-	strip_literal_type(Obj_S_Value, S_Raw),
-	atom_number(S_Raw, S),
-	MinS is S - SVVariance,
-	MaxS is S + SVVariance,
-	MinS =< S_Value,
-	MaxS >= S_Value,
-	rdf_has(ObjectIdentifier, suturo:vColorValue , Obj_V_Value),
-	strip_literal_type(Obj_V_Value, V_Raw),
-	atom_number(V_Raw, V),
-	MinV is V - SVVariance,
-	MaxV is V + SVVariance,
-	MinV =< V_Value,
-	MaxV >= V_Value.
-
 headElement([Head| _], Head).
 
 %% This is a test for JNI integration
-getPerceivedObjectsInfos(PODataList) :-
+getPerceivedObjectsInfos(PODataList, RawPerceivedObjects) :-
 	perception(PrologBridge),
 	jpl_call(PrologBridge, 'updatePerception', [], Out_raw),
 	jpl_get(Out_raw,'length',Length),
