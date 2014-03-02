@@ -32,11 +32,20 @@ class ProbabilityClassifier implements ObjectClassifier {
    */
   public String classifyPerceivedObject(PerceivedObject percObject) {
     probRes = new ArrayList<ProbabilityObject>();
+    
+    float l1 = percObject.matched_cuboid.length1;
+    float l2 = percObject.matched_cuboid.length2;
+    float l3 = percObject.matched_cuboid.length3;
+    float minl = Math.max(l1, Math.max(l2, l3));
+    float midl = Math.max(l1, Math.min(l2, l3));
+    float maxl = Math.min(l1, Math.min(l2, l3));
 
     for (String inst : instanceNames) {
       probRes.add(new ProbabilityObject(inst, 
           gauss(Math.sin(percObject.c_color_average_h * Math.PI / 180), probData.get(inst+"_hue_sin_mean"), probData.get(inst+"_hue_sin_sd")) +
-          gauss(Math.sin(percObject.c_color_average_h * Math.PI / 180), probData.get(inst+"_hue_cos_mean"), probData.get(inst+"_hue_cos_sd")) 
+          gauss(Math.sin(percObject.c_color_average_h * Math.PI / 180), probData.get(inst+"_hue_cos_mean"), probData.get(inst+"_hue_cos_sd")) +
+          gauss(maxl / midl, probData.get(inst+"_length_relation_1_mean"), probData.get(inst+"_length_relation_1_sd")) +
+          gauss(maxl / minl, probData.get(inst+"_length_relation_2_mean"), probData.get(inst+"_length_relation_2_sd"))
           ));
     }
 
