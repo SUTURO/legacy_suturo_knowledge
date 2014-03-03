@@ -33,6 +33,7 @@ add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 add_classpath(${tfjava_PACKAGE_PATH}/bin)
 add_classpath(${suturo_knowledge_ps_export_PACKAGE_PATH}/bin)
+add_classpath(${suturo_knowledge_foodreasoner_PACKAGE_PATH}/lib/weka.jar)
 
 # build java
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
