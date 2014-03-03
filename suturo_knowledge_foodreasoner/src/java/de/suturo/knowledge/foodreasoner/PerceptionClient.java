@@ -3,6 +3,7 @@ package de.suturo.knowledge.foodreasoner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
@@ -87,10 +88,22 @@ public class PerceptionClient {
 	 * @throws RosException
 	 */
 	public String[] percieve() throws RosException {
+		clearPerceived(identifierToID.keySet());
 		PerceivedObject[] pos = updatePerception();
 		classifyObjects(pos);
 		publishPlanningScenes();
 		return identifierToID.keySet().toArray(new String[0]);
+	}
+
+	/**
+	 * Remove all keys from keySet from PlanningScene
+	 * 
+	 * @param keySet
+	 */
+	private void clearPerceived(Set<String> keySet) {
+		for (String key : keySet) {
+			mc.removeObject(key);
+		}
 	}
 
 	/**
