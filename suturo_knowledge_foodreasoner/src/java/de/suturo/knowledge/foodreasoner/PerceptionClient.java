@@ -124,9 +124,8 @@ public class PerceptionClient {
 	 */
 	private void classifyObjects(PerceivedObject[] pos) {
 		for (PerceivedObject po : pos) {
-			identifierToID.put(classifier.classifyPerceivedObject(
-					(int) po.c_color_average_h, po.c_volume), Long
-					.valueOf(po.c_id));
+			identifierToID.put(classifier.classifyPerceivedObject(po),
+					Long.valueOf(po.c_id));
 		}
 	}
 
@@ -216,6 +215,35 @@ public class PerceptionClient {
 	}
 
 	/**
+	 * Utility method to convert prolog list representing a rotation matrix to
+	 * Pose object
+	 * 
+	 * @param in
+	 *            A list of 16 double values
+	 * @return Pose object
+	 */
+	public static Pose prologMatrix4dToPose(double[] in) {
+		Matrix4d mat = new Matrix4d();
+		mat.m00 = in[0];
+		mat.m01 = in[1];
+		mat.m02 = in[2];
+		mat.m03 = in[3];
+		mat.m10 = in[4];
+		mat.m11 = in[5];
+		mat.m12 = in[6];
+		mat.m13 = in[7];
+		mat.m20 = in[8];
+		mat.m21 = in[9];
+		mat.m22 = in[10];
+		mat.m23 = in[11];
+		mat.m30 = in[12];
+		mat.m31 = in[13];
+		mat.m32 = in[14];
+		mat.m33 = in[15];
+		return matrix4dToPose(mat);
+	}
+
+	/**
 	 * Utility method to convert a PerceivedObject centroid to
 	 * Stamped&lt;Point3d&gt; object
 	 * 
@@ -278,7 +306,10 @@ public class PerceptionClient {
 	 *            Object identifier
 	 * @return Pose object
 	 */
-	public Stamped<Pose> getCuboidPose(String identifier) {
-		return this.mapCuboid.get(identifierToID.get(identifier));
+	public Stamped<Matrix4d> getCuboidMatrix(String identifier) {
+		Stamped<Pose> pose = this.mapCuboid.get(identifierToID.get(identifier));
+		return new Stamped<Matrix4d>(poseToMatrix4d(pose.getData()),
+				pose.frameID, pose.timeStamp);
 	}
+
 }
