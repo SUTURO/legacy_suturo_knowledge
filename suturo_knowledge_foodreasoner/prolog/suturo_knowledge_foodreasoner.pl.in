@@ -6,7 +6,10 @@
       containerOn/2,
       updatePerception/1,
       placedObjectInBox/3,
-      clearPerceived/0
+      onObject/2,
+      isInObject/3,
+      withName/2,
+      isOnObject/3,
     ]).
 
 %% Dependencies
@@ -31,6 +34,13 @@
 %% %% volume variance in percent / 100
 %% volumeVariance(0.1).
 
+
+onObject(Object, Out) :-
+	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], QX, QY, QZ, QW], (on_Physical(ObjInst, Object),
+			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ)),Out).
+
+withName(Object, [_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], QX, QY, QZ, QW]) :-
+	grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ).
 %% graspableOn(+TableInstanceName, -Out)
 %%
 %% Returns graspable objects on given table instance
@@ -41,11 +51,10 @@
 graspableOn(Object, Out) :-
 	findall(ObjectInfos, (on_Physical(ObjInst, Object),
 			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
-			grepInfosToPush(ObjInst, OutObj),
-			rdf_has(ObjInst, suturo:'newtonMeter', NM_Raw),
-			strip_literal_type(NM_Raw, NM_String),
-			atom_number(NM_String, NM),
-			append(OutObj, [NM,''], ObjectInfos)), Out).
+			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ]).
+
+isOnObject(Object1, Object2, Out) :-
+	Out = onObject(Object, Object2).
 
 %% containerOn(+TableInstanceName, -Out)
 %%
@@ -83,24 +92,35 @@ updatePerception(Out) :-
 %%  +Object (String): Name of object instance
 %%  +Container (String): Name of container instance
 %%  -Out (Number): Empty list (for planning convenience)
-placedObjectInBox(Object, _, Out) :-
+placedObjectInBox(Object, Container, Out) :-
 	mapconverter(MapConverter),
 	jpl_call(MapConverter, 'removeObject', [Object], _),
 	jpl_call(MapConverter, 'publishScene', [], _),
-	rdf_retractall(Object, knowrob:'latestDetectionOfObject',_),
+	assert(rdf_has(Object, knowrob:'insideOf', Container)),
+	getLatestMatrixOfObject(Container, Map_FrameId, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	createPerceptionInstanceToObject([Object, Map_FrameId, M03, M13, M13,
+ M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
+	Container)
+	%rdf_retractall(Object, knowrob:'latestDetectionOfObject',_),
 	Out = [].
+
+isInObject(Object1, Object2, Out) :-
+	rdf_has(Object1, knowrob:'insideOf', Object2), Out = true;
+	in_ContGeneric(Object1, Object2), Out = true;
+	Out = false.
+
 
 %% clearPerceived
 %%
 %% Clears the database of perceived objects and removes all objects from the Planning Scene
-clearPerceived :-
-	mapconverter(MapConverter),
-	forall(rdf_has(Objects, knowrob:'latestDetectionOfObject',_),
-		   (jpl_call(MapConverter, 'removeObject', [Objects], _),
-		    jpl_call(MapConverter, 'removeAttachedObject', [Objects], _))
-		   ),
-	jpl_call(MapConverter, 'publishScene', [], _),
-	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
+%% clearPerceived :-
+%% 	mapconverter(MapConverter),
+%% 	forall(rdf_has(Objects, knowrob:'latestDetectionOfObject',_),
+%% 		   (jpl_call(MapConverter, 'removeObject', [Objects], _),
+%% 		    jpl_call(MapConverter, 'removeAttachedObject', [Objects], _))
+%% 		   ),
+%% 	jpl_call(MapConverter, 'publishScene', [], _),
+%% 	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
 
 %% Load lab room semantic map
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true).
@@ -159,11 +179,19 @@ shape(3, 'Sphere').
 %% 	 X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
 
 
-grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centroid_z],_frameid]) :-
+grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ]) :-
 	_name = ObjectIdentifier,
 	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
 		_edible =true; _edible=false),
-	getLatestCoordinatesOfObject(ObjectIdentifier, _centroid_x,_centroid_y,_centroid_z, _frameid).
+	rdf_has(ObjectIdentifier, knowrob:heightOfObject, Height),
+	rdf_has(ObjectIdentifier, knowrob:depthOfObject, Depth),
+	rdf_has(ObjectIdentifier, knowrob:widthOfObject, Width),
+	rdf_has(ObjInst, suturo:'newtonMeter', NM_Raw),
+	strip_literal_type(NM_Raw, NM_String),
+	atom_number(NM_String, NM),
+	getLatestMatrixOfObject(ObjectIdentifier, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33)
+	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z),
+	(rdf_has(ObjectIdentifier, rdf:type, suturo:'FoodBox') -> Use = 'storage-for-food'; Use = 'storage-for-stuff').
 
 
 %% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
@@ -174,24 +202,27 @@ savePerception(ObjectInst) :-
 		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
 			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
 
-createPerceptionInstanceToObject([Identifier, Map_FrameId, X_Coord, Y_Coord, Z_Coord, W_Rot, X_Rot, Y_Rot, Z_Rot],
+createPerceptionInstanceToObject([Identifier, Map_FrameId, X_Coord, Y_Coord, Z_Coord,
+ M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
 	Identifier) :-
 	once(create_perception_instance(['VisualPerception'], Perception)),
     set_object_perception(Identifier, Perception),
-    fromQuaterniontoRotation(W_Rot, X_Rot, Y_Rot, Z_Rot, M11, M21, M31, M21, M22, M23, M31, M32, M33),
-    set_perception_pose(Perception, [M11,M12,M13,X_Coord,M21,M22,M23,Y_Coord,M31,M32,M33,Z_Coord,0,0,0,0]),
+    set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]),
     rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Map_FrameId))).
 
-fromQuaterniontoRotation(W,X,Y,Z,M11, M21, M31, M21, M22, M23, M31, M32, M33) :-
-	is(M11, 1 - 2 * Y**2 - 2 * Z**2),
-	is(M12, 2 * X * Y + 2 * W * Z),
-	is(M13, 2 * X * Z - 2 * W * Y),
-	is(M21, 2 * X * Y - 2 * W * Z),
-	is(M22, 1 - 2 * X**2 - 2 * Z**2),
-	is(M23, 2 * Y * Z + 2 * W * X),
-	is(M31, 2 * X * Z + 2 * W * Y),
-	is(M32, 2 * Y * Z - 2 * W * X),
-	is(M33, 1 - 2 * X**2 - 2 * Y**2).
+fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z) :-
+	perception(PrologBridge),
+	jpl_call(PrologBridge, 'prologMatrix4dToPose', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Out_raw),
+	jpl_call(Out_raw, 'getData', [], Stamped),
+	jpl_get(Stamped, 'orientation', Orientation),
+	jpl_get(Orientation, 'w', QW),
+	jpl_get(Orientation, 'x', QX),
+	jpl_get(Orientation, 'y', QY),
+	jpl_get(Orientation, 'z', QZ),
+	jpl_get(Stamped, 'position', Position),
+	jpl_get(Position, 'x', X),
+	jpl_get(Position, 'y', Y),
+	jpl_get(Position, 'z', Z).
 
 
 
@@ -331,20 +362,20 @@ fromQuaterniontoRotation(W,X,Y,Z,M11, M21, M31, M21, M22, M23, M31, M32, M33) :-
 
 %% This is a test for JNI integration
 getPerceivedObjectsInfos(PODataList, RawPerceivedObjects) :-
-	perception(PrologBridge),
-	jpl_call(PrologBridge, 'perceive', [], Out_raw),
+	c
 	jpl_get(Out_raw,'length',Length),
 	is(Indizees, Length-1),
 	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
 
-processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_Coord, Z_Coord, W_Rot, X_Rot, Y_Rot, Z_Rot]) :-
+processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_Coord, Z_Coord,
+ M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
 	perception(PrologBridge),
 	numlist(0,Indizees,IndexList),
 	member(Index, IndexList),
 	jpl_get(Out_raw,Index,Perceived_object),
 	jpl_call(PrologBridge, 'getMapCoords', [Perceived_object], MapCoords_Raw),
 	jpl_call(PrologBridge, 'getCuboidPose', [Perceived_object], Cuboid_Raw),
-	jpl_get(Perceived_object, 'Identifier', Identifier)
+	jpl_get(Perceived_object, 'Identifier', Identifier),
 
 	jpl_call(MapCoords_Raw, 'getData', [], Point_Raw),
 	jpl_get(Point_Raw,'x', X_Coord),
@@ -352,11 +383,22 @@ processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_
 	jpl_get(Point_Raw,'z', Z_Coord),
 	jpl_get(Point_Raw,'frameID', Map_FrameId),
 
-	jpl_call(Cuboid_Raw, 'getData', [], Pose_Raw),
-	jpl_get(Pose_Raw,'w', W_Rot),
-	jpl_get(Pose_Raw,'x', X_Rot),
-	jpl_get(Pose_Raw,'y', Y_Rot),
-	jpl_get(Pose_Raw,'z', Z_Rot),
+	jpl_get(Cuboid_Raw,'m00', M00),
+	jpl_get(Cuboid_Raw,'m01', M01),
+	jpl_get(Cuboid_Raw,'m02', M02),
+	jpl_get(Cuboid_Raw,'m03', M03),
+	jpl_get(Cuboid_Raw,'m10', M10),
+	jpl_get(Cuboid_Raw,'m11', M11),
+	jpl_get(Cuboid_Raw,'m12', M12),
+	jpl_get(Cuboid_Raw,'m13', M13),
+	jpl_get(Cuboid_Raw,'m20', M20),
+	jpl_get(Cuboid_Raw,'m21', M21),
+	jpl_get(Cuboid_Raw,'m22', M22),
+	jpl_get(Cuboid_Raw,'m23', M23),
+	jpl_get(Cuboid_Raw,'m30', M30),
+	jpl_get(Cuboid_Raw,'m31', M31),
+	jpl_get(Cuboid_Raw,'m32', M32),
+	jpl_get(Cuboid_Raw,'m33', M33),
 	jpl_get(Pose_Raw,'frameID', Map_FrameId2).
 	
 
@@ -370,11 +412,14 @@ getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
 	strip_literal_type(FrameID_Raw, FrameID),
 	rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
+
+
 	rdf_has(RotationMatrix, knowrob:m03, X_Coord),
 	strip_literal_type(X_Coord , X1),
 	(rdf_has(ObjectIdentifier, suturo:xOffset, X_Offset) ->
 		strip_literal_type(X_Offset , X2S), atom_number(X2S, X2), X is (X1+X2);
 		X is X1),
+
 	rdf_has(RotationMatrix, knowrob:m13, Y_Coord),
 	strip_literal_type(Y_Coord, Y1),
 	(rdf_has(ObjectIdentifier, suturo:yOffset, Y_Offset) ->
@@ -386,6 +431,45 @@ getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 		strip_literal_type(Z_Offset , Z2S), atom_number(Z2S, Z2), Z is (Z1+Z2);
 		Z is Z1).
 
+
+getLatestMatrixOfObject(ObjectIdentifier, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33) :-
+	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
+	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
+	strip_literal_type(FrameID_Raw, FrameID),
+	rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
+
+	rdf_has(RotationMatrix, knowrob:m00, M00_R),
+	strip_literal_type(M00_R , M00),
+	rdf_has(RotationMatrix, knowrob:m01, M01_R),
+	strip_literal_type(M01_R , M01),
+	rdf_has(RotationMatrix, knowrob:m02, M02_R),
+	strip_literal_type(M02_R , M02),
+	rdf_has(RotationMatrix, knowrob:m03, M03_R),
+	strip_literal_type(M03_R , M03),
+	rdf_has(RotationMatrix, knowrob:m10, M10_R),
+	strip_literal_type(M10_R , M10),
+	rdf_has(RotationMatrix, knowrob:m11, M11_R),
+	strip_literal_type(M11_R , M11),
+	rdf_has(RotationMatrix, knowrob:m12, M12_R),
+	strip_literal_type(M12_R , M12),
+	rdf_has(RotationMatrix, knowrob:m13, M13_R),
+	strip_literal_type(M13_R , M13),
+	rdf_has(RotationMatrix, knowrob:m20, M20_R),
+	strip_literal_type(M20_R , M20),
+	rdf_has(RotationMatrix, knowrob:m21, M21_R),
+	strip_literal_type(M21_R , M21),
+	rdf_has(RotationMatrix, knowrob:m22, M2_R),
+	strip_literal_type(M2_R , M22),
+	rdf_has(RotationMatrix, knowrob:m23, M23_R),
+	strip_literal_type(M23_R , M23),
+	rdf_has(RotationMatrix, knowrob:m30, M30_R),
+	strip_literal_type(M30_R , M30),
+	rdf_has(RotationMatrix, knowrob:m31, M31_R),
+	strip_literal_type(M31_R , M31),
+	rdf_has(RotationMatrix, knowrob:m32, M32_R),
+	strip_literal_type(M32_R , M32),
+	rdf_has(RotationMatrix, knowrob:m33, M33_R),
+	strip_literal_type(M33_R , M33).
 %% sendSingleObject(ObjectIdentifier) :-
 %% 	mapconverter(MapConverter),
 %% 	rdf_has(ObjectIdentifier, knowrob:heightOfObject, OHeight),
