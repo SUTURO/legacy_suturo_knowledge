@@ -33,7 +33,7 @@
 %% svColorVariance(A) :- A is 0.2.
 %% %% volume variance in percent / 100
 %% volumeVariance(0.1).
-
+%http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top
 
 onObject(Object, Out) :-
 	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], QX, QY, QZ, QW], (on_Physical(ObjInst, Object),
@@ -51,7 +51,7 @@ withName(Object, [_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Hei
 graspableOn(Object, Out) :-
 	findall(ObjectInfos, (on_Physical(ObjInst, Object),
 			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
-			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ]).
+			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ)), Out).
 
 isOnObject(Object1, Object2, Out) :-
 	Out = onObject(Object, Object2).
@@ -64,10 +64,10 @@ isOnObject(Object1, Object2, Out) :-
 %%  -Out (List): List of containers. A container is also a list consisting of multiple attributes:
 %%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use],[...]]
 containerOn(Object, Out) :-
-	findall(ObjectInfos, (on_Physical(ObjInst, Object
+	findall(ObjectInfos, (on_Physical(ObjInst, Object),
 			grepInfosToPush(ObjInst, OutObj),
 			(storagePlaceFor(ObjInst, knowrob:'FoodOrDrink')->
-			append(OutObj, [0,'storage-for-food'], ObjectInfos);append(OutObj, [0,'storage-for-stuff'], ObjectInfos))), Out).
+			append(OutObj, [0,'storage-for-food'], ObjectInfos);append(OutObj, [0,'storage-for-stuff'], ObjectInfos))),Out).
 
 %% updatePerception(-Out)
 %%
@@ -99,8 +99,8 @@ placedObjectInBox(Object, Container, Out) :-
 	assert(rdf_has(Object, knowrob:'insideOf', Container)),
 	getLatestMatrixOfObject(Container, Map_FrameId, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
 	createPerceptionInstanceToObject([Object, Map_FrameId, M03, M13, M13,
- M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
-	Container)
+ 	M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
+	Container),
 	%rdf_retractall(Object, knowrob:'latestDetectionOfObject',_),
 	Out = [].
 
@@ -179,7 +179,7 @@ shape(3, 'Sphere').
 %% 	 X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
 
 
-grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ]) :-
+grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ) :-
 	_name = ObjectIdentifier,
 	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
 		_edible =true; _edible=false),
@@ -189,7 +189,7 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	rdf_has(ObjInst, suturo:'newtonMeter', NM_Raw),
 	strip_literal_type(NM_Raw, NM_String),
 	atom_number(NM_String, NM),
-	getLatestMatrixOfObject(ObjectIdentifier, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33)
+	getLatestMatrixOfObject(ObjectIdentifier, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
 	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z),
 	(rdf_has(ObjectIdentifier, rdf:type, suturo:'FoodBox') -> Use = 'storage-for-food'; Use = 'storage-for-stuff').
 
@@ -359,10 +359,7 @@ fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21,
 %% 	MaxV >= V_Value.
 
 %headElement([Head| _], Head).
-
-%% This is a test for JNI integration
 getPerceivedObjectsInfos(PODataList, RawPerceivedObjects) :-
-	c
 	jpl_get(Out_raw,'length',Length),
 	is(Indizees, Length-1),
 	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
