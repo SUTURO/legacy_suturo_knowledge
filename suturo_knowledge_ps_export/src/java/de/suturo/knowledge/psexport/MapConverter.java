@@ -8,6 +8,7 @@ import ros.Publisher;
 import ros.Ros;
 import ros.RosException;
 import ros.communication.Time;
+import ros.pkg.geometry_msgs.msg.Quaternion;
 import ros.pkg.moveit_msgs.msg.CollisionObject;
 import de.suturo.knowledge.psexport.CollisionObjectWrapper.Operation;
 
@@ -103,6 +104,31 @@ public class MapConverter {
 		co.setFrame(frameID, Time.now());
 		co.addPrimitiveBox(dimX, dimY, dimZ);
 		co.addPose(x, y, z, 0, 0, 0);
+		addCollisionObject(co);
+		handle.logDebug("Add new object with key " + id);
+	}
+
+	/**
+	 * Adds a collision object to the pending scene
+	 * 
+	 * @param id
+	 * @param dimX
+	 * @param dimY
+	 * @param dimZ
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param quat
+	 * @param frameID
+	 */
+
+	public void addBox(String id, double dimX, double dimY, double dimZ,
+			double x, double y, double z, Quaternion quat, String frameID) {
+		CollisionObjectWrapper co = new CollisionObjectWrapper(id,
+				Operation.ADD);
+		co.setFrame(frameID, Time.now());
+		co.addPrimitiveBox(dimX, dimY, dimZ);
+		co.addPose(x, y, z, quat);
 		addCollisionObject(co);
 		handle.logDebug("Add new object with key " + id);
 	}

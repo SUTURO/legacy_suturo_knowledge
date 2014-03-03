@@ -3,6 +3,7 @@ package de.suturo.knowledge.foodreasoner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
@@ -15,6 +16,7 @@ import ros.RosException;
 import ros.communication.Time;
 import ros.pkg.geometry_msgs.msg.Point;
 import ros.pkg.geometry_msgs.msg.Pose;
+import ros.pkg.geometry_msgs.msg.Quaternion;
 import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
 import tfjava.Stamped;
 import tfjava.TFListener;
@@ -39,6 +41,7 @@ public class PerceptionClient {
 	private final Map<String, Long> identifierToID = new HashMap<String, Long>();
 	private final Map<Long, Stamped<Point3d>> mapCoords = new HashMap<Long, Stamped<Point3d>>();
 	private final Map<Long, Stamped<Pose>> mapCuboid = new HashMap<Long, Stamped<Pose>>();
+	private final Map<Long, Vector3d> mapDim = new HashMap<Long, Vector3d>();
 
 	private final ObjectClassifier classifier;
 	private final MapConverter mc;
@@ -85,10 +88,22 @@ public class PerceptionClient {
 	 * @throws RosException
 	 */
 	public String[] percieve() throws RosException {
+		clearPerceived(identifierToID.keySet());
 		PerceivedObject[] pos = updatePerception();
 		classifyObjects(pos);
 		publishPlanningScenes();
 		return identifierToID.keySet().toArray(new String[0]);
+	}
+
+	/**
+	 * Remove all keys from keySet from PlanningScene
+	 * 
+	 * @param keySet
+	 */
+	private void clearPerceived(Set<String> keySet) {
+		for (String key : keySet) {
+			mc.removeObject(key);
+		}
 	}
 
 	/**
@@ -102,6 +117,7 @@ public class PerceptionClient {
 		}
 		mapCoords.clear();
 		mapCuboid.clear();
+		mapDim.clear();
 		identifierToID.clear();
 		PerceivedObject[] pos = cluster.getClusters().toArray(
 				new PerceivedObject[0]);
@@ -110,6 +126,9 @@ public class PerceptionClient {
 			Stamped<Matrix4d> poPose = new Stamped<Matrix4d>(
 					poseToMatrix4d(po.matched_cuboid.pose), po.frame_id,
 					Time.now());
+			mapDim.put(Long.valueOf(po.c_id), new Vector3d(
+					po.matched_cuboid.length1, po.matched_cuboid.length2,
+					po.matched_cuboid.length3));
 			addTransformPoint("/map", poPoint, mapCoords, po.c_id);
 			addTransformPose("/map", poPose, mapCuboid, po.c_id);
 		}
@@ -135,7 +154,10 @@ public class PerceptionClient {
 	private void publishPlanningScenes() {
 		for (Entry<String, Long> entry : identifierToID.entrySet()) {
 			Point pos = mapCuboid.get(entry.getValue()).getData().position;
-			mc.addBox(entry.getKey(), 0, 0, 0, pos.x, pos.y, pos.z, "/map");
+			Quaternion or = mapCuboid.get(entry.getValue()).getData().orientation;
+			Vector3d dim = mapDim.get(entry.getValue());
+			mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z,
+					or, "/map");
 		}
 		mc.publishScene();
 	}

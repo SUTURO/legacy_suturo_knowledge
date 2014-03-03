@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import ros.communication.Time;
 import ros.pkg.geometry_msgs.msg.Pose;
+import ros.pkg.geometry_msgs.msg.Quaternion;
 import ros.pkg.moveit_msgs.msg.CollisionObject;
 import ros.pkg.shape_msgs.msg.SolidPrimitive;
 
@@ -180,6 +181,26 @@ public class CollisionObjectWrapper {
 		pose.position.y = posY;
 		pose.position.z = posZ;
 		pose.orientation = Util.createMsgForQuaternion(roll, pitch, yaw);
+		poses.add(pose);
+	}
+
+	/**
+	 * Add a pose to list
+	 * 
+	 * @param posX
+	 * @param posY
+	 * @param posZ
+	 * @param quat
+	 */
+	public void addPose(double posX, double posY, double posZ, Quaternion quat) {
+		if (poses == null) {
+			poses = new ArrayList<Pose>();
+		}
+		Pose pose = new Pose();
+		pose.position.x = posX;
+		pose.position.y = posY;
+		pose.position.z = posZ;
+		pose.orientation = quat;
 		poses.add(pose);
 	}
 
