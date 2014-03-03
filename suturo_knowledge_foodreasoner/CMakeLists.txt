@@ -37,6 +37,7 @@ add_classpath(${suturo_knowledge_ps_export_PACKAGE_PATH}/bin)
 # build java
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
 add_java_source_dir( ${PROJECT_SOURCE_DIR}/src/java )
+rospack_add_java_executable( ClassificationTest de.suturo.knowledge.foodreasoner.ClassificationTest )
 
 # replace path to local owl files
 set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )

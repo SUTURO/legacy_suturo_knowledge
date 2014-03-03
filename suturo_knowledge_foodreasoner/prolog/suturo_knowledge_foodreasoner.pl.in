@@ -116,29 +116,6 @@ clearPerceived :-
 :- jpl_new('de.suturo.knowledge.psexport.MapConverter',[], Instance), assert(mapconverter(Instance)).
 %% Instanciate Java object classifier
 :- jpl_new('de.suturo.knowledge.foodreasoner.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
-
-
-%% Gets classification information of one object
-%%getObjectProbabilities(Instance, HueMean, HueSD, VolumeMean, VolumeSD) :-
-%%  rdf_has(Instance, suturo:'statisticalHueMean', HueMeanRaw),
-%%  rdf_has(Instance, suturo:'statisticalHueStandardDeviation', HueSDRaw),
-%%  rdf_has(Instance, suturo:'statisticalVolumeMean', VolumeMeanRaw),
-%%  rdf_has(Instance, suturo:'statisticalVolumeStandardDeviation', VolumeSDRaw),
-%%  strip_literal_type(HueMeanRaw, HueMean),
-%%  strip_literal_type(HueSDRaw, HueSD),
-%%  strip_literal_type(VolumeMeanRaw, VolumeMean),
-%%  strip_literal_type(VolumeSDRaw, VolumeSD).
-
-%% sends all object classification information available to java class
-%%sendObjectProbabilitiesToJava(List) :-
-%%  probabilityclassifier(ProbabilityClassifier),
-%%  findall([Instance, HueMean, HueSD, VolumeMean, VolumeSD],
-%%    (
-%%      getObjectProbabilities(Instance, HueMean, HueSD, VolumeMean, VolumeSD), 
-%%      jpl_call(ProbabilityClassifier, 'appendToObjectsList', [Instance, HueMean, HueSD, VolumeMean, VolumeSD], ColRet),
-%%      writeln(ColRet)
-%%    ),
-%%    List).
  
 %% print out information about the last object classification
 %% classificationInfo(List) :-
@@ -191,7 +168,7 @@ grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centr
 
 %% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
 savePerception(ObjectInst) :-
-	getPerceivedObjectsInfos(DataList),
+	getPerceivedObjectsInfos(DataList, RawPerceivedObjects),
 	findall(Instance,(member(Object, DataList),
 		%once(recognizeLowestVariance(Object, Instance)),
 		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
@@ -353,7 +330,7 @@ fromQuaterniontoRotation(W,X,Y,Z,M11, M21, M31, M21, M22, M23, M31, M32, M33) :-
 %headElement([Head| _], Head).
 
 %% This is a test for JNI integration
-getPerceivedObjectsInfos(PODataList) :-
+getPerceivedObjectsInfos(PODataList, RawPerceivedObjects) :-
 	perception(PrologBridge),
 	jpl_call(PrologBridge, 'perceive', [], Out_raw),
 	jpl_get(Out_raw,'length',Length),
