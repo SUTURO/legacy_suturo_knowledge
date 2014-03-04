@@ -152,8 +152,14 @@ public class PerceptionClient {
 	 */
 	private void publishPlanningScenes() {
 		for (Entry<String, Long> entry : identifierToID.entrySet()) {
-			Point pos = mapCuboid.get(entry.getValue()).getData().position;
-			Quaternion or = mapCuboid.get(entry.getValue()).getData().orientation;
+			Stamped<Pose> stampedPoint = mapCuboid.get(entry.getValue());
+			if (stampedPoint == null) {
+				handle.logWarn("PerceptionClient: No transformed cuboid available for object "
+						+ entry.getKey());
+				continue;
+			}
+			Point pos = stampedPoint.getData().position;
+			Quaternion or = stampedPoint.getData().orientation;
 			Vector3d dim = mapDim.get(entry.getValue());
 			mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z,
 					or, "/map");
@@ -333,4 +339,8 @@ public class PerceptionClient {
 				pose.frameID, pose.timeStamp);
 	}
 
+	public static void main(String... asd) throws RosException {
+		PerceptionClient asdasd = new PerceptionClient();
+		asdasd.perceive();
+	}
 }
