@@ -339,8 +339,4 @@ public class PerceptionClient {
 				pose.frameID, pose.timeStamp);
 	}
 
-	public static void main(String... asd) throws RosException {
-		PerceptionClient asdasd = new PerceptionClient();
-		asdasd.perceive();
-	}
 }
