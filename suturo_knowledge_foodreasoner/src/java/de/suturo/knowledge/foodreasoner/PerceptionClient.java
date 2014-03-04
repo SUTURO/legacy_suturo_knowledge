@@ -190,8 +190,7 @@ public class PerceptionClient {
 			out.setData(new Matrix4d());
 			tf.transformPose(target, poPose, out);
 			Stamped<Pose> pose = new Stamped<Pose>(
-					matrix4dToPose(out.getData()), poPose.frameID,
-					poPose.timeStamp);
+					matrix4dToPose(out.getData()), target, poPose.timeStamp);
 			map.put(Long.valueOf(cID), pose);
 		} catch (RuntimeException e) {
 			throw e;
@@ -229,7 +228,7 @@ public class PerceptionClient {
 		Quat4d quat = new Quat4d();
 		matrix.get(quat);
 		Vector3d vector = new Vector3d();
-		matrix.get(quat);
+		matrix.get(vector);
 		Pose pose = new Pose();
 		pose.orientation.w = quat.w;
 		pose.orientation.x = quat.x;
@@ -337,6 +336,11 @@ public class PerceptionClient {
 		Stamped<Pose> pose = this.mapCuboid.get(identifierToID.get(identifier));
 		return new Stamped<Matrix4d>(poseToMatrix4d(pose.getData()),
 				pose.frameID, pose.timeStamp);
+	}
+
+	public static void main(String... asd) throws RosException {
+		PerceptionClient p = new PerceptionClient();
+		p.perceive();
 	}
 
 }

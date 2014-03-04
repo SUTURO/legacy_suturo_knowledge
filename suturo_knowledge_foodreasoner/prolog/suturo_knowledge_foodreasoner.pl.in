@@ -93,9 +93,6 @@ updatePerception(Out) :-
 %%  +Container (String): Name of container instance
 %%  -Out (Number): Empty list (for planning convenience)
 placedObjectInBox(Object, Container, Out) :-
-	mapconverter(MapConverter),
-	jpl_call(MapConverter, 'removeObject', [Object], _),
-	jpl_call(MapConverter, 'publishScene', [], _),
 	assert(rdf_has(Object, knowrob:'insideOf', Container)),
 	getLatestMatrixOfObject(Container, Map_FrameId, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
 	createPerceptionInstanceToObject([Object, Map_FrameId, M03, M13, M13,
@@ -133,7 +130,6 @@ isInObject(Object1, Object2, Out) :-
 
 %% Instanciate Java bridges to Perception and Manipulation
 :- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
-:- jpl_new('de.suturo.knowledge.psexport.MapConverter',[], Instance), assert(mapconverter(Instance)).
 %% Instanciate Java object classifier
 :- jpl_new('de.suturo.knowledge.foodreasoner.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
  
@@ -372,13 +368,14 @@ processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_
 	numlist(0,Indizees,IndexList),
 	member(Index, IndexList),
 	jpl_get(Out_raw,Index,Perceived_object),
+	Identifier = Perceived_object,
 	jpl_call(PrologBridge, 'getMapCoords', [Perceived_object], MapCoords_Raw),
 	jpl_call(PrologBridge, 'getCuboidMatrix', [Perceived_object], Cuboid_Raw),
 	jpl_call(MapCoords_Raw, 'getData', [], Point_Raw),
 	jpl_get(Point_Raw,'x', X_Coord),
 	jpl_get(Point_Raw,'y', Y_Coord),
 	jpl_get(Point_Raw,'z', Z_Coord),
-	jpl_get(Point_Raw,'frameID', Map_FrameId),
+	jpl_get(MapCoords_Raw,'frameID', Map_FrameId),
 	jpl_call(Cuboid_Raw, 'getData', [], Matrix_Raw),
 
 	jpl_get(Matrix_Raw,'m00', M00),
