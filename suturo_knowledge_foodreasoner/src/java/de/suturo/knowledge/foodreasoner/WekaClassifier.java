@@ -5,12 +5,14 @@ import ros.pkg.geometry_msgs.msg.Pose;
 import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
 
 import weka.core.Instances;
+import weka.classifiers.bayes.NaiveBayes;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
 class WekaClassifier implements ObjectClassifier {
+    private NaiveBayes classifier = new NaiveBayes();
   public WekaClassifier() {
     String foodreasoner_path = executeCommand("rospack find suturo_knowledge_foodreasoner");
     String arff_path = foodreasoner_path + "/raw_data/milestone4.arff";
@@ -20,14 +22,17 @@ class WekaClassifier implements ObjectClassifier {
     try {
       BufferedReader reader = new BufferedReader(new FileReader(arff_path));
       Instances data = new Instances(reader);
-        reader.close();
+      reader.close();
+      data.setClassIndex(data.numAttributes() - 1);
     } catch (IOException ex) {
       ex.printStackTrace();
     }
+    classifier.buildClassifier(data);
 
   }
 
   public String classifyPerceivedObject(PerceivedObject po) {
+    classifier.classfyInstance(Instance);
     return "";
   }
 
