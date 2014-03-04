@@ -360,6 +360,8 @@ fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21,
 
 %headElement([Head| _], Head).
 getPerceivedObjectsInfos(PODataList, RawPerceivedObjects) :-
+	perception(PrologBridge),
+	jpl_call(PrologBridge, 'perceive', [], Out_raw),
 	jpl_get(Out_raw,'length',Length),
 	is(Indizees, Length-1),
 	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
@@ -371,7 +373,7 @@ processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_
 	member(Index, IndexList),
 	jpl_get(Out_raw,Index,Perceived_object),
 	jpl_call(PrologBridge, 'getMapCoords', [Perceived_object], MapCoords_Raw),
-	jpl_call(PrologBridge, 'getCuboidPose', [Perceived_object], Cuboid_Raw),
+	jpl_call(PrologBridge, 'getCuboidMatrix', [Perceived_object], Cuboid_Raw),
 	jpl_get(Perceived_object, 'Identifier', Identifier),
 
 	jpl_call(MapCoords_Raw, 'getData', [], Point_Raw),
