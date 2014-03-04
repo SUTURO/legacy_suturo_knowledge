@@ -1,58 +1,129 @@
 package de.suturo.knowledge.foodreasoner;
 
-import ros.pkg.geometry_msgs.msg.Point;
-import ros.pkg.geometry_msgs.msg.Pose;
-import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
-
-import weka.core.Instances;
-import weka.classifiers.bayes.NaiveBayes;
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
+import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.core.Attribute;
+import weka.core.Instance;
+import weka.core.Instances;
+
+/**
+ * Interface to Weka classifier
+ * 
+ * @author Tom - Initial classifier
+ * @author Moritz - Completely rewritten
+ * 
+ */
 class WekaClassifier implements ObjectClassifier {
-    private NaiveBayes classifier = new NaiveBayes();
-  public WekaClassifier() {
-    String foodreasoner_path = executeCommand("rospack find suturo_knowledge_foodreasoner");
-    String arff_path = foodreasoner_path + "/raw_data/milestone4.arff";
-    
-    System.out.println("arff path: "+arff_path);
+	private static final String ARFF_FILE = "/arff/milestone4.arff";
+	private static final String OWL_NS = "http://www.suturo.de/ontology/hierarchy#";
+	private final NaiveBayes classifier = new NaiveBayes();
+	private final List<Attribute> attributes;
+	private final Instances dataSet;
 
-    try {
-      BufferedReader reader = new BufferedReader(new FileReader(arff_path));
-      Instances data = new Instances(reader);
-      reader.close();
-      data.setClassIndex(data.numAttributes() - 1);
-    } catch (IOException ex) {
-      ex.printStackTrace();
-    }
-    classifier.buildClassifier(data);
+	/**
+	 * Initialize classifier
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public WekaClassifier() throws Exception {
+		Instances data = getInstances(WekaClassifier.class
+				.getResourceAsStream(ARFF_FILE));
+		attributes = new ArrayList<Attribute>(data.numAttributes());
+		Enumeration<Attribute> atts = data.enumerateAttributes();
+		while (atts.hasMoreElements()) {
+			attributes.add(atts.nextElement());
+		}
+		data.setClassIndex(data.numAttributes() - 1);
+		this.dataSet = data;
+		classifier.buildClassifier(data);
 
-  }
+	}
 
-  public String classifyPerceivedObject(PerceivedObject po) {
-    classifier.classfyInstance(Instance);
-    return "";
-  }
+	private static Instances getInstances(InputStream is) throws IOException {
+		BufferedReader reader = null;
+		try {
+			InputStreamReader isr = new InputStreamReader(is);
+			reader = new BufferedReader(isr);
+			return new Instances(reader);
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					// Close quietly
+				}
+			}
+		}
+	}
 
-  /**
-   * executes a command. taken from http://www.mkyong.com/java/how-to-execute-shell-command-from-java/
-   */
-  private String executeCommand(String command) {
-    StringBuffer output = new StringBuffer();
-    Process p;
-    try {
-      p = Runtime.getRuntime().exec(command);
-      p.waitFor();
-      BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-      String line = "";     
-      while ((line = reader.readLine())!= null) {
-        output.append(line + "\n");
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return output.toString();
-  }
+	@Override
+	public String classifyPerceivedObject(PerceivedObject po) {
+		Instance inst = new Instance(attributes.size());
+		inst.setDataset(dataSet);
+		for (Attribute att : attributes) {
+			setPOValue(po, inst, att);
+		}
+		inst.setClassMissing();
+		try {
+			double index = classifier.classifyInstance(inst);
+			return OWL_NS + inst.classAttribute().value((int) index);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private static void setPOValue(PerceivedObject po, Instance inst,
+			Attribute att) {
+		double val = po.c_color_average_h * Math.PI / 180;
+		double sin = Math.sin(val);
+		double cos = Math.cos(val);
+		double maxLen = Math.max(po.matched_cuboid.length1,
+				Math.max(po.matched_cuboid.length2, po.matched_cuboid.length3));
+		double middleLen = Math.min(
+				Math.max(po.matched_cuboid.length1, po.matched_cuboid.length2),
+				Math.max(po.matched_cuboid.length2, po.matched_cuboid.length3));
+		double minLen = Math.min(po.matched_cuboid.length1,
+				Math.min(po.matched_cuboid.length2, po.matched_cuboid.length3));
+		String name = att.name();
+		if ("red".equals(name))
+			inst.setValue(att, po.c_color_average_r);
+		else if ("green".equals(name))
+			inst.setValue(att, po.c_color_average_g);
+		else if ("blue".equals(name))
+			inst.setValue(att, po.c_color_average_b);
+		else if ("hue_sin".equals(name))
+			inst.setValue(att, sin);
+		else if ("hue_cos".equals(name))
+			inst.setValue(att, cos);
+		else if ("saturation".equals(name))
+			inst.setValue(att, po.c_color_average_s);
+		else if ("value".equals(name))
+			inst.setValue(att, po.c_color_average_v);
+		else if ("vol".equals(name))
+			inst.setValue(att, po.matched_cuboid.volume);
+		else if ("length_1".equals(name))
+			inst.setValue(att, po.matched_cuboid.length1);
+		else if ("length_2".equals(name))
+			inst.setValue(att, po.matched_cuboid.length2);
+		else if ("length_3".equals(name))
+			inst.setValue(att, po.matched_cuboid.length3);
+		else if ("cuboid_length_relation_1".equals(name))
+			inst.setValue(att, maxLen / middleLen);
+		else if ("cuboid_length_relation_2".equals(name))
+			inst.setValue(att, maxLen / minLen);
+		else if ("label_2d".equals(name))
+			inst.setValue(att, po.recognition_label_2d);
+		else if ("shape".equals(name))
+			inst.setValue(att, po.c_shape);
+	}
 }

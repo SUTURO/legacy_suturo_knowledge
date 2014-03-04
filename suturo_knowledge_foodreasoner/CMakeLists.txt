@@ -35,6 +35,9 @@ add_classpath(${tfjava_PACKAGE_PATH}/bin)
 add_classpath(${suturo_knowledge_ps_export_PACKAGE_PATH}/bin)
 add_classpath(${suturo_knowledge_foodreasoner_PACKAGE_PATH}/lib/weka.jar)
 
+# Add java dependencies
+configure_file(raw_data/milestone4.arff ${JAVA_OUTPUT_DIR}/arff/milestone4.arff COPYONLY)
+
 # build java
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
 add_java_source_dir( ${PROJECT_SOURCE_DIR}/src/java )

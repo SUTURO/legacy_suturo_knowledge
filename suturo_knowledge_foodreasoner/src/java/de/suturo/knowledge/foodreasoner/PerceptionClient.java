@@ -43,16 +43,8 @@ public class PerceptionClient {
 	private final Map<Long, Stamped<Pose>> mapCuboid = new HashMap<Long, Stamped<Pose>>();
 	private final Map<Long, Vector3d> mapDim = new HashMap<Long, Vector3d>();
 
-	private final ObjectClassifier classifier;
+	private ObjectClassifier classifier;
 	private final MapConverter mc;
-
-	/**
-	 * Prolog benötigt:
-	 * 
-	 * #identifier<br />
-	 * #koordinaten in map<br />
-	 * #pose in map <br />
-	 */
 
 	/**
 	 * Initializes node
@@ -60,8 +52,13 @@ public class PerceptionClient {
 	public PerceptionClient() {
 		checkInitialized();
 		tf = TFListenerSafe.getInstance();
-		// classifier = new WekaClassifier();
-		classifier = new ProbabilityClassifier();
+		try {
+			classifier = new WekaClassifier();
+		} catch (Exception e) {
+			handle.logError("PerceptionClient: Could not initialize Weka classifier. Reason: "
+					+ e);
+			classifier = new ProbabilityClassifier();
+		}
 		mc = new MapConverter();
 		handle.logInfo("PerceptionClient initialized");
 	}
@@ -143,8 +140,10 @@ public class PerceptionClient {
 	 */
 	private void classifyObjects(PerceivedObject[] pos) {
 		for (PerceivedObject po : pos) {
-			identifierToID.put(classifier.classifyPerceivedObject(po),
-					Long.valueOf(po.c_id));
+			String object = classifier.classifyPerceivedObject(po);
+			if (object != null) {
+				identifierToID.put(object, Long.valueOf(po.c_id));
+			}
 		}
 	}
 
