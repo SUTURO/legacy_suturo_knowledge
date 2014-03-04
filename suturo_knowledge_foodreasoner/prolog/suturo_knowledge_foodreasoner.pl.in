@@ -9,7 +9,7 @@
       onObject/2,
       isInObject/3,
       withName/2,
-      isOnObject/3,
+      isOnObject/3
     ]).
 
 %% Dependencies
