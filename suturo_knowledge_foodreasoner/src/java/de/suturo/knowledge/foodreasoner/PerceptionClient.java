@@ -84,7 +84,7 @@ public class PerceptionClient {
 	 * 
 	 * @throws RosException
 	 */
-	public String[] percieve() throws RosException {
+	public String[] perceive() throws RosException {
 		clearPerceived(identifierToID.keySet());
 		PerceivedObject[] pos = updatePerception();
 		classifyObjects(pos);
