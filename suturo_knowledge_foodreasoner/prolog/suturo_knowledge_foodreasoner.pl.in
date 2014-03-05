@@ -36,15 +36,15 @@
 %% volumeVariance(0.1).
 %http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top
 
-getDimensions(Obejct, [FrameID, [M03, M13, M23], [Height, Depth, Width]]) :-
+getDimensions(Object, [FrameID, [M03, M13, M23], [Height, Depth, Width]]) :-
 	getLatestMatrixOfObject(Object, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
-	rdf_has(ObjectIdentifier, knowrob:heightOfObject, OHeight),
+	rdf_has(Object, knowrob:heightOfObject, OHeight),
 	strip_literal_type(OHeight, Height_Raw),
 	atom_number(Height_Raw, Height),
-	rdf_has(ObjectIdentifier, knowrob:depthOfObject, ODepth),
+	rdf_has(Object, knowrob:depthOfObject, ODepth),
 	strip_literal_type(ODepth, Depth_Raw),
 	atom_number(Depth_Raw, Depth),
-	rdf_has(ObjectIdentifier, knowrob:widthOfObject, OWidth),
+	rdf_has(Object, knowrob:widthOfObject, OWidth),
 	strip_literal_type(OWidth, Width_Raw),
 	atom_number(Width_Raw, Width).
 
@@ -62,12 +62,12 @@ withName(Object, [_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Hei
 %%  -Out (List): List of graspable objects. A graspable object is also a list consisting of multiple attributes:
 %%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use],[...]]
 graspableOn(Object, Out) :-
-	findall(ObjectInfos, (on_Physical(ObjInst, Object),
+	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], QX, QY, QZ, QW], (on_Physical(ObjInst, Object),
 			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
 			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ)), Out).
 
 isOnObject(Object1, Object2, Out) :-
-	Out = onObject(Object, Object2).
+	Out = onObject(Object1, Object2).
 
 %% containerOn(+TableInstanceName, -Out)
 %%
@@ -204,6 +204,7 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	rdf_has(ObjectIdentifier, knowrob:widthOfObject, OWidth),
 	strip_literal_type(OWidth, Width_Raw),
 	atom_number(Width_Raw, Width),
+	rdf_has(ObjectIdentifier, suturo:newtonMeter, NM_Raw),
 	strip_literal_type(NM_Raw, NM_String),
 	atom_number(NM_String, NM),
 	getLatestMatrixOfObject(ObjectIdentifier, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
@@ -212,7 +213,7 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 
 %% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
 savePerception(ObjectInst) :-
-	getPerceivedObjectsInfos(DataList, RawPerceivedObjects),
+	getPerceivedObjectsInfos(DataList),
 	findall(Instance,(member(Object, DataList),
 		%once(recognizeLowestVariance(Object, Instance)),
 		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
@@ -374,7 +375,7 @@ fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21,
 %% 	MaxV >= V_Value.
 
 %headElement([Head| _], Head).
-getPerceivedObjectsInfos(PODataList, RawPerceivedObjects) :-
+getPerceivedObjectsInfos(PODataList) :-
 	perception(PrologBridge),
 	jpl_call(PrologBridge, 'perceive', [], Out_raw),
 	jpl_get(Out_raw,'length',Length),
