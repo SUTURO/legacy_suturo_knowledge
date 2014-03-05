@@ -209,13 +209,12 @@ createPerceptionInstanceToObject([Identifier, Map_FrameId, X_Coord, Y_Coord, Z_C
 fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z) :-
 	perception(PrologBridge),
 	jpl_call(PrologBridge, 'prologMatrix4dToPose', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Out_raw),
-	jpl_call(Out_raw, 'getData', [], Stamped),
-	jpl_get(Stamped, 'orientation', Orientation),
+	jpl_get(Out_raw, 'orientation', Orientation),
 	jpl_get(Orientation, 'w', QW),
 	jpl_get(Orientation, 'x', QX),
 	jpl_get(Orientation, 'y', QY),
 	jpl_get(Orientation, 'z', QZ),
-	jpl_get(Stamped, 'position', Position),
+	jpl_get(Out_raw, 'position', Position),
 	jpl_get(Position, 'x', X),
 	jpl_get(Position, 'y', Y),
 	jpl_get(Position, 'z', Z).

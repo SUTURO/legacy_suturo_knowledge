@@ -244,28 +244,45 @@ public class PerceptionClient {
 	 * Utility method to convert prolog list representing a rotation matrix to
 	 * Pose object
 	 * 
-	 * @param in
-	 *            A list of 16 double values
+	 * @param m00
+	 * @param m01
+	 * @param m02
+	 * @param m03
+	 * @param m10
+	 * @param m11
+	 * @param m12
+	 * @param m13
+	 * @param m20
+	 * @param m21
+	 * @param m22
+	 * @param m23
+	 * @param m30
+	 * @param m31
+	 * @param m32
+	 * @param m33
 	 * @return Pose object
 	 */
-	public static Pose prologMatrix4dToPose(double[] in) {
+	public static Pose prologMatrix4dToPose(double m00, double m01, double m02,
+			double m03, double m10, double m11, double m12, double m13,
+			double m20, double m21, double m22, double m23, double m30,
+			double m31, double m32, double m33) {
 		Matrix4d mat = new Matrix4d();
-		mat.m00 = in[0];
-		mat.m01 = in[1];
-		mat.m02 = in[2];
-		mat.m03 = in[3];
-		mat.m10 = in[4];
-		mat.m11 = in[5];
-		mat.m12 = in[6];
-		mat.m13 = in[7];
-		mat.m20 = in[8];
-		mat.m21 = in[9];
-		mat.m22 = in[10];
-		mat.m23 = in[11];
-		mat.m30 = in[12];
-		mat.m31 = in[13];
-		mat.m32 = in[14];
-		mat.m33 = in[15];
+		mat.m00 = m00;
+		mat.m01 = m01;
+		mat.m02 = m02;
+		mat.m03 = m03;
+		mat.m10 = m10;
+		mat.m11 = m11;
+		mat.m12 = m12;
+		mat.m13 = m13;
+		mat.m20 = m20;
+		mat.m21 = m21;
+		mat.m22 = m22;
+		mat.m23 = m23;
+		mat.m30 = m30;
+		mat.m31 = m31;
+		mat.m32 = m32;
+		mat.m33 = m33;
 		return matrix4dToPose(mat);
 	}
 
@@ -336,11 +353,6 @@ public class PerceptionClient {
 		Stamped<Pose> pose = this.mapCuboid.get(identifierToID.get(identifier));
 		return new Stamped<Matrix4d>(poseToMatrix4d(pose.getData()),
 				pose.frameID, pose.timeStamp);
-	}
-
-	public static void main(String... asd) throws RosException {
-		PerceptionClient p = new PerceptionClient();
-		p.perceive();
 	}
 
 }
