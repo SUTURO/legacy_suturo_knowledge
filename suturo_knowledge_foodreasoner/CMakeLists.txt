@@ -37,7 +37,7 @@ add_classpath(${PROJECT_SOURCE_DIR}/lib/weka.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/weka.jar)
 
 # Add java dependencies
-configure_file(raw_data/milestone4.arff ${JAVA_OUTPUT_DIR}/arff/milestone4.arff COPYONLY)
+configure_file(raw_data/milestone4improved.arff ${JAVA_OUTPUT_DIR}/arff/milestone4.arff COPYONLY)
 
 # build java
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
