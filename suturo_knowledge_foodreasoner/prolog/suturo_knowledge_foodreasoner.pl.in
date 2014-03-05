@@ -37,7 +37,9 @@
 %http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top
 
 getDimensions(Object, [FrameID, [M03, M13, M23], [Height, Depth, Width]]) :-
-	getLatestMatrixOfObject(Object, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	getLatestMatrixOfObject(Object, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	rdf_has(Object, suturo:frameID, FrameID_Raw),
+	strip_literal_type(FrameID_Raw, FrameID),
 	rdf_has(Object, knowrob:heightOfObject, OHeight),
 	strip_literal_type(OHeight, Height_Raw),
 	atom_number(Height_Raw, Height),
@@ -107,7 +109,9 @@ updatePerception(Out) :-
 %%  -Out (Number): Empty list (for planning convenience)
 placedObjectInBox(Object, Container, Out) :-
 	assert(rdf_has(Object, knowrob:'insideOf', Container)),
-	getLatestMatrixOfObject(Container, Map_FrameId, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	getLatestMatrixOfObject(Container, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	rdf_has(Container, suturo:frameID, FrameID_Raw),
+	strip_literal_type(FrameID_Raw, Map_FrameId),
 	createPerceptionInstanceToObject([Object, Map_FrameId, M03, M13, M13,
  	M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
 	Container),
@@ -207,7 +211,9 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	rdf_has(ObjectIdentifier, suturo:newtonMeter, NM_Raw),
 	strip_literal_type(NM_Raw, NM_String),
 	atom_number(NM_String, NM),
-	getLatestMatrixOfObject(ObjectIdentifier, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	getLatestMatrixOfObject(ObjectIdentifier, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	rdf_has(ObjectIdentifier, suturo:frameID, FrameID_Raw),
+	strip_literal_type(FrameID_Raw, FrameID),
 	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z).
 
 
@@ -446,10 +452,8 @@ getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 		Z is Z1).
 
 
-getLatestMatrixOfObject(ObjectIdentifier, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33) :-
+getLatestMatrixOfObject(ObjectIdentifier,  M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33) :-
 	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
-	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
-	strip_literal_type(FrameID_Raw, FrameID),
 	rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
 
 	rdf_has(RotationMatrix, knowrob:m00, M00_R),
@@ -481,7 +485,7 @@ getLatestMatrixOfObject(ObjectIdentifier, FrameID, M00, M01, M02, M03, M10, M11,
 	rdf_has(RotationMatrix, knowrob:m31, M31_R),
 	strip_literal_type(M31_R , M31),
 	rdf_has(RotationMatrix, knowrob:m32, M32_R),
-	strip_literal_type(M32_R , M32_a),
+	strip_literal_type(M32_R , M32),
 	rdf_has(RotationMatrix, knowrob:m33, M33_R),
 	strip_literal_type(M33_R , M33).
 %% sendSingleObject(ObjectIdentifier) :-
