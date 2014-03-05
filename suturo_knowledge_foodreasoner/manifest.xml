@@ -16,7 +16,7 @@
   <depend package="tfjava"/>
 
   <export>
-    <java classpath="${prefix}/bin"/>
+    <java classpath="${prefix}/bin:${prefix}/lib/weka.jar"/>
   </export>
 
 </package>

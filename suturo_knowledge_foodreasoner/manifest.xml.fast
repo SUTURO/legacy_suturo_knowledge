@@ -15,7 +15,7 @@
   <depend package="knowrob_common"/>
 
   <export>
-    <java classpath="${prefix}/bin"/>
+    <java classpath="${prefix}/bin:${prefix}/lib/weka.jar"/>
   </export>
 
 </package>
