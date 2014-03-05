@@ -178,7 +178,7 @@ shape(3, 'Sphere').
 grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ) :-
 	_name = ObjectIdentifier,
 	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
-		_edible =true; _edible=false),
+		(_edible =true, Use=''); (_edible=false,(rdf_has(ObjectIdentifier, rdf:type, suturo:'FoodBox') -> Use = 'storage-for-food'; Use = 'storage-for-stuff'))),
 	rdf_has(ObjectIdentifier, knowrob:heightOfObject, Height),
 	rdf_has(ObjectIdentifier, knowrob:depthOfObject, Depth),
 	rdf_has(ObjectIdentifier, knowrob:widthOfObject, Width),
@@ -186,8 +186,7 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	strip_literal_type(NM_Raw, NM_String),
 	atom_number(NM_String, NM),
 	getLatestMatrixOfObject(ObjectIdentifier, FrameID, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
-	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z),
-	(rdf_has(ObjectIdentifier, rdf:type, suturo:'FoodBox') -> Use = 'storage-for-food'; Use = 'storage-for-stuff').
+	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z).
 
 
 %% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
