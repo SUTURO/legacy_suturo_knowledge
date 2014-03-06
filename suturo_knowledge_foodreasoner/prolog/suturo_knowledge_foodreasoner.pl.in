@@ -10,6 +10,7 @@
       isInObject/3,
       withName/2,
       getDimensions/2,
+      getKnowrobDimension/2,
       isOnObject/3
     ]).
 
@@ -38,7 +39,8 @@
 
 getDimensions(Object, [FrameID, [M03, M13, M23], [Height, Depth, Width]]) :-
 	getLatestMatrixOfObject(Object, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
-	rdf_has(Object, suturo:frameID, FrameID_Raw),
+	rdf_has(Object, knowrob:latestDetectionOfObject, ObjectDetection),
+	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
 	strip_literal_type(FrameID_Raw, FrameID),
 	rdf_has(Object, knowrob:heightOfObject, OHeight),
 	strip_literal_type(OHeight, Height_Raw),
@@ -241,9 +243,12 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	_name = ObjectIdentifier,
 	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
 		(_edible =true, Use=''); 
-		(_edible=false,(rdf_has(ObjectIdentifier, rdf:type, suturo:'FoodBox') -> 
-			Use = 'storage-for-food';
-			 Use = 'storage-for-stuff'))),
+		(_edible=false)),
+	(rdfs_individual_of(ObjectIdentifier, knowrob:'Box-Container') -> 
+		(rdfs_individual_of(ObjectIdentifier, suturo:'FoodBox') ->
+			(Use = 'storage-for-food';
+			Use = 'storage-for-stuff'));
+		Use =''),
 	rdf_has(ObjectIdentifier, knowrob:heightOfObject, OHeight),
 	strip_literal_type(OHeight, Height_Raw),
 	atom_number(Height_Raw, Height),
@@ -257,7 +262,8 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	strip_literal_type(NM_Raw, NM_String),
 	atom_number(NM_String, NM),
 	getLatestMatrixOfObject(ObjectIdentifier, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
-	rdf_has(ObjectIdentifier, suturo:frameID, FrameID_Raw),
+	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
+	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
 	strip_literal_type(FrameID_Raw, FrameID),
 	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z).
 
