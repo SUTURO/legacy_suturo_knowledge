@@ -112,10 +112,7 @@ public class PerceptionClient {
 		if (cluster == null) {
 			cluster = new GetClustersService(handle);
 		}
-		mapCoords.clear();
-		mapCuboid.clear();
-		mapDim.clear();
-		identifierToID.clear();
+		clearPerception();
 		PerceivedObject[] pos = cluster.getClusters().toArray(
 				new PerceivedObject[0]);
 		for (PerceivedObject po : pos) {
@@ -353,6 +350,22 @@ public class PerceptionClient {
 		Stamped<Pose> pose = this.mapCuboid.get(identifierToID.get(identifier));
 		return new Stamped<Matrix4d>(poseToMatrix4d(pose.getData()),
 				pose.frameID, pose.timeStamp);
+	}
+
+	/**
+	 * Clear perceived objects manually.
+	 */
+	public void clearPlanningScene() {
+		clearPerceived(identifierToID.keySet());
+		mc.publishScene();
+		clearPerception();
+	}
+
+	private void clearPerception() {
+		mapCoords.clear();
+		mapCuboid.clear();
+		mapDim.clear();
+		identifierToID.clear();
 	}
 
 }
