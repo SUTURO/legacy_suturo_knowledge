@@ -10,7 +10,9 @@
       isInObject/3,
       withName/2,
       getDimensions/2,
-      isOnObject/3
+      getKnowrobDimension/2,
+      isOnObject/3,
+      clearPerceived/0
     ]).
 
 %% Dependencies
@@ -172,14 +174,10 @@ isInObject(Object1, Object2, Out) :-
 %% clearPerceived
 %%
 %% Clears the database of perceived objects and removes all objects from the Planning Scene
-%% clearPerceived :-
-%% 	mapconverter(MapConverter),
-%% 	forall(rdf_has(Objects, knowrob:'latestDetectionOfObject',_),
-%% 		   (jpl_call(MapConverter, 'removeObject', [Objects], _),
-%% 		    jpl_call(MapConverter, 'removeAttachedObject', [Objects], _))
-%% 		   ),
-%% 	jpl_call(MapConverter, 'publishScene', [], _),
-%% 	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
+clearPerceived :-
+	perception(PerceptionClient),
+ 	jpl_call(PerceptionClient, 'clearPlanningScene', [], _),
+ 	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
 
 %% Load lab room semantic map
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true).
