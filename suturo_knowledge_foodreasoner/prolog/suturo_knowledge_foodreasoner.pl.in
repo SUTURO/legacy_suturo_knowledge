@@ -13,7 +13,6 @@
       getKnowrobDimension/2,
       isOnObject/3,
       clearPerceived/0
-
     ]).
 
 %% Dependencies
