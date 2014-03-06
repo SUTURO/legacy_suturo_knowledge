@@ -11,12 +11,9 @@
       withName/2,
       getDimensions/2,
       getKnowrobDimension/2,
-<<<<<<< HEAD
-      isOnObject/3
-=======
       isOnObject/3,
       clearPerceived/0
->>>>>>> 67e50730480dc5109ae089109b96bae8797aca2b
+
     ]).
 
 %% Dependencies
@@ -103,10 +100,10 @@ getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]):-
 	strip_literal_type(M33_R , M33).
 
 onObject(Object, Out) :-
-	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], QX, QY, QZ, QW], (on_Physical(ObjInst, Object),
+	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], [QX, QY, QZ, QW]], (on_Physical(ObjInst, Object),
 			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ)),Out).
 
-withName(Object, [_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], QX, QY, QZ, QW]) :-
+withName(Object, [_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], [QX, QY, QZ, QW]]) :-
 	grepInfosToPush(Object, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ).
 %% graspableOn(+TableInstanceName, -Out)
 %%
