@@ -3100,6 +3100,48 @@
         <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_fridge_block"/>
     </owl:NamedIndividual> -->
 
+    <!-- http://www.suturo.de/ontology/semantic#r_dumpster -->
+
+    <owl:NamedIndividual rdf:about="http://www.suturo.de/ontology/semantic#r_dumpster">
+        <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"/>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.085</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.25</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.4</knowrob:depthOfObject>
+        <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#SemanticEnvironmentMap_PM580j"/>
+    </owl:NamedIndividual>
+
+
+    <!-- http://www.suturo.de/ontology/semantic#SemanticMapPerception_8pWptVvU -->
+
+    <owl:NamedIndividual rdf:about="http://www.suturo.de/ontology/semantic#SemanticMapPerception_8pWptVvU">
+        <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SemanticMapPerception"/>
+        <knowrob:objectActedOn rdf:resource="http://www.suturo.de/ontology/semantic#r_dumpster"/>
+        <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1361536619"/>
+        <knowrob:eventOccursAt rdf:resource="http://www.suturo.de/ontology/semantic#RotationMatrix3D_Jp3VnXnw"/>
+    </owl:NamedIndividual>
+
+    <!-- http://www.suturo.de/ontology/semantic#RotationMatrix3D_Jp3VnXnw -->
+
+    <owl:NamedIndividual rdf:about="http://www.suturo.de/ontology/semantic#RotationMatrix3D_Jp3VnXnw">
+        <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3D"/>
+        <knowrob:m03 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.84</knowrob:m03>
+        <knowrob:m02 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m02>
+        <knowrob:m31 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m30>
+        <knowrob:m10 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m10>
+        <knowrob:m32 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m21>
+        <knowrob:m12 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m12>
+        <knowrob:m01 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m01>
+        <knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.56</knowrob:m13>
+        <knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.905</knowrob:m23>
+        <knowrob:m22 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m22>
+        <knowrob:m00 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m00>
+        <knowrob:m11 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m11>
+        <knowrob:m33 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
 
 
 </rdf:RDF>
