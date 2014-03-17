@@ -9,7 +9,6 @@ import java.util.Enumeration;
 import java.util.List;
 
 import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
-import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -27,7 +26,7 @@ class WekaClassifier implements ObjectClassifier {
 	private static final String ARFF_FILE = "/arff/milestone4.arff";
 	private static final String CLASSIFIER_PATH = "/classifier.model";
 	private static final String OWL_NS = "http://www.suturo.de/ontology/hierarchy#";
-	//private final NaiveBayes classifier = new NaiveBayes();
+	// private final NaiveBayes classifier = new NaiveBayes();
 	private final Classifier classifier;
 	private final List<Attribute> attributes;
 	private final Instances dataSet;
@@ -48,9 +47,9 @@ class WekaClassifier implements ObjectClassifier {
 		}
 		data.setClassIndex(data.numAttributes() - 1);
 		this.dataSet = data;
-		classifier = (Classifier) weka.core.SerializationHelper.read(WekaClassifier.class
-			.getResourceAsStream(CLASSIFIER_PATH));
-		//classifier.buildClassifier(data);
+		classifier = (Classifier) SerializationHelper.read(WekaClassifier.class
+				.getResourceAsStream(CLASSIFIER_PATH));
+		// classifier.buildClassifier(data);
 
 	}
 
