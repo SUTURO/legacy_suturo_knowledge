@@ -42,11 +42,11 @@ public class MapConverter {
 		try {
 			publisher = handle.advertise("/collision_object",
 					new CollisionObject(), 100);
+			pendingObjects = new LinkedHashMap<String, CollisionObjectWrapper>();
+			handle.logInfo("MapConverter initialized");
 		} catch (RosException e) {
 			handle.logError("Publisher advertisement failed: " + e.getMessage());
 		}
-		pendingObjects = new LinkedHashMap<String, CollisionObjectWrapper>();
-		handle.logInfo("MapConverter initialized");
 	}
 
 	/**
@@ -140,23 +140,6 @@ public class MapConverter {
 	 */
 	public void removeObject(String id) {
 		addCollisionObject(CollisionObjectWrapper.removeObject(id));
-	}
-
-	/**
-	 * Removes a collision object from the pending scene
-	 * 
-	 * @param id
-	 */
-	public void removeAttachedObject(String id) {
-		if (aoc == null) {
-			aoc = new AttachedObjectClearer(handle);
-		}
-		try {
-			aoc.clearObject(id);
-		} catch (RosException e) {
-			handle.logError("Could not remove attached object: "
-					+ e.getMessage());
-		}
 	}
 
 	/**

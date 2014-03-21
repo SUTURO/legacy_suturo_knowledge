@@ -356,8 +356,8 @@ public class PerceptionClient {
 	 * Clear perceived objects manually.
 	 */
 	public void clearPlanningScene() {
-		clearPerceived(identifierToID.keySet());
 		mc.removeAttachedObjects();
+		clearPerceived(identifierToID.keySet());
 		mc.publishScene();
 		clearPerception();
 	}
