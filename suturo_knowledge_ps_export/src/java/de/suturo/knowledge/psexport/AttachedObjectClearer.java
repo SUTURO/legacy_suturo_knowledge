@@ -46,26 +46,43 @@ public class AttachedObjectClearer {
 	 * @throws RosException
 	 */
 	public void clearObject(String object) throws RosException {
+		PlanningScene ps = getPlanningScene();
+		ArrayList<AttachedCollisionObject> acos = ps.robot_state.attached_collision_objects;
+		for (AttachedCollisionObject aco : acos) {
+			if (object.equals(aco.object.id)) {
+				removeAttCollObj(aco);
+				return;
+			}
+		}
+	}
+
+	private void removeAttCollObj(AttachedCollisionObject o) {
+		AttachedCollisionObject rem = new AttachedCollisionObject();
+		rem.link_name = o.link_name;
+		rem.object.id = o.object.id;
+		rem.object.operation = CollisionObject.REMOVE;
+		publisher.publish(rem);
+	}
+
+	private PlanningScene getPlanningScene() throws RosException {
 		GetPlanningScene.Request req = new GetPlanningScene.Request();
 		ServiceClient<GetPlanningScene.Request, GetPlanningScene.Response, GetPlanningScene> cl = handle
 				.serviceClient("/get_planning_scene", new GetPlanningScene());
 		PlanningScene ps = cl.call(req).scene;
 		cl.shutdown();
+		return ps;
+	}
+
+	/**
+	 * Remove all attached objects from PlanningScene
+	 * 
+	 * @throws RosException
+	 */
+	public void clearAllObjects() throws RosException {
+		PlanningScene ps = getPlanningScene();
 		ArrayList<AttachedCollisionObject> acos = ps.robot_state.attached_collision_objects;
-		AttachedCollisionObject o = null;
 		for (AttachedCollisionObject aco : acos) {
-			if (object.equals(aco.object.id)) {
-				o = aco;
-				break;
-			}
+			removeAttCollObj(aco);
 		}
-		if (o == null) {
-			return;
-		}
-		AttachedCollisionObject rem = new AttachedCollisionObject();
-		rem.link_name = o.link_name;
-		rem.object.id = object;
-		rem.object.operation = CollisionObject.REMOVE;
-		publisher.publish(rem);
 	}
 }

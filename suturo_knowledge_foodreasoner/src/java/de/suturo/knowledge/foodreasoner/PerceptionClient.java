@@ -357,6 +357,7 @@ public class PerceptionClient {
 	 */
 	public void clearPlanningScene() {
 		clearPerceived(identifierToID.keySet());
+		mc.removeAttachedObjects();
 		mc.publishScene();
 		clearPerception();
 	}

@@ -147,7 +147,6 @@ public class MapConverter {
 	 * 
 	 * @param id
 	 */
-	@Deprecated
 	public void removeAttachedObject(String id) {
 		if (aoc == null) {
 			aoc = new AttachedObjectClearer(handle);
@@ -156,6 +155,23 @@ public class MapConverter {
 			aoc.clearObject(id);
 		} catch (RosException e) {
 			handle.logError("Could not remove attached object: "
+					+ e.getMessage());
+		}
+	}
+
+	/**
+	 * Removes a collision object from the pending scene
+	 * 
+	 * @param id
+	 */
+	public void removeAttachedObjects() {
+		if (aoc == null) {
+			aoc = new AttachedObjectClearer(handle);
+		}
+		try {
+			aoc.clearAllObjects();
+		} catch (RosException e) {
+			handle.logError("Could not remove attached objects: "
 					+ e.getMessage());
 		}
 	}
