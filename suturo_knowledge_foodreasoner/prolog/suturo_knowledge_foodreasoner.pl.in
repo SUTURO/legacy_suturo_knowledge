@@ -196,48 +196,12 @@ clearPerceived :-
 :- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
 %% Instanciate Java object classifier
 :- jpl_new('de.suturo.knowledge.foodreasoner.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
- 
-%% print out information about the last object classification
-%% classificationInfo(List) :-
-%%   probabilityclassifier(ProbabilityClassifier), 
-%%   jpl_call(ProbabilityClassifier, 'classificationInfo', [], Ret),
-%%   writeln(Ret).
-
 
 %% Constants
 shape(0, 'NONE').
 shape(1, 'Box').
 shape(2, 'Cylinder').
 shape(3, 'Sphere').
-
-%$ Accessor predicate for perceived objects
-%perceived_object([ID, Label, Volume, Shape], ID, Label, Volume, Shape).
-
-%% This parses float strings from LISP (1.23456789d-123) to prolog float
-%% dfloatToFloat(StringDoubleFloat, Float) :-
-%% 	atomic_list_concat(List, 'd', StringDoubleFloat),
-%% 	atomic_list_concat(List, 'e', FloatString),
-%% 	atom_number(FloatString, Float).
-
-%% %% Accessor predicate for containers
-%% %% containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
-
-%% list_min([L|Ls], Min) :- foldl(num_num_min, Ls, L, Min).
-
-%% num_num_min(X, Y, Min) :- Min is min(X, Y).
-
-%% hackCreateTable(ObjectList) :-
-%% 	%%findall(Y,(member(ObjectIdentifier,ObjectList),getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID)),Y_Coords),
-%% 	%%list_min(Y_Coords, Min_Y),
-%% 	headElement( ObjectList, Object),
-%% 	getLatestCoordinatesOfObject(Object, X , Y ,Z, FrameID),
-%% 	rdf_has(Object, knowrob:heightOfObject, OHeight),
-%% 	strip_literal_type(OHeight, Height_Raw),
-%% 	atom_number(Height_Raw, Height),
-%% 	Z_Table is Z - Height,
-%% 	createPerceptionInstanceToObject([_, _, _, _, 'kitchen_island_counter_top', _, _, _, _, _, _, _, _, _, 
-%% 	 X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
-
 
 grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ) :-
 	_name = ObjectIdentifier,
@@ -272,9 +236,7 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 savePerception(ObjectInst) :-
 	getPerceivedObjectsInfos(DataList),
 	findall(Instance,(member(Object, DataList),
-		%once(recognizeLowestVariance(Object, Instance)),
-		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
-			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
+		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).
 
 createPerceptionInstanceToObject([Identifier, Map_FrameId, X_Coord, Y_Coord, Z_Coord,
  M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
@@ -297,141 +259,6 @@ fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21,
 	jpl_get(Position, 'y', Y),
 	jpl_get(Position, 'z', Z).
 
-
-
-%% createObjectPerception([_, _, _c_volume, _, _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g,
-%%  _c_color_average_b, _c_color_average_h, _c_color_average_s, _c_color_average_v, _, _, X_Coord, Y_Coord, Z_Coord,
-%%   Odom_FrameId], _, PerceptionTypes, ObjInst) :-
-%% 	%% if shape != 0 
-%% 	(_c_shape =\= 0 ->
-%% 		shape(_c_shape, ShapeString),
-%% 		atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Type),
-%% 		atom_concat('Got Type Shape ', Type , Log),
-%% 		writeln(Log);
-%%     	%%else 
-%%     	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', 'Thing', Type),
-%%     	atom_concat('Got Type Thing ', Type , Log),
-%% 		writeln(Log)),
-%%     (_recognition_label_2d \= '' ->
-%%     	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst),
-%%     	rdf_assert(ObjInst, rdf:type, Type); 
-%%     	rdf_instance_from_class(Type, ObjInst)),
-%%     assertRGBColors(ObjInst, _c_color_average_r, _c_color_average_g, _c_color_average_b),
-%%     assertRGBColors(ObjInst, _c_color_average_h, _c_color_average_s, _c_color_average_v),
-%%    	rdf_assert(ObjInst, knowrob:'volumeOfObject', literal(type('http://www.w3.org/2001/XMLSchema#int',_c_volume))),
-%%     create_perception_instance(PerceptionTypes, Perception),
-%%     set_object_perception(ObjInst, Perception),
-%%     set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
-%%     rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
-
-%% assertRGBColors(ObjInst, R_Color, G_Color, B_Color) :-
-%% 	rdf_assert(ObjInst, rdf:type, knowrob:'RGBAverageColor'),
-%% 	rdf_assert(ObjInst, suturo:'rColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',R_Color))),
-%% 	rdf_assert(ObjInst, suturo:'gColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',G_Color))),
-%% 	rdf_assert(ObjInst, suturo:'bColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',B_Color))).
-
-%% assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
-%% 	rdf_assert(ObjInst, rdf:type, knowrob:'HSVAverageColor'),
-%% 	rdf_assert(ObjInst, suturo:'HColorValue', literal(type('http://www.w3.org/2001/XMLSchema#int',H_Color))),
-%% 	rdf_assert(ObjInst, suturo:'SColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',S_Color))),
-%% 	rdf_assert(ObjInst, suturo:'VColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',V_Color))).
-
-
-%% recognizeLowestVariance(Object, ObjectIdentifier) :-
-%% 	varianceSteps(Steps),
-%% 	between(1, Steps, Step),
-%% 	recognizedObject(Object, Step, ObjectIdentifier).
-
-%% recognizedObject([_c_id, _c_centroid, _c_volume, _frame_id,
-%%  _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
-%%  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
-%%  X_Coord, Y_Coord, Z_Coord, Odom_FrameId], Step, ObjectIdentifier) :-
-%% 	write('Step nr: '),
-%% 	writeln(Step),
-
-%%   writeln('Zero using probability for matching'),
-%%   probabilityclassifier(ProbabilityClassifier),
-%%   jpl_call(ProbabilityClassifier, 'classifyPerceivedObject', [_c_color_average_h, _c_volume], ObjectIdentifier),
-%%   writeln(ObjectIdentifier),
-%%   classificationInfo(L).
-  
-%% recognitionLabelExisting(ObjectIdentifier, Label) :-
-%% 	atom_concat('http://www.suturo.de/ontology/hierarchy#', Label, ObjectIdentifier),
-%% 	rdf_has(ObjectIdentifier, _ , _).
-
-%% shapeIsFitting(ObjectIdentifier, Shape_Raw) :-
-%% 	shape(Shape_Raw, ShapeString),
-%% 	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
-%% 	rdf_has(ObjectIdentifier, rdf:type ,Shape).
-
-%% volumeInRange(ObjectIdentifier, Step, Volume) :-
-%% 	rdf_has(ObjectIdentifier , knowrob:'volumeOfObject', Obj_Vol),
-%% 	strip_literal_type(Obj_Vol, VOL_Raw),
-%% 	atom_number(VOL_Raw, VOL),
-%% 	volumeVariance(VarRaw),
-%% 	varianceSteps(Steps),
-%% 	Var is (Step/Steps*VarRaw),
-%% 	Min is VOL * (1 - Var),
-%% 	Max is VOL * (1 + Var),
-%% 	Min =< Volume,
-%% 	Max >= Volume.
-
-%% rgbIsFitting(ObjectIdentifier, Step, R_Color, G_Color, B_Color) :-
-%% 	rdf_has(ObjectIdentifier, suturo:rColorValue , Obj_R_Color),
-%% 	rgbColorVariance(RGBVarianceRaw),
-%% 	varianceSteps(Steps),
-%% 	RGBVariance is (Step/Steps*RGBVarianceRaw),
-%% 	strip_literal_type(Obj_R_Color, R_Raw),
-%% 	atom_number(R_Raw, R),
-%% 	MinR is R - RGBVariance,
-%% 	MaxR is R + RGBVariance,
-%% 	MinR =< R_Color,
-%% 	MaxR >= R_Color,
-%% 	rdf_has(ObjectIdentifier, suturo:gColorValue , Obj_G_Color),
-%% 	strip_literal_type(Obj_G_Color, G_Raw),
-%% 	atom_number(G_Raw, G),
-%% 	MinG is G - RGBVariance,
-%% 	MaxG is G + RGBVariance,
-%% 	MinG =< G_Color,
-%% 	MaxG >= G_Color,
-%% 	rdf_has(ObjectIdentifier, suturo:bColorValue , Obj_B_Color),
-%% 	strip_literal_type(Obj_B_Color, B_Raw),
-%% 	atom_number(B_Raw, B),	
-%% 	MinB is B - RGBVariance,
-%% 	MaxB is B + RGBVariance,
-%% 	MinB =< B_Color,
-%% 	MaxB >= B_Color.
-
-%% hsvIsFitting(ObjectIdentifier, Step, H_Value, S_Value, V_Value) :-
-%% 	rdf_has(ObjectIdentifier, suturo:hColorValue , Obj_H_Value),
-%% 	hColorVariance(HVarianceRaw),
-%% 	varianceSteps(Steps),
-%% 	HVariance is (Step/Steps*HVarianceRaw),
-%% 	strip_literal_type(Obj_H_Value, H_Raw),
-%% 	atom_number(H_Raw, H),
-%% 	MinH is round(H - HVariance) mod 360,
-%% 	MaxH is round(H + HVariance) mod 360,
-%% 	(((H - HVariance) < 0; (H + HVariance) >359) -> 
-%% 		(MinH =< H_Value; MaxH >= H_Value);
-%% 		((MinH =< H_Value), (MaxH >= H_Value)) ),
-%% 	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
-%% 	svColorVariance(SVVarianceRaw),
-%% 	SVVariance is (Step/Steps*SVVarianceRaw),
-%% 	strip_literal_type(Obj_S_Value, S_Raw),
-%% 	atom_number(S_Raw, S),
-%% 	MinS is S - SVVariance,
-%% 	MaxS is S + SVVariance,
-%% 	MinS =< S_Value,
-%% 	MaxS >= S_Value,
-%% 	rdf_has(ObjectIdentifier, suturo:vColorValue , Obj_V_Value),
-%% 	strip_literal_type(Obj_V_Value, V_Raw),
-%% 	atom_number(V_Raw, V),
-%% 	MinV is V - SVVariance,
-%% 	MaxV is V + SVVariance,
-%% 	MinV =< V_Value,
-%% 	MaxV >= V_Value.
-
-%headElement([Head| _], Head).
 getPerceivedObjectsInfos(PODataList) :-
 	perception(PrologBridge),
 	jpl_call(PrologBridge, 'perceive', [], Out_raw),
@@ -471,12 +298,6 @@ processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_
 	jpl_get(Matrix_Raw,'m31', M31),
 	jpl_get(Matrix_Raw,'m32', M32),
 	jpl_get(Matrix_Raw,'m33', M33).
-	
-
-%% sendPlanningScene(ObjectList) :-
-%% 	mapconverter(MapConverter),
-%% 	foreach(member(Object, ObjectList), sendSingleObject(Object)),
-%% 	jpl_call(MapConverter, 'publishScene', [], _).
 
 getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
@@ -539,16 +360,3 @@ getLatestMatrixOfObject(ObjectIdentifier,  M00, M01, M02, M03, M10, M11, M12, M1
 	strip_literal_type(M32_R , M32),
 	rdf_has(RotationMatrix, knowrob:m33, M33_R),
 	strip_literal_type(M33_R , M33).
-%% sendSingleObject(ObjectIdentifier) :-
-%% 	mapconverter(MapConverter),
-%% 	rdf_has(ObjectIdentifier, knowrob:heightOfObject, OHeight),
-%% 	strip_literal_type(OHeight, Height_Raw),
-%% 	atom_number(Height_Raw, Height),
-%% 	rdf_has(ObjectIdentifier, knowrob:depthOfObject, ODepth),
-%% 	strip_literal_type(ODepth, Depth_Raw),
-%% 	atom_number(Depth_Raw, Depth),
-%% 	rdf_has(ObjectIdentifier, knowrob:widthOfObject, OWidth),
-%% 	strip_literal_type(OWidth, Width_Raw),
-%% 	atom_number(Width_Raw, Width),
-%% 	getLatestCoordinatesOfObject(ObjectIdentifier, X_Coord, Y_Coord, Z_Coord, FrameID),
-%% 	jpl_call(MapConverter, 'addBox', [ObjectIdentifier, Depth, Width, Height, X_Coord, Y_Coord, Z_Coord, FrameID], _).
