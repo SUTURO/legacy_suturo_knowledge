@@ -5,6 +5,7 @@
       graspableOn/2,
       containerOn/2,
       updatePerception/1,
+      publishSemanticMap/0,
       placedObjectInBox/3,
       onObject/2,
       isInObject/3,
@@ -23,48 +24,48 @@
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 
-%% Constants for value tolerance. Feel free to change this.
-
-%% Number of steps the variance should be increased from 1/steps*variance to full variance. Three steps means
-%% to try 1/3*variance, 2/3*variance and variance
-%% varianceSteps(10).
-%% %% RGB Variance as relative offset (rgb +- variance)
-%% rgbColorVariance(A) :- A is round(0.2 * 255).
-%% %% H of HSV variance as relative offset (h +- variance)
-%% hColorVariance(A) :- A is round(0.2 * 359).
-%% %% S and V of HSV variance in percent / 100
-%% svColorVariance(A) :- A is 0.2.
-%% %% volume variance in percent / 100
-%% volumeVariance(0.1).
-%http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top
-
-getDimensions(Object, [FrameID, [M03, M13, M23], [Height, Depth, Width]]) :-
-	getLatestMatrixOfObject(Object, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
-	rdf_has(Object, knowrob:latestDetectionOfObject, ObjectDetection),
+%% getDimensions(+ObjectInstanceName, -Out)
+%%
+%% Returns dimensions for a given perceived object instance.
+%%
+%% 	+ObjectInstanceName (String): Name of object instance
+%%  -Out (List): A list consisting of a frame id, the x y z coordinates as list and the dimensions as list.
+%%               Example: ['/map', [0.4, 0.5, 0.6], [0.25, 0.21, 0.22]]
+getDimensions(ObjectInstanceName, [FrameID, [M03, M13, M23], [Height, Depth, Width]]) :-
+	getLatestMatrixOfObject(ObjectInstanceName, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	rdf_has(ObjectInstanceName, knowrob:latestDetectionOfObject, ObjectDetection),
 	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
 	strip_literal_type(FrameID_Raw, FrameID),
-	rdf_has(Object, knowrob:heightOfObject, OHeight),
+	rdf_has(ObjectInstanceName, knowrob:heightOfObject, OHeight),
 	strip_literal_type(OHeight, Height_Raw),
 	atom_number(Height_Raw, Height),
-	rdf_has(Object, knowrob:depthOfObject, ODepth),
+	rdf_has(ObjectInstanceName, knowrob:depthOfObject, ODepth),
 	strip_literal_type(ODepth, Depth_Raw),
 	atom_number(Depth_Raw, Depth),
-	rdf_has(Object, knowrob:widthOfObject, OWidth),
+	rdf_has(ObjectInstanceName, knowrob:widthOfObject, OWidth),
 	strip_literal_type(OWidth, Width_Raw),
 	atom_number(Width_Raw, Width).
 
-getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]):-
-	rdf_has(Object, knowrob:heightOfObject, OHeight),
+%% getKnowrobDimension(+ObjectInstanceName, -Out)
+%%
+%% Returns dimensions for a static object instance from the semantic map
+%%
+%% 	+ObjectInstanceName (String): Name of object instance
+%%  -Out (List): A list consisting of a frame id, the x y z coordinates as list and the dimensions as list.
+%%               Example: ['/map', [0.4, 0.5, 0.6], [0.25, 0.21, 0.22]]
+getKnowrobDimension(ObjectInstanceName, [[M03, M13, M23], [Height, Depth, Width]]):-
+	owl_has(ObjectInstanceName, knowrob:describedInMap, _),
+	rdf_has(ObjectInstanceName, knowrob:heightOfObject, OHeight),
 	strip_literal_type(OHeight, Height_Raw),
 	atom_number(Height_Raw, Height),
-	rdf_has(Object, knowrob:depthOfObject, ODepth),
+	rdf_has(ObjectInstanceName, knowrob:depthOfObject, ODepth),
 	strip_literal_type(ODepth, Depth_Raw),
 	atom_number(Depth_Raw, Depth),
-	rdf_has(Object, knowrob:widthOfObject, OWidth),
+	rdf_has(ObjectInstanceName, knowrob:widthOfObject, OWidth),
 	strip_literal_type(OWidth, Width_Raw),
 	atom_number(Width_Raw, Width),
-	rdf_has(A,'http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn',Object),
-	rdf_has(A,'http://ias.cs.tum.edu/kb/knowrob.owl#eventOccursAt',RotationMatrix),
+	rdf_has(A, knowrob:objectActedOn,ObjectInstanceName),
+	rdf_has(A, knowrob:eventOccursAt,RotationMatrix),
 	rdf_has(RotationMatrix, knowrob:m00, M00_R),
 	strip_literal_type(M00_R , M00),
 	rdf_has(RotationMatrix, knowrob:m01, M01_R),
@@ -101,36 +102,61 @@ getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]):-
 	rdf_has(RotationMatrix, knowrob:m33, M33_R),
 	strip_literal_type(M33_R , M33).
 
-onObject(Object, Out) :-
-	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], [QX, QY, QZ, QW]], (on_Physical(ObjInst, Object),
+%% onObject(+ObjectInstanceName, -Out)
+%%
+%% Returns all objects on given object (eg. table) instance.
+%%
+%% 	+ObjectInstanceName (String): Name of object instance
+%%  -Out (List): List of objects. An object is also a list consisting of multiple attributes:
+%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
+onObject(ObjectInstanceName, Out) :-
+	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], [QX, QY, QZ, QW]], (on_Physical(ObjInst, ObjectInstanceName),
 			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ)),Out).
 
-withName(Object, [_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], [QX, QY, QZ, QW]]) :-
-	grepInfosToPush(Object, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ).
-%% graspableOn(+TableInstanceName, -Out)
+%% withName(+ObjectInstanceName, -Out)
 %%
-%% Returns graspable objects on given table instance
+%% Returns all objects on given object (eg. table) instance.
 %%
-%% 	+TableInstanceName (String): Name of table instance
+%% 	+ObjectInstanceName (String): Name of object instance
+%%  -Out (List): List of objects. An object is also a list consisting of multiple attributes:
+%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
+withName(ObjectInstanceName, [_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], [QX, QY, QZ, QW]]) :-
+	grepInfosToPush(ObjectInstanceName, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ).
+
+%% graspableOn(+ObjectInstanceName, -Out)
+%%
+%% Returns graspable objects on given object (eg. table) instance
+%%
+%% 	+ObjectInstanceName (String): Name of object instance
 %%  -Out (List): List of graspable objects. A graspable object is also a list consisting of multiple attributes:
-%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use],[...]]
-graspableOn(Object, Out) :-
-	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], QX, QY, QZ, QW], (on_Physical(ObjInst, Object),
+%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
+graspableOn(ObjectInstanceName, Out) :-
+	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], QX, QY, QZ, QW], (on_Physical(ObjInst, ObjectInstanceName),
 			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
 			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ)), Out).
 
-isOnObject(Object1, Object2, Out) :-
-	Out = onObject(Object1, Object2).
 
-%% containerOn(+TableInstanceName, -Out)
+%% isOnObject(+Object1, +Object2, -Out)
 %%
-%% Returns containers on given table instance
+%% Is true, if object 1 is on object 2
 %%
-%% 	+TableInstanceName (String): Name of table instance
+%% 	+Object1 (String): Name of object instance 1
+%% 	+Object2 (String): Name of object instance 2
+%% 	-Out (Boolean): True if object instance 1 is on object instance 2
+isOnObject(Object1, Object2, Out) :-
+	Out = on_Physical(Object1, Object2).
+
+%% containerOn(+ObjectInstanceName, -Out)
+%%
+%% DEPRECATED
+%%
+%% Returns containers on given object (eg. table) instance
+%%
+%% 	+ObjectInstanceName (String): Name of object instance
 %%  -Out (List): List of containers. A container is also a list consisting of multiple attributes:
 %%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use],[...]]
-containerOn(Object, Out) :-
-	findall(ObjectInfos, (on_Physical(ObjInst, Object),
+containerOn(ObjectInstanceName, Out) :-
+	findall(ObjectInfos, (on_Physical(ObjInst, ObjectInstanceName),
 			grepInfosToPush(ObjInst, OutObj),
 			(storagePlaceFor(ObjInst, knowrob:'FoodOrDrink')->
 			append(OutObj, [0,'storage-for-food'], ObjectInfos);append(OutObj, [0,'storage-for-stuff'], ObjectInfos))),Out).
@@ -151,7 +177,7 @@ updatePerception(Out) :-
 		 Out is 0)
 		).
 
-%% placedObjectInBox(+Object, +Box, -Out)
+%% placedObjectInBox(+Object, +Container, -Out)
 %%
 %% This removes the given Object from the PlanningScene
 %%
@@ -169,6 +195,13 @@ placedObjectInBox(Object, Container, Out) :-
 	%rdf_retractall(Object, knowrob:'latestDetectionOfObject',_),
 	Out = [].
 
+%% isInObject(+Object1, +Object2, -Out)
+%%
+%% Is true, if object 1 is inside of object 2
+%%
+%% 	+Object1 (String): Name of object instance 1
+%% 	+Object2 (String): Name of object instance 2
+%% 	-Out (Boolean): True if object instance 1 is inside of object instance 2
 isInObject(Object1, Object2, Out) :-
 	rdf_has(Object1, knowrob:'insideOf', Object2), Out = true;
 	in_ContGeneric(Object1, Object2), Out = true;
@@ -182,6 +215,13 @@ clearPerceived :-
 	perception(PerceptionClient),
  	jpl_call(PerceptionClient, 'clearPlanningScene', [], _),
  	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
+
+%% publishSemanticMap
+%%
+%% Publishes all objects from the semantic map to the Planning Scene
+publishSemanticMap :-
+	perception(PerceptionClient),
+	forall(aggregateStaticPlanning(Param), jpl_call(PerceptionClient, 'addSemanticPerception', Param, _)).
 
 %% Load lab room semantic map
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true).
@@ -230,6 +270,70 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
 	strip_literal_type(FrameID_Raw, FrameID),
 	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z).
+
+aggregateStaticPlanning([ObjectIdentifier, '/map', Width, Height, Depth, Pose]) :-
+	owl_has(ObjectIdentifier, knowrob:describedInMap, _),
+	rdf_has(ObjectIdentifier, knowrob:heightOfObject, OHeight),
+	strip_literal_type(OHeight, Height_Raw),
+	atom_number(Height_Raw, Height),
+	rdf_has(ObjectIdentifier, knowrob:depthOfObject, ODepth),
+	strip_literal_type(ODepth, Depth_Raw),
+	atom_number(Depth_Raw, Depth),
+	rdf_has(ObjectIdentifier, knowrob:widthOfObject, OWidth),
+	strip_literal_type(OWidth, Width_Raw),
+	atom_number(Width_Raw, Width),
+	rdf_has(A, knowrob:objectActedOn,ObjectIdentifier),
+	rdf_has(A, knowrob:eventOccursAt,RotationMatrix),
+	rdf_has(RotationMatrix, knowrob:m00, M00_R),
+	strip_literal_type(M00_R , M00_s),
+	atom_number(M00_s, M00),
+	rdf_has(RotationMatrix, knowrob:m01, M01_R),
+	strip_literal_type(M01_R , M01_s),
+	atom_number(M01_s, M01),
+	rdf_has(RotationMatrix, knowrob:m02, M02_R),
+	strip_literal_type(M02_R , M02_s),
+	atom_number(M02_s, M02),
+	rdf_has(RotationMatrix, knowrob:m03, M03_R),
+	strip_literal_type(M03_R , M03_s),
+	atom_number(M03_s, M03),
+	rdf_has(RotationMatrix, knowrob:m10, M10_R),
+	strip_literal_type(M10_R , M10_s),
+	atom_number(M10_s, M10),
+	rdf_has(RotationMatrix, knowrob:m11, M11_R),
+	strip_literal_type(M11_R , M11_s),
+	atom_number(M11_s, M11),
+	rdf_has(RotationMatrix, knowrob:m12, M12_R),
+	strip_literal_type(M12_R , M12_s),
+	atom_number(M12_s, M12),
+	rdf_has(RotationMatrix, knowrob:m13, M13_R),
+	strip_literal_type(M13_R , M13_s),
+	atom_number(M13_s, M13),
+	rdf_has(RotationMatrix, knowrob:m20, M20_R),
+	strip_literal_type(M20_R , M20_s),
+	atom_number(M20_s, M20),
+	rdf_has(RotationMatrix, knowrob:m21, M21_R),
+	strip_literal_type(M21_R , M21_s),
+	atom_number(M21_s, M21),
+	rdf_has(RotationMatrix, knowrob:m22, M22_R),
+	strip_literal_type(M22_R , M22_s),
+	atom_number(M22_s, M22),
+	rdf_has(RotationMatrix, knowrob:m23, M23_R),
+	strip_literal_type(M23_R , M23_s),
+	atom_number(M23_s, M23),
+	rdf_has(RotationMatrix, knowrob:m30, M30_R),
+	strip_literal_type(M30_R , M30_s),
+	atom_number(M30_s, M30),
+	rdf_has(RotationMatrix, knowrob:m31, M31_R),
+	strip_literal_type(M31_R , M31_s),
+	atom_number(M31_s, M31),
+	rdf_has(RotationMatrix, knowrob:m32, M32_R),
+	strip_literal_type(M32_R , M32_s),
+	atom_number(M32_s, M32),
+	rdf_has(RotationMatrix, knowrob:m33, M33_R),
+	strip_literal_type(M33_R , M33_s),
+	atom_number(M33_s, M33),
+	perception(PrologBridge),
+	jpl_call(PrologBridge, 'prologMatrix4dToPose', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Pose).
 
 
 %% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
