@@ -42,11 +42,11 @@ public class MapConverter {
 		try {
 			publisher = handle.advertise("/collision_object",
 					new CollisionObject(), 100);
+			pendingObjects = new LinkedHashMap<String, CollisionObjectWrapper>();
+			handle.logInfo("MapConverter initialized");
 		} catch (RosException e) {
 			handle.logError("Publisher advertisement failed: " + e.getMessage());
 		}
-		pendingObjects = new LinkedHashMap<String, CollisionObjectWrapper>();
-		handle.logInfo("MapConverter initialized");
 	}
 
 	/**
@@ -134,6 +134,32 @@ public class MapConverter {
 	}
 
 	/**
+	 * Adds a static collision object to the pending scene. These are unaffected
+	 * by any automatic cleanup procedures.
+	 * 
+	 * @param id
+	 * @param dimX
+	 * @param dimY
+	 * @param dimZ
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param quat
+	 * @param frameID
+	 */
+
+	public void addStaticBox(String id, double dimX, double dimY, double dimZ,
+			double x, double y, double z, Quaternion quat, String frameID) {
+		CollisionObjectWrapper co = new CollisionObjectWrapper(id,
+				Operation.ADD);
+		co.setFrame(frameID, Time.now());
+		co.addPrimitiveBox(dimX, dimY, dimZ);
+		co.addPose(x, y, z, quat);
+		publisher.publish(co.toCollisionObject());
+		handle.logDebug("Published static object with key " + id);
+	}
+
+	/**
 	 * Removes a collision object from the pending scene
 	 * 
 	 * @param id
@@ -147,15 +173,14 @@ public class MapConverter {
 	 * 
 	 * @param id
 	 */
-	@Deprecated
-	public void removeAttachedObject(String id) {
+	public void removeAttachedObjects() {
 		if (aoc == null) {
 			aoc = new AttachedObjectClearer(handle);
 		}
 		try {
-			aoc.clearObject(id);
+			aoc.clearAllObjects();
 		} catch (RosException e) {
-			handle.logError("Could not remove attached object: "
+			handle.logError("Could not remove attached objects: "
 					+ e.getMessage());
 		}
 	}

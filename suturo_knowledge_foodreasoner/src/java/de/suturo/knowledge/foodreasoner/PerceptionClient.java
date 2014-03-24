@@ -353,9 +353,31 @@ public class PerceptionClient {
 	}
 
 	/**
+	 * Add semantic perception to PlanningScene. Currently only cuboids are
+	 * supported. These perception won't be cleared by
+	 * {@link #clearPlanningScene()}, so be careful what you add!
+	 * 
+	 * @param objectName
+	 *            Object instance name
+	 * @param frameID
+	 *            FrameID of pose
+	 * @param dimX
+	 * @param dimY
+	 * @param dimZ
+	 * @param pose
+	 *            Pose object as returned by prologMatrix4dToPose
+	 */
+	public void addSemanticPerception(String objectName, String frameID,
+			double dimX, double dimY, double dimZ, Pose pose) {
+		mc.addStaticBox(objectName, dimX, dimY, dimZ, pose.position.x,
+				pose.position.y, pose.position.z, pose.orientation, frameID);
+	}
+
+	/**
 	 * Clear perceived objects manually.
 	 */
 	public void clearPlanningScene() {
+		mc.removeAttachedObjects();
 		clearPerceived(identifierToID.keySet());
 		mc.publishScene();
 		clearPerception();
