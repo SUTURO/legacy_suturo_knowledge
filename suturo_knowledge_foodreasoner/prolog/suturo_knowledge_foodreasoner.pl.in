@@ -12,6 +12,7 @@
       getDimensions/2,
       getKnowrobDimension/2,
       isOnObject/3,
+      publishMap/0,
       clearPerceived/0
     ]).
 
@@ -53,7 +54,14 @@ getDimensions(Object, [FrameID, [M03, M13, M23], [Height, Depth, Width]]) :-
 	strip_literal_type(OWidth, Width_Raw),
 	atom_number(Width_Raw, Width).
 
+publishMap :-
+	getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]).
+	%jpl_call(MapConverter, 'addBox', [Object, Depth, Width, Height, M03, M13, M23, '/map'], _).
+	%sendSingleObject(Object, M03,M13,M23, Height, Depth, Width).
+
 getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]):-
+	rdf_has(A,'http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn',Object),
+	rdfs_individual_of(A, knowrob:'SemanticMapPerception'),
 	rdf_has(Object, knowrob:heightOfObject, OHeight),
 	strip_literal_type(OHeight, Height_Raw),
 	atom_number(Height_Raw, Height),
@@ -63,7 +71,6 @@ getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]):-
 	rdf_has(Object, knowrob:widthOfObject, OWidth),
 	strip_literal_type(OWidth, Width_Raw),
 	atom_number(Width_Raw, Width),
-	rdf_has(A,'http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn',Object),
 	rdf_has(A,'http://ias.cs.tum.edu/kb/knowrob.owl#eventOccursAt',RotationMatrix),
 	rdf_has(RotationMatrix, knowrob:m00, M00_R),
 	strip_literal_type(M00_R , M00),
