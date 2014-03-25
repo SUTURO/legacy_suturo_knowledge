@@ -46,10 +46,6 @@ getDimensions(ObjectInstanceName, [FrameID, [M03, M13, M23], [Height, Depth, Wid
 	strip_literal_type(OWidth, Width_Raw),
 	atom_number(Width_Raw, Width).
 
-
-	%jpl_call(MapConverter, 'addBox', [Object, Depth, Width, Height, M03, M13, M23, '/map'], _).
-	%sendSingleObject(Object, M03,M13,M23, Height, Depth, Width).
-
 %% getKnowrobDimension(+ObjectInstanceName, -Out)
 %%
 %% Returns dimensions for a static object instance from the semantic map
@@ -228,7 +224,7 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	strip_literal_type(FrameID_Raw, FrameID),
 	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z).
 
-aggregateStaticPlanning([ObjectIdentifier, '/map', Width, Height, Depth, Pose]) :-
+aggregateStaticPlanning([ObjectIdentifier, '/map', Depth, Width, Height, Pose]) :-
 	getSemanticMapObjectInfo(ObjectIdentifier, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, Width, Height, Depth),
 	perception(PrologBridge),
 	jpl_call(PrologBridge, 'prologMatrix4dToPose', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Pose).
