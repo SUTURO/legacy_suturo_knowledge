@@ -137,8 +137,8 @@ public class PerceptionClient {
 	 * @param po
 	 */
 	private static void applyCorrectionFactors(PerceivedObject po) {
-		po.c_centroid.y += 0.01;
-		po.matched_cuboid.pose.position.y = +0.01;
+		po.c_centroid.z += 0.01;
+		po.matched_cuboid.pose.position.z += 0.01;
 	}
 
 	/**
