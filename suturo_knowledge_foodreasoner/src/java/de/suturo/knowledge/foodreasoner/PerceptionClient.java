@@ -134,16 +134,15 @@ public class PerceptionClient {
 	 * TODO: Remove me!
 	 * 
 	 * @param <T>
-	 * 
 	 * @param out
 	 */
 	private static <T> void applyCorrectionFactors(Stamped<T> out) {
 		T data = out.getData();
 		if (data instanceof Pose) {
-			((Pose) data).position.z += 0.01;
+			((Pose) data).position.z += 0.02;
 		}
 		if (data instanceof Point3d) {
-			((Point3d) data).z += 0.01;
+			((Point3d) data).z += 0.02;
 		}
 	}
 
