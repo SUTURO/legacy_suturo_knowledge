@@ -116,7 +116,6 @@ public class PerceptionClient {
 		PerceivedObject[] pos = cluster.getClusters().toArray(
 				new PerceivedObject[0]);
 		for (PerceivedObject po : pos) {
-			applyCorrectionFactors(po);
 			Stamped<Point3d> poPoint = getStamped3DPoint(po);
 			Stamped<Matrix4d> poPose = new Stamped<Matrix4d>(
 					poseToMatrix4d(po.matched_cuboid.pose), po.frame_id,
@@ -134,11 +133,18 @@ public class PerceptionClient {
 	 * Hack to add 1 cm to all objects' height value to fix collisions. <br>
 	 * TODO: Remove me!
 	 * 
-	 * @param po
+	 * @param <T>
+	 * 
+	 * @param out
 	 */
-	private static void applyCorrectionFactors(PerceivedObject po) {
-		po.c_centroid.z += 0.01;
-		po.matched_cuboid.pose.position.z += 0.01;
+	private static <T> void applyCorrectionFactors(Stamped<T> out) {
+		T data = out.getData();
+		if (data instanceof Pose) {
+			((Pose) data).position.z += 0.01;
+		}
+		if (data instanceof Point3d) {
+			((Point3d) data).z += 0.01;
+		}
 	}
 
 	/**
@@ -200,6 +206,7 @@ public class PerceptionClient {
 			tf.transformPose(target, poPose, out);
 			Stamped<Pose> pose = new Stamped<Pose>(
 					matrix4dToPose(out.getData()), target, poPose.timeStamp);
+			applyCorrectionFactors(pose);
 			map.put(Long.valueOf(cID), pose);
 		} catch (RuntimeException e) {
 			throw e;
@@ -332,6 +339,7 @@ public class PerceptionClient {
 			Stamped<Point3d> out = new Stamped<Point3d>();
 			out.setData(new Point3d());
 			tf.transformPoint(target, poPoint, out);
+			applyCorrectionFactors(out);
 			map.put(Long.valueOf(cID), out);
 		} catch (RuntimeException e) {
 			throw e;
