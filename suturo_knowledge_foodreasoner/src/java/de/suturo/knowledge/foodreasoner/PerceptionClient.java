@@ -116,6 +116,7 @@ public class PerceptionClient {
 		PerceivedObject[] pos = cluster.getClusters().toArray(
 				new PerceivedObject[0]);
 		for (PerceivedObject po : pos) {
+			applyCorrectionFactors(po);
 			Stamped<Point3d> poPoint = getStamped3DPoint(po);
 			Stamped<Matrix4d> poPose = new Stamped<Matrix4d>(
 					poseToMatrix4d(po.matched_cuboid.pose), po.frame_id,
@@ -127,6 +128,17 @@ public class PerceptionClient {
 			addTransformPose("/map", poPose, mapCuboid, po.c_id);
 		}
 		return pos;
+	}
+
+	/**
+	 * Hack to add 1 cm to all objects' height value to fix collisions. <br>
+	 * TODO: Remove me!
+	 * 
+	 * @param po
+	 */
+	private static void applyCorrectionFactors(PerceivedObject po) {
+		po.c_centroid.y += 0.01;
+		po.matched_cuboid.pose.position.y = +0.01;
 	}
 
 	/**
