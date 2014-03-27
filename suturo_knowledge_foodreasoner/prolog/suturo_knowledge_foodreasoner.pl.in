@@ -182,7 +182,11 @@ isInObject(Object1, Object2, Out) :-
 clearPerceived :-
 	perception(PerceptionClient),
  	jpl_call(PerceptionClient, 'clearPlanningScene', [], _),
- 	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
+ 	rdf_retractall(_, knowrob:'latestDetectionOfObject', _),
+ 	rdf_retractall(_, knowrob:'previousDetectionOfObject', _),
+ 	rdf_has(Perceptions, rdf:type, knowrob:'VisualPerception'),
+ 	rdf_retractall(Perceptions, _, _),
+ 	rdf_retractall(_, _, Perceptions).
 
 %% publishSemanticMap
 %%
