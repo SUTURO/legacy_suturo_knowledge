@@ -275,7 +275,7 @@ fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21,
 	jpl_get(Position, 'z', Z).
 
 getPerceivedObjectsInfos(SurfaceInstanceName, PODataList) :-
-	(nonvar(SurfaceInstanceName),aggregateStaticPlanning([SurfaceInstanceName, FrameID, _, _, Height, Pose]);var(SurfaceInstanceName), Pose = @(null), Height = 0),
+	(nonvar(SurfaceInstanceName),aggregateStaticPlanning([SurfaceInstanceName, _, _, _, Height, Pose]);var(SurfaceInstanceName), Pose = @(null), Height = 0),
 	perception(PrologBridge),
 	jpl_call(PrologBridge, 'perceive', [Pose, Height], Out_raw),
 	jpl_get(Out_raw,'length',Length),

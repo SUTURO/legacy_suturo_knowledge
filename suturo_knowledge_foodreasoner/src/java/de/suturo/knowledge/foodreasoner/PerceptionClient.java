@@ -126,6 +126,9 @@ public class PerceptionClient {
 			Stamped<Matrix4d> poPose = new Stamped<Matrix4d>(
 					poseToMatrix4d(po.matched_cuboid.pose), po.frame_id,
 					Time.now());
+			// Cuboid length1 = Width of object
+			// Cuboid length2 = Height of object
+			// Cuboid length3 = Depth of object
 			mapDim.put(Long.valueOf(po.c_id), new Vector3d(
 					po.matched_cuboid.length1, po.matched_cuboid.length2,
 					po.matched_cuboid.length3));
@@ -168,7 +171,7 @@ public class PerceptionClient {
 			Quaternion or = stampedPoint.getData().orientation;
 			Vector3d dim = mapDim.get(entry.getValue());
 			if (pose != null) {
-				pos.z = pose.position.z + (height / 2) + (dim.z / 2) + 0.01;
+				pos.z = pose.position.z + (height / 2) + (dim.y / 2) + 0.01;
 			}
 			mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z,
 					or, "/map");
