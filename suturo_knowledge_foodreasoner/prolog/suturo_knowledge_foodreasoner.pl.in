@@ -5,6 +5,7 @@
       graspableOn/2,
       containerOn/2,
       updatePerception/1,
+      updatePerception/2,
       publishSemanticMap/0,
       placedObjectInBox/3,
       onObject/2,
@@ -32,7 +33,7 @@
 %%  -Out (List): A list consisting of a frame id, the x y z coordinates as list and the dimensions as list.
 %%               Example: ['/map', [0.4, 0.5, 0.6], [0.25, 0.21, 0.22]]
 getDimensions(ObjectInstanceName, [FrameID, [M03, M13, M23], [Height, Depth, Width]]) :-
-	getLatestMatrixOfObject(ObjectInstanceName, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	getLatestMatrixOfObject(ObjectInstanceName, _, _, _, M03, _, _, _, M13, _, _, _, M23, _, _, _, _),
 	rdf_has(ObjectInstanceName, knowrob:latestDetectionOfObject, ObjectDetection),
 	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
 	strip_literal_type(FrameID_Raw, FrameID),
@@ -53,7 +54,7 @@ getDimensions(ObjectInstanceName, [FrameID, [M03, M13, M23], [Height, Depth, Wid
 %% 	+ObjectInstanceName (String): Name of object instance
 %%  -Out (List): A list consisting of a frame id, the x y z coordinates as list and the dimensions as list.
 getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]):-
-	getSemanticMapObjectInfo(Object, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, Width, Height, Depth).
+	getSemanticMapObjectInfo(Object, _, _, _, M03, _, _, _, M13, _, _, _, M23, _, _, _, _, Width, Height, Depth).
 
 %% onObject(+ObjectInstanceName, -Out)
 %%
@@ -123,10 +124,24 @@ containerOn(ObjectInstanceName, Out) :-
 %%                 not the amount of recognized objects in the knowledge base)
 updatePerception(Out) :-
 	once(
-		(savePerception(ObjectList),
+		(savePerception(_, ObjectList),
 		 length(ObjectList, Out);
-		 %hackCreateTable(ObjectList),
-		 %sendPlanningScene(ObjectList);
+		 Out is 0)
+		).
+
+%% updatePerception(+SurfaceInstanceName, -Out)
+%%
+%% Calls the perception service and runs the recognition on the results.
+%% Furthermore, a new PlanningScene is published to the manipulation node.
+%% The recognized objects are placed right on the given surface with a collision prevention margin of 1 cm
+%%
+%% 	+SurfaceInstanceName (String): Name of surface whose z-Axis in map is used for object placement
+%%  -Out (Number): Number of recognized objects (Note: These are CURRENTLY recognized objects and
+%%                 not the amount of recognized objects in the knowledge base)
+updatePerception(SurfaceInstanceName, Out) :-
+	once(
+		(savePerception(SurfaceInstanceName, ObjectList),
+		 length(ObjectList, Out);
 		 Out is 0)
 		).
 
@@ -176,14 +191,16 @@ publishSemanticMap :-
 	perception(PerceptionClient),
 	forall(aggregateStaticPlanning(Param), jpl_call(PerceptionClient, 'addSemanticPerception', Param, _)).
 
-%% Load lab room semantic map
-:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true).
-%% Load suturo objects (either defaultlab_hierarchy.owl, or load OWL file given as argument)
+%% Load semantic map depending on location passed as argument
 :- current_prolog_flag(argv, Args), last(Args, Arg),
-   string_concat('@LOCAL_PACKAGE_PATH@/owl/', Arg, File),
-   string_concat(_, '.owl', File) ->
-   		owl_parser:owl_parse(File, false, false, true);
-   		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/lab_hierarchy.owl', false, false, true).
+   (Arg = 'gazebo' ->
+   		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
+		%% owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/gazebo_room.owl', false, false, true) TODO Replace later
+   ; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
+   ).
+
+%% Load suturo objects 
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl', false, false, true).
 
 %% Instanciate Java bridges to Perception and Manipulation
 :- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
@@ -222,7 +239,7 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
 	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
 	strip_literal_type(FrameID_Raw, FrameID),
-	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z).
+	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, _, _, _).
 
 aggregateStaticPlanning([ObjectIdentifier, '/map', Depth, Width, Height, Pose]) :-
 	getSemanticMapObjectInfo(ObjectIdentifier, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, Width, Height, Depth),
@@ -231,12 +248,12 @@ aggregateStaticPlanning([ObjectIdentifier, '/map', Depth, Width, Height, Pose]) 
 
 
 %% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
-savePerception(ObjectInst) :-
-	getPerceivedObjectsInfos(DataList),
+savePerception(SurfaceInstanceName, ObjectInst) :-
+	getPerceivedObjectsInfos(SurfaceInstanceName, DataList),
 	findall(Instance,(member(Object, DataList),
 		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).
 
-createPerceptionInstanceToObject([Identifier, Map_FrameId, X_Coord, Y_Coord, Z_Coord,
+createPerceptionInstanceToObject([Identifier, Map_FrameId, _, _, _,
  M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
 	Identifier) :-
 	once(create_perception_instance(['VisualPerception'], Perception)),
@@ -257,9 +274,10 @@ fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21,
 	jpl_get(Position, 'y', Y),
 	jpl_get(Position, 'z', Z).
 
-getPerceivedObjectsInfos(PODataList) :-
+getPerceivedObjectsInfos(SurfaceInstanceName, PODataList) :-
+	(nonvar(SurfaceInstanceName),aggregateStaticPlanning([SurfaceInstanceName, FrameID, _, _, Height, Pose]);var(SurfaceInstanceName), Pose = @(null), Height = 0),
 	perception(PrologBridge),
-	jpl_call(PrologBridge, 'perceive', [], Out_raw),
+	jpl_call(PrologBridge, 'perceive', [Pose, Height], Out_raw),
 	jpl_get(Out_raw,'length',Length),
 	is(Indizees, Length-1),
 	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
