@@ -80,15 +80,21 @@ public class PerceptionClient {
 	/**
 	 * Calls the perception service and runs classifiers on the results.
 	 * 
+	 * @param pose
+	 *            Pose to use as height correction to correctly place objects on
+	 *            a surface in planning scene
+	 * @param height
+	 *            Height of surface to place objects on
+	 * 
 	 * @return String array of all recognized identifiers
 	 * 
 	 * @throws RosException
 	 */
-	public String[] perceive() throws RosException {
+	public String[] perceive(Pose pose, double height) throws RosException {
 		clearPerceived(identifierToID.keySet());
 		PerceivedObject[] pos = updatePerception();
 		classifyObjects(pos);
-		publishPlanningScenes();
+		publishPlanningScenes(pose, height);
 		return identifierToID.keySet().toArray(new String[0]);
 	}
 
@@ -130,23 +136,6 @@ public class PerceptionClient {
 	}
 
 	/**
-	 * Hack to add 1 cm to all objects' height value to fix collisions. <br>
-	 * TODO: Remove me!
-	 * 
-	 * @param <T>
-	 * @param out
-	 */
-	private static <T> void applyCorrectionFactors(Stamped<T> out) {
-		T data = out.getData();
-		if (data instanceof Pose) {
-			((Pose) data).position.z += 0.02;
-		}
-		if (data instanceof Point3d) {
-			((Point3d) data).z += 0.02;
-		}
-	}
-
-	/**
 	 * Pass perceived objects to classifier and assign c_id with identifier
 	 * 
 	 * @param pos
@@ -163,8 +152,11 @@ public class PerceptionClient {
 
 	/**
 	 * Publishes recognized objects to the planning scene
+	 * 
+	 * @param pose
+	 *            Height correction pose
 	 */
-	private void publishPlanningScenes() {
+	private void publishPlanningScenes(Pose pose, double height) {
 		for (Entry<String, Long> entry : identifierToID.entrySet()) {
 			Stamped<Pose> stampedPoint = mapCuboid.get(entry.getValue());
 			if (stampedPoint == null) {
@@ -175,6 +167,9 @@ public class PerceptionClient {
 			Point pos = stampedPoint.getData().position;
 			Quaternion or = stampedPoint.getData().orientation;
 			Vector3d dim = mapDim.get(entry.getValue());
+			if (pose != null) {
+				pos.z = pose.position.z + (height / 2) + (dim.z / 2) + 0.01;
+			}
 			mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z,
 					or, "/map");
 		}
@@ -205,7 +200,6 @@ public class PerceptionClient {
 			tf.transformPose(target, poPose, out);
 			Stamped<Pose> pose = new Stamped<Pose>(
 					matrix4dToPose(out.getData()), target, poPose.timeStamp);
-			applyCorrectionFactors(pose);
 			map.put(Long.valueOf(cID), pose);
 		} catch (RuntimeException e) {
 			throw e;
@@ -338,7 +332,6 @@ public class PerceptionClient {
 			Stamped<Point3d> out = new Stamped<Point3d>();
 			out.setData(new Point3d());
 			tf.transformPoint(target, poPoint, out);
-			applyCorrectionFactors(out);
 			map.put(Long.valueOf(cID), out);
 		} catch (RuntimeException e) {
 			throw e;

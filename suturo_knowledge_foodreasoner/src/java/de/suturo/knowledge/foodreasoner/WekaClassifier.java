@@ -1,6 +1,7 @@
 package de.suturo.knowledge.foodreasoner;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,8 +38,13 @@ class WekaClassifier implements ObjectClassifier {
 	 */
 	@SuppressWarnings("unchecked")
 	public WekaClassifier() throws Exception {
-		Instances data = getInstances(WekaClassifier.class
-				.getResourceAsStream(ARFF_FILE));
+		@SuppressWarnings("resource")
+		InputStream arff = WekaClassifier.class.getResourceAsStream(ARFF_FILE);
+		if (arff == null) {
+			throw new FileNotFoundException("Could not get arff file "
+					+ ARFF_FILE + " from classpath!");
+		}
+		Instances data = getInstances(arff);
 		attributes = new ArrayList<Attribute>(data.numAttributes());
 		Enumeration<Attribute> atts = data.enumerateAttributes();
 		while (atts.hasMoreElements()) {
