@@ -21,7 +21,7 @@ public class GetBarcodeService {
 
 	private final String serviceName;
 
-	private static final String DEFAULT_SERVICE_NAME = "/suturo/GetBarcode";
+	private static final String DEFAULT_SERVICE_NAME = "/suturo/barcodescanner";
 
 	/**
 	 * Access to GetBarcode using given handle
