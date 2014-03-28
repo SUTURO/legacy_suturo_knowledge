@@ -9,8 +9,7 @@
 
   <depend package="rosjava_jni"/> <!-- Java in ROS -->
   <depend package="suturo_knowledge_ps_export"/> <!-- Planning scene export -->
-  <depend package="suturo_perception_msgs"/> <!-- Communication with perception -->
-  <depend package="geometry_msgs" /> <!-- Dependency of perception_msg, so rosjava can build msg classes -->
+  <depend package="suturo_java_serviceclients"/> <!-- Communication with perception -->
   <depend package="json_prolog"/> <!-- Java/Prolog bridge -->
   <depend package="knowrob_common"/>
   <depend package="ias_semantic_map"/>

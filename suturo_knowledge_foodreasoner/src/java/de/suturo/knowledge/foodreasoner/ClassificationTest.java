@@ -16,6 +16,7 @@ import ros.pkg.geometry_msgs.msg.Point;
 import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
 import tfjava.Stamped;
 import tfjava.TFListener;
+import de.suturo.java.serviceclient.GetClustersService;
 
 /**
  * Bridge from Perception to Prolog

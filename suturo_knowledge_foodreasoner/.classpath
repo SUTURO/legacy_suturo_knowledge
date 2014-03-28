@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="../suturo_knowledge_ps_export/bin"/>
 	<classpathentry kind="lib" path="../tfjava/lib/vecmath.jar"/>
 	<classpathentry kind="lib" path="lib/weka.jar"/>
+	<classpathentry kind="lib" path="../suturo_java_serviceclients/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

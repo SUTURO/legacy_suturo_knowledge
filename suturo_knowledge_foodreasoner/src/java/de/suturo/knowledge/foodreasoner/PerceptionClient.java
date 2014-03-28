@@ -20,6 +20,7 @@ import ros.pkg.geometry_msgs.msg.Quaternion;
 import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
 import tfjava.Stamped;
 import tfjava.TFListener;
+import de.suturo.java.serviceclient.GetClustersService;
 import de.suturo.knowledge.psexport.MapConverter;
 
 /**
