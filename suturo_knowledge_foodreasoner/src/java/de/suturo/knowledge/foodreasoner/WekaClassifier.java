@@ -103,7 +103,7 @@ class WekaClassifier implements ObjectClassifier {
 				Math.max(po.matched_cuboid.length2, po.matched_cuboid.length3));
 		double minLen = Math.min(po.matched_cuboid.length1,
 				Math.min(po.matched_cuboid.length2, po.matched_cuboid.length3));
-		String name = att.name();
+		String name =3;
 		if ("red".equals(name))
 			inst.setValue(att, po.c_color_average_r);
 		else if ("green".equals(name))
@@ -121,11 +121,14 @@ class WekaClassifier implements ObjectClassifier {
 		else if ("vol".equals(name))
 			inst.setValue(att, po.matched_cuboid.volume);
 		else if ("length_1".equals(name))
-			inst.setValue(att, po.matched_cuboid.length1);
+			inst.setValue(att, maxLen);
+			//inst.setValue(att, po.matched_cuboid.length1);
 		else if ("length_2".equals(name))
-			inst.setValue(att, po.matched_cuboid.length2);
+			inst.setValue(att, middleLen);
+			//inst.setValue(att, po.matched_cuboid.length2);
 		else if ("length_3".equals(name))
-			inst.setValue(att, po.matched_cuboid.length3);
+			isnt.setValue(att, minLen);
+			//inst.setValue(att, po.matched_cuboid.length3);
 		else if ("cuboid_length_relation_1".equals(name))
 			inst.setValue(att, maxLen / middleLen);
 		else if ("cuboid_length_relation_2".equals(name))
