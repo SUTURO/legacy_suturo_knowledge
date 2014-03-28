@@ -24,17 +24,6 @@ public class GetBarcodeService {
 	private static final String DEFAULT_SERVICE_NAME = "/suturo/GetBarcode";
 
 	/**
-	 * Enum to determine the operation
-	 * 
-	 * @author Moritz
-	 * 
-	 */
-	enum Operation {
-		/** Get recognized barcodes */
-		GET();
-	}
-
-	/**
 	 * Access to GetBarcode using given handle
 	 * 
 	 * @param handle
@@ -61,19 +50,16 @@ public class GetBarcodeService {
 	 * @throws RosException
 	 */
 	public List<Barcode> getBarcodes() throws RosException {
-		return callService(Operation.GET);
+		return callService();
 	}
 
 	/**
 	 * Calls service with given operation and returns a list of barcodes
 	 * 
-	 * @param op
-	 *            Operation
-	 * 
 	 * @return list of barcodes
 	 * @throws RosException
 	 */
-	private List<Barcode> callService(Operation op) throws RosException {
+	private List<Barcode> callService() throws RosException {
 		ServiceClient<Request, Response, GetBarcode> cl = handle.serviceClient(
 				serviceName, new GetBarcode());
 		List<Barcode> barcodes = cl.call(new Request()).barcodes;
