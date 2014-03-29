@@ -154,12 +154,12 @@ updatePerception(SurfaceInstanceName, Out) :-
 %%  -Out (Number): Empty list (for planning convenience)
 placedObjectInBox(Object, Container, Out) :-
 	rdf_assert(Object, knowrob:'insideOf', Container),
-	getLatestMatrixOfObject(Container, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
-	rdf_has(Container, suturo:frameID, FrameID_Raw),
-	strip_literal_type(FrameID_Raw, Map_FrameId),
-	createPerceptionInstanceToObject([Object, Map_FrameId, M03, M13, M13,
- 	M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
-	Container),
+	%getLatestMatrixOfObject(Container, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	%rdf_has(Container, suturo:frameID, FrameID_Raw),
+	%strip_literal_type(FrameID_Raw, Map_FrameId),
+	%createPerceptionInstanceToObject([Object, Map_FrameId, M03, M13, M13,
+ 	%M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
+	%Container),
 	perception(PerceptionClient),
 	jpl_call(PerceptionClient, 'romoveObjectFromPS', [Object],_),
 	%rdf_retractall(Object, knowrob:'latestDetectionOfObject',_),
