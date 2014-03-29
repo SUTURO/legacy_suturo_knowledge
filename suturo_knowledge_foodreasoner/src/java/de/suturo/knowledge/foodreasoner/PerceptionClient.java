@@ -406,4 +406,15 @@ public class PerceptionClient {
 		identifierToID.clear();
 	}
 
+	/**
+	 * Remove object with specified id from planning scene
+	 * 
+	 * @param id
+	 *            Object ID
+	 */
+	public void removeObjectFromPS(String id) {
+		mc.removeObject(id);
+		mc.publishScene();
+	}
+
 }
