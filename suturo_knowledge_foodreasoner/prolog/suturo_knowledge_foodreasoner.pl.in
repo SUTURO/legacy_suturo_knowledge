@@ -161,7 +161,7 @@ placedObjectInBox(Object, Container, Out) :-
  	%M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
 	%Container),
 	perception(PerceptionClient),
-	jpl_call(PerceptionClient, 'romoveObjectFromPS', [Object],_),
+	jpl_call(PerceptionClient, 'removeObjectFromPS', [Object],_),
 	%rdf_retractall(Object, knowrob:'latestDetectionOfObject',_),
 	Out = [].
 
