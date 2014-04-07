@@ -10,7 +10,6 @@
   <url>http://www.suturo.de</url>
 
   <depend package="SnapMapICP" />
-  <depend package="pr2_navigation_global" />
   <depend package="rosjava_jni"/> <!-- Java in ROS -->
   <depend package="tfjava"/> <!-- Java in ROS -->
   <depend package="geometry_msgs" />
