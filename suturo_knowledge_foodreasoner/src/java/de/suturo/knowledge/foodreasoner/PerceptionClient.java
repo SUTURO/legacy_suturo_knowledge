@@ -42,7 +42,6 @@ public class PerceptionClient {
 	private final Map<String, Long> identifierToID = new HashMap<String, Long>();
 	private final Map<Long, Stamped<Point3d>> mapCoords = new HashMap<Long, Stamped<Point3d>>();
 	private final Map<Long, Stamped<Pose>> mapCuboid = new HashMap<Long, Stamped<Pose>>();
-	private final Map<Long, Stamped<Pose>> odomCuboid = new HashMap<Long, Stamped<Pose>>();
 	private final Map<Long, Vector3d> mapDim = new HashMap<Long, Vector3d>();
 
 	private ObjectClassifier classifier;
@@ -136,7 +135,6 @@ public class PerceptionClient {
 					po.matched_cuboid.length3));
 			addTransformPoint("/map", poPoint, mapCoords, po.c_id);
 			addTransformPose("/map", poPose, mapCuboid, po.c_id);
-			addTransformPose("/odom_combined", poPose, odomCuboid, po.c_id);
 		}
 		return pos;
 	}
@@ -164,20 +162,20 @@ public class PerceptionClient {
 	 */
 	private void publishPlanningScenes(Pose pose, double height) {
 		for (Entry<String, Long> entry : identifierToID.entrySet()) {
-			Stamped<Pose> stampedPose = odomCuboid.get(entry.getValue());
-			if (stampedPose == null) {
+			Stamped<Pose> stampedPoint = mapCuboid.get(entry.getValue());
+			if (stampedPoint == null) {
 				handle.logWarn("PerceptionClient: No transformed cuboid available for object "
 						+ entry.getKey());
 				continue;
 			}
-			Point pos = stampedPose.getData().position;
-			Quaternion or = stampedPose.getData().orientation;
+			Point pos = stampedPoint.getData().position;
+			Quaternion or = stampedPoint.getData().orientation;
 			Vector3d dim = mapDim.get(entry.getValue());
 			if (pose != null) {
 				pos.z = pose.position.z + (height / 2) + (dim.y / 2) + 0.01;
 			}
 			mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z,
-					or, stampedPose.frameID);
+					or, "/map");
 		}
 		mc.publishScene();
 	}
@@ -404,7 +402,6 @@ public class PerceptionClient {
 	private void clearPerception() {
 		mapCoords.clear();
 		mapCuboid.clear();
-		odomCuboid.clear();
 		mapDim.clear();
 		identifierToID.clear();
 	}
