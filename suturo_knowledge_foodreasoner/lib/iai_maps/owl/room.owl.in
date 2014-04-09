@@ -3009,7 +3009,7 @@
         <knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.405</knowrob:m23>
         <knowrob:m33 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m33>
         <knowrob:m22 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m22>
-        <knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.681244</knowrob:m13>
+        <knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.706244</knowrob:m13>
     </owl:NamedIndividual>
 
 
@@ -3032,7 +3032,7 @@
         <knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.83</knowrob:m23>
         <knowrob:m33 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m33>
         <knowrob:m22 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m22>
-        <knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.681244</knowrob:m13>
+        <knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.706244</knowrob:m13>
     </owl:NamedIndividual>
 
 
@@ -3124,7 +3124,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.suturo.de/ontology/semantic#RotationMatrix3D_Jp3VnXnw">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3D"/>
-        <knowrob:m03 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.84</knowrob:m03>
+        <knowrob:m03 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.86</knowrob:m03>
         <knowrob:m02 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m02>
         <knowrob:m31 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m31>
         <knowrob:m20 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m20>
@@ -3134,7 +3134,7 @@
         <knowrob:m21 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m21>
         <knowrob:m12 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m12>
         <knowrob:m01 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m01>
-        <knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.585</knowrob:m13>
+        <knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.61</knowrob:m13>
         <knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.90</knowrob:m23>
         <knowrob:m22 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m22>
         <knowrob:m00 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m00>
