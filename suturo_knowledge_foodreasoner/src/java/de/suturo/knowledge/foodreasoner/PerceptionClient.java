@@ -136,7 +136,7 @@ public class PerceptionClient {
 					po.matched_cuboid.length3));
 			addTransformPoint("/map", poPoint, mapCoords, po.c_id);
 			addTransformPose("/map", poPose, mapCuboid, po.c_id);
-			addTransformPose("/odom_combined", poPose, odomCuboid, po.c_id);
+			addTransformPose(po.frame_id, poPose, odomCuboid, po.c_id);
 		}
 		return pos;
 	}
