@@ -188,8 +188,10 @@ clearPerceived :-
  	rdf_retractall(_, knowrob:'latestDetectionOfObject', _),
  	rdf_retractall(_, knowrob:'previousDetectionOfObject', _),
  	rdf_has(Perceptions, rdf:type, knowrob:'VisualPerception'),
- 	rdf_retractall(Perceptions, _, _),
- 	rdf_retractall(_, _, Perceptions).
+ 	rdf_transaction((
+ 		rdf_retractall(Perceptions, _, _),
+ 		rdf_retractall(_, _, Perceptions)
+ 	)).
 
 %% publishSemanticMap
 %%
