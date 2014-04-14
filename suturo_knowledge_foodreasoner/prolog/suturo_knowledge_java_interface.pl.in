@@ -114,3 +114,28 @@ processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_
   jpl_get(Matrix_Raw,'m31', M31),
   jpl_get(Matrix_Raw,'m32', M32),
   jpl_get(Matrix_Raw,'m33', M33).
+
+assertObject(ObjectIdentifier, Shape, Art, Volume, Width, Height, Depth, LengthRel1, LengthRel2, H, S, V, R, G, B) :-
+  rdf_assert(ObjectIdentifier, rdf:type, owl:'NamedIndividual'),
+  rdf_assert(ObjectIdentifier, rdf:type, Shape),
+  rdf_assert(ObjectIdentifier, rdf:type, Art),
+  rdf_assert(ObjectIdentifier, knowrob:volumeOfObject, literal(type(xsd:float,Volume))),
+  rdf_assert(ObjectIdentifier, knowrob:heightOfObject, literal(type(xsd:double,Height))),
+  rdf_assert(ObjectIdentifier, knowrob:widthOfObject, literal(type(xsd:double,Width))),
+  rdf_assert(ObjectIdentifier, knowrob:depthOfObject, literal(type(xsd:double,Depth))),
+  rdf_assert(ObjectIdentifier, suturo:lengthrelation1, literal(type(xsd:float,LengthRel1))),
+  rdf_assert(ObjectIdentifier, suturo:lengthrelation2, literal(type(xsd:float,LengthRel2))),
+  rdf_assert(ObjectIdentifier, rdf:type, suturo:'HSVAverageColor'),
+  rdf_assert(ObjectIdentifier, suturo:hColorValue, literal(type(xsd:int,H))),
+  rdf_assert(ObjectIdentifier, suturo:sColorValue, literal(type(xsd:float,S))),
+  rdf_assert(ObjectIdentifier, suturo:vColorValue, literal(type(xsd:float,V))),
+  rdf_assert(ObjectIdentifier, rdf:type, suturo:'RGBAvergaeColor'),
+  rdf_assert(ObjectIdentifier, suturo:rColorValue, literal(type(xsd:byte,R))),
+  rdf_assert(ObjectIdentifier, suturo:gColorValue, literal(type(xsd:byte,G))),
+  rdf_assert(ObjectIdentifier, suturo:bColorValue, literal(type(xsd:byte,B))).
+
+
+saveObjectToFile(ObjectIdentifier) :-
+  open('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl',append,Stream),
+  rdf_save_subject(Stream, ObjectIdentifier, []),
+  close(Stream).
