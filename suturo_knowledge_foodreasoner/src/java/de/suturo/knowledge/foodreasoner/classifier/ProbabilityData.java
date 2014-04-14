@@ -1,4 +1,4 @@
-package de.suturo.knowledge.foodreasoner;
+package de.suturo.knowledge.foodreasoner.classifier;
 import java.util.HashMap;
 class ProbabilityData {
   private final HashMap<String, Double> data = new HashMap<String, Double>();

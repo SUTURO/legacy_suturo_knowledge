@@ -21,6 +21,9 @@ import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
 import tfjava.Stamped;
 import tfjava.TFListener;
 import de.suturo.java.serviceclient.GetClustersService;
+import de.suturo.knowledge.foodreasoner.classifier.ObjectClassifier;
+import de.suturo.knowledge.foodreasoner.classifier.ProbabilityClassifier;
+import de.suturo.knowledge.foodreasoner.classifier.WekaClassifier;
 import de.suturo.knowledge.psexport.MapConverter;
 
 /**

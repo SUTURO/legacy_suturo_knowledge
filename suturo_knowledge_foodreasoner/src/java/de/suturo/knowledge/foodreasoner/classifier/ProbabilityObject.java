@@ -1,4 +1,4 @@
-package de.suturo.knowledge.foodreasoner;
+package de.suturo.knowledge.foodreasoner.classifier;
 
 
 class ProbabilityObject implements Comparable<ProbabilityObject> {

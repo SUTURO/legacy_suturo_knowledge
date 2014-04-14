@@ -1,4 +1,4 @@
-package de.suturo.knowledge.foodreasoner;
+package de.suturo.knowledge.foodreasoner.classifier;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
 import tfjava.Stamped;
 import tfjava.TFListener;
 import de.suturo.java.serviceclient.GetClustersService;
+import de.suturo.knowledge.foodreasoner.TFListenerSafe;
 
 /**
  * Bridge from Perception to Prolog

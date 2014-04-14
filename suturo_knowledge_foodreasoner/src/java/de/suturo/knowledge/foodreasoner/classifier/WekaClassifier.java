@@ -1,4 +1,4 @@
-package de.suturo.knowledge.foodreasoner;
+package de.suturo.knowledge.foodreasoner.classifier;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -23,7 +23,7 @@ import weka.core.SerializationHelper;
  * @author Moritz - Completely rewritten
  * 
  */
-class WekaClassifier implements ObjectClassifier {
+public class WekaClassifier implements ObjectClassifier {
 	private static final String ARFF_FILE = "/arff/milestone4.arff";
 	private static final String CLASSIFIER_PATH = "/classifier.model";
 	private static final String OWL_NS = "http://www.suturo.de/ontology/hierarchy#";
