@@ -186,11 +186,13 @@ clearPerceived :-
  	jpl_call(PerceptionClient, 'clearPlanningScene', [], _),
  	rdf_retractall(_, knowrob:'latestDetectionOfObject', _),
  	rdf_retractall(_, knowrob:'previousDetectionOfObject', _),
- 	rdf_has(Perceptions, rdf:type, knowrob:'VisualPerception'),
- 	rdf_transaction((
- 		rdf_retractall(Perceptions, _, _),
- 		rdf_retractall(_, _, Perceptions)
- 	)).
+ 	rdf_transaction(
+ 		(forall(rdf_has(Perceptions, rdf:type, knowrob:'VisualPerception'),
+ 			(rdf_retractall(Perceptions, _, _),
+ 		 	 rdf_retractall(_, _, Perceptions)
+ 			))
+ 		)
+ 	).
 
 %% publishSemanticMap
 %%
@@ -213,7 +215,7 @@ publishSemanticMap :-
 %% Instanciate Java bridges to Perception and Manipulation
 :- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
 %% Instanciate Java object classifier
-:- jpl_new('de.suturo.knowledge.foodreasoner.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
+:- jpl_new('de.suturo.knowledge.foodreasoner.classifier.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
 
 %% Constants
 shape(0, 'NONE').
