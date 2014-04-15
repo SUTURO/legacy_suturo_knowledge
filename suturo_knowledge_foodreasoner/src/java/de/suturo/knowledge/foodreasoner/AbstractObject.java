@@ -121,7 +121,7 @@ public abstract class AbstractObject {
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new TFException(centroid.frameID, target);
+			throw new TFException(centroid.frameID, target, e);
 		}
 	}
 
@@ -154,7 +154,7 @@ public abstract class AbstractObject {
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new TFException(centroid.frameID, target);
+			throw new TFException(centroid.frameID, target, e);
 		}
 	}
 

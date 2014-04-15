@@ -22,6 +22,7 @@ import de.suturo.java.serviceclient.GetClustersService;
 import de.suturo.knowledge.foodreasoner.classifier.ObjectClassifier;
 import de.suturo.knowledge.foodreasoner.classifier.ProbabilityClassifier;
 import de.suturo.knowledge.foodreasoner.classifier.WekaClassifier;
+import de.suturo.knowledge.foodreasoner.exception.TFException;
 import de.suturo.knowledge.psexport.MapConverter;
 
 /**
@@ -97,8 +98,19 @@ public class PerceptionClient {
 		clearPerceived();
 		PerceivedObject[] pos = updatePerception();
 		classifyObjects(pos);
+		transformObjects();
 		publishPlanningScenes(pose, height);
 		return allObjects.keySet().toArray(new String[0]);
+	}
+
+	private void transformObjects() {
+		for (AbstractObject object : allObjects.values()) {
+			try {
+				object.transformToFrame(BASE_FRAME);
+			} catch (TFException e) {
+				handle.logWarn("PerceptionClient: " + e.getMessage());
+			}
+		}
 	}
 
 	/**
