@@ -204,8 +204,8 @@ publishSemanticMap :-
 %% Load semantic map depending on location passed as argument
 :- current_prolog_flag(argv, Args), last(Args, Arg),
    (Arg = 'gazebo' ->
+		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/gazebo_room.owl', false, false, true);
    		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
-		%% owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/gazebo_room.owl', false, false, true) TODO Replace later
    ; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
    ).
 
