@@ -100,7 +100,7 @@ public class PerceptionClient {
 		classifyObjects(pos);
 		transformObjects();
 		publishPlanningScenes(pose, height);
-		return allObjects.keySet().toArray(new String[0]);
+		return knownObjects.toArray(new String[0]);
 	}
 
 	private void transformObjects() {
@@ -163,8 +163,7 @@ public class PerceptionClient {
 		List<AbstractObject> out = new ArrayList<AbstractObject>(a.size()
 				+ b.size());
 		out.addAll(a);
-		// TODO handle unknown objects with centroid checking and prolog
-		// awareness! out.addAll(b);
+		out.addAll(b);
 		Map<String, AbstractObject> objMap = new HashMap<String, AbstractObject>();
 		for (AbstractObject object : out) {
 			objMap.put(object.getIdentifier(), object);
