@@ -3124,7 +3124,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.suturo.de/ontology/semantic#RotationMatrix3D_Jp3VnXnw">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3D"/>
-        <knowrob:m03 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.86</knowrob:m03>
+        <knowrob:m03 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.02</knowrob:m03>
         <knowrob:m02 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m02>
         <knowrob:m31 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m31>
         <knowrob:m20 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m20>
