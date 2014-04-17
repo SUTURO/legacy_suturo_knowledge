@@ -1,8 +1,6 @@
 package de.suturo.knowledge.foodreasoner;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -44,8 +42,8 @@ public class PerceptionClient {
 	private ObjectClassifier classifier;
 	private final MapConverter mc;
 
-	private final List<AbstractObject> knownObjects;
-	private final List<AbstractObject> unknownObjects;
+	private final Map<String, RecognizedObject> knownObjects;
+	private final Map<String, UnknownObject> unknownObjects;
 	private final Map<String, AbstractObject> allObjects;
 
 	/**
@@ -61,8 +59,8 @@ public class PerceptionClient {
 			classifier = new ProbabilityClassifier();
 		}
 		mc = new MapConverter();
-		knownObjects = new ArrayList<AbstractObject>();
-		unknownObjects = new ArrayList<AbstractObject>();
+		knownObjects = new HashMap<String, RecognizedObject>();
+		unknownObjects = new HashMap<String, UnknownObject>();
 		allObjects = new HashMap<String, AbstractObject>();
 		handle.logInfo("PerceptionClient initialized");
 	}
@@ -100,7 +98,7 @@ public class PerceptionClient {
 		classifyObjects(pos);
 		transformObjects();
 		publishPlanningScenes(pose, height);
-		return knownObjects.toArray(new String[0]);
+		return knownObjects.keySet().toArray(new String[0]);
 	}
 
 	private void transformObjects() {
@@ -149,9 +147,10 @@ public class PerceptionClient {
 			String object = classifier.classifyPerceivedObject(po);
 			// TODO add centroid checking
 			if (object != null) {
-				knownObjects.add(new RecognizedObject(po, object));
+				knownObjects.put(object, new RecognizedObject(po, object));
 			} else {
-				unknownObjects.add(new UnknownObject(po));
+				UnknownObject unknown = new UnknownObject(po);
+				unknownObjects.put(unknown.getIdentifier(), unknown);
 			}
 		}
 		allObjects.clear();
@@ -159,16 +158,13 @@ public class PerceptionClient {
 	}
 
 	private static Map<String, AbstractObject> mapObjects(
-			List<AbstractObject> a, List<AbstractObject> b) {
-		List<AbstractObject> out = new ArrayList<AbstractObject>(a.size()
-				+ b.size());
-		out.addAll(a);
-		out.addAll(b);
-		Map<String, AbstractObject> objMap = new HashMap<String, AbstractObject>();
-		for (AbstractObject object : out) {
-			objMap.put(object.getIdentifier(), object);
-		}
-		return objMap;
+			Map<String, ? extends AbstractObject> a,
+			Map<String, ? extends AbstractObject> b) {
+		Map<String, AbstractObject> out = new HashMap<String, AbstractObject>(
+				a.size() + b.size());
+		out.putAll(a);
+		out.putAll(b);
+		return out;
 	}
 
 	/**
