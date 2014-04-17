@@ -261,6 +261,13 @@ public class CollisionObjectWrapper {
 	}
 
 	/**
+	 * @return the Operation
+	 */
+	public Operation getOperation() {
+		return op;
+	}
+
+	/**
 	 * Generates a {@link CollisionObject} message while performing sanity
 	 * checks, assuring completeness.
 	 * 

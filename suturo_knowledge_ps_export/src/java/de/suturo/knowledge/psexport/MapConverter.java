@@ -1,5 +1,7 @@
 package de.suturo.knowledge.psexport;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -65,7 +67,14 @@ public class MapConverter {
 						.toCollisionObject());
 			}
 		}
-		for (CollisionObjectWrapper co : pendingObjects.values()) {
+		Collection<CollisionObjectWrapper> objects = pendingObjects.values();
+		Iterator<CollisionObjectWrapper> i = objects.iterator();
+		while (i.hasNext()) {
+			CollisionObjectWrapper co = i.next();
+			if (co.getOperation() == Operation.REMOVE) {
+				i.remove();
+				continue; // Removal was done in loop before
+			}
 			handle.logDebug("Publish object with key: " + co.getId());
 			publisher.publish(co.toCollisionObject());
 		}
