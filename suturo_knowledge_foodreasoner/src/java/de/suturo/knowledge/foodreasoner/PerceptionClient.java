@@ -46,6 +46,10 @@ public class PerceptionClient {
 	private final Map<String, UnknownObject> unknownObjects;
 	private final Map<String, AbstractObject> allObjects;
 
+	static {
+		ExceptionHandler.setExcaptionHandler();
+	}
+
 	/**
 	 * Initializes node
 	 */
