@@ -7,6 +7,7 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import ros.pkg.geometry_msgs.msg.Point;
 import ros.pkg.geometry_msgs.msg.Pose;
 import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
 import tfjava.Stamped;
@@ -159,8 +160,41 @@ public abstract class AbstractObject {
 	}
 
 	/**
+	 * Check if object is the same as the given object by comparing centroid
+	 * distances
+	 * 
+	 * @param targetFrame
+	 *            TF frame to compare
+	 * @param obj
+	 *            Object to check against
+	 * @return True if object could be me
+	 */
+	public boolean isSameObject(String targetFrame, AbstractObject obj) {
+		double range = Math.max(obj.getCuboidDim().x,
+				Math.max(obj.getCuboidDim().y, obj.getCuboidDim().z)) / 2;
+		Point myPos = getTransformedPose(targetFrame).getData().position;
+		Point theirPos = obj.getTransformedPose(targetFrame).getData().position;
+		return Math.abs(myPos.x - theirPos.x) < range
+				&& Math.abs(myPos.y - theirPos.y) < range
+				&& Math.abs(myPos.z - theirPos.z) < range;
+	}
+
+	@Override
+	public String toString() {
+		return getIdentifier() != null ? getIdentifier() : super.toString();
+	}
+
+	/**
 	 * Return identifier of object. This is shared with manipulation and
 	 * planning.
 	 */
 	public abstract String getIdentifier();
+
+	/**
+	 * Replace identifier of object.
+	 * 
+	 * @param identifier
+	 *            Identifier to replace
+	 */
+	public abstract void setIdentifier(String identifier);
 }

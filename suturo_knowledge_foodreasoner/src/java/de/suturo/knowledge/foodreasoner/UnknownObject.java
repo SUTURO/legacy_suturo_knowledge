@@ -12,7 +12,7 @@ import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
  */
 public class UnknownObject extends AbstractObject {
 
-	private final String temporaryIdentifier = "http://www.suturo.de/ontology/unclassified#"
+	private String temporaryIdentifier = "http://www.suturo.de/ontology/unclassified#"
 			+ UUID.randomUUID().toString();
 
 	/**
@@ -28,6 +28,11 @@ public class UnknownObject extends AbstractObject {
 	@Override
 	public String getIdentifier() {
 		return temporaryIdentifier;
+	}
+
+	@Override
+	public void setIdentifier(String identifier) {
+		temporaryIdentifier = identifier;
 	}
 
 }

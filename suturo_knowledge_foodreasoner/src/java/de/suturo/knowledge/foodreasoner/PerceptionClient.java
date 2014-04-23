@@ -1,6 +1,8 @@
 package de.suturo.knowledge.foodreasoner;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -97,16 +99,65 @@ public class PerceptionClient {
 	 * @throws RosException
 	 */
 	public String[] perceive(Pose pose, double height) throws RosException {
-		clearPerceived();
+		clearPerceived(); // TODO dont remove everything
 		PerceivedObject[] pos = updatePerception();
-		classifyObjects(pos);
-		transformObjects();
+		List<AbstractObject> objs = classifyObjects(pos);
+		transformObjects(objs);
+		postprocessObjects(objs);
+		persistObjects(objs);
 		publishPlanningScenes(pose, height);
 		return knownObjects.keySet().toArray(new String[0]);
 	}
 
-	private void transformObjects() {
-		for (AbstractObject object : allObjects.values()) {
+	private void persistObjects(List<AbstractObject> objs) {
+		unknownObjects.clear();
+		knownObjects.clear();
+		List<UnknownObject> uObjs = filter(UnknownObject.class, objs);
+		List<RecognizedObject> rObjs = filter(RecognizedObject.class, objs);
+		for (UnknownObject u : uObjs) {
+			unknownObjects.put(u.getIdentifier(), u);
+		}
+		for (RecognizedObject r : rObjs) {
+			knownObjects.put(r.getIdentifier(), r);
+		}
+		allObjects.clear();
+		allObjects.putAll(mapObjects(knownObjects, unknownObjects));
+	}
+
+	private void postprocessObjects(List<AbstractObject> objs) {
+		for (AbstractObject o : objs) {
+			for (AbstractObject o2 : objs) {
+				if (o.equals(o2)) {
+					continue;
+				}
+				if (o.isSameObject(BASE_FRAME, o2)) {
+					handle.logError("Object " + o + " is too close to object "
+							+ o2);
+					// TODO error handling
+					return;
+				}
+			}
+			if (o instanceof UnknownObject) {
+				for (AbstractObject uk : unknownObjects.values()) {
+					if (uk.isSameObject(BASE_FRAME, o)) {
+						o.setIdentifier(uk.getIdentifier());
+						// TODO Reuse instances, replace original and TF data
+					}
+				}
+			}
+			if (o instanceof RecognizedObject) {
+				for (AbstractObject ao : allObjects.values()) {
+					if (ao.isSameObject(BASE_FRAME, o)
+							&& !ao.getIdentifier().equals(o.getIdentifier())) {
+						mc.removeObject(ao.getIdentifier());
+					}
+				}
+			}
+		}
+	}
+
+	private static void transformObjects(List<AbstractObject> objs) {
+		for (AbstractObject object : objs) {
 			try {
 				object.transformToFrame(BASE_FRAME);
 			} catch (TFException e) {
@@ -143,22 +194,19 @@ public class PerceptionClient {
 	 * 
 	 * @param pos
 	 *            PercievedObject list
+	 * @return List of objects
 	 */
-	private void classifyObjects(PerceivedObject[] pos) {
-		knownObjects.clear();
-		unknownObjects.clear();
+	private List<AbstractObject> classifyObjects(PerceivedObject[] pos) {
+		ArrayList<AbstractObject> newRecogObj = new ArrayList<AbstractObject>();
 		for (PerceivedObject po : pos) {
 			String object = classifier.classifyPerceivedObject(po);
-			// TODO add centroid checking
 			if (object != null) {
-				knownObjects.put(object, new RecognizedObject(po, object));
+				newRecogObj.add(new RecognizedObject(po, object));
 			} else {
-				UnknownObject unknown = new UnknownObject(po);
-				unknownObjects.put(unknown.getIdentifier(), unknown);
+				newRecogObj.add(new UnknownObject(po));
 			}
 		}
-		allObjects.clear();
-		allObjects.putAll(mapObjects(knownObjects, unknownObjects));
+		return newRecogObj;
 	}
 
 	private static Map<String, AbstractObject> mapObjects(
@@ -219,6 +267,17 @@ public class PerceptionClient {
 	 */
 	public Stamped<Matrix4d> getCuboidMatrix(String identifier) {
 		return allObjects.get(identifier).getTransformedMatrix(BASE_FRAME);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> List<T> filter(Class<T> clazz, List<?> in) {
+		List<T> list = new ArrayList<T>();
+		for (Object o : in) {
+			if (clazz.isInstance(o)) {
+				list.add((T) o);
+			}
+		}
+		return list;
 	}
 
 	/**
