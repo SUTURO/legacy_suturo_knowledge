@@ -14,7 +14,12 @@
       getDimensions/2,
       getKnowrobDimension/2,
       isOnObject/3,
-      clearPerceived/0
+      startObjectLearning/0,
+      learnObject/2,
+      abortLearning/0,
+      finishLearning/0,
+      clearPerceived/0,
+      loadEnv/1
     ]).
 
 %% Dependencies
@@ -177,6 +182,34 @@ isInObject(Object1, Object2, Out) :-
 	in_ContGeneric(Object1, Object2), Out = true;
 	Out = false.
 
+%% startObjectLearning
+%%
+%% Initializes learning procedure for unknown objects
+startObjectLearning :-
+	true.
+
+%% learnObject(+ObjectInstanceName, -Out)
+%%
+%% Captures perception data for unknown object denoted by ObjectInstanceName. The perception data is fed into the classifiers from WEKA.
+%% For errors watch values of Out parameter.
+%%
+%%  +ObjectInstanceName (String): Name of unknown object instance
+%%  -Out (Integer): Result of the object recognition
+learnObject(ObjectInstanceName, Out) :-
+	true.
+
+%% abortLearning
+%%
+%% Abort all captured unfinished perceptions for unknown objects
+abortLearning :-
+	true.
+
+%% finishLearning
+%%
+%% Classify all perceived data for unknown objects. This will update the current classifier, all learned objects will be recognized in the future
+finishLearning :-
+	true.
+
 
 %% clearPerceived
 %%
@@ -202,12 +235,12 @@ publishSemanticMap :-
 	forall(aggregateStaticPlanning(Param), jpl_call(PerceptionClient, 'addSemanticPerception', Param, _)).
 
 %% Load semantic map depending on location passed as argument
-:- current_prolog_flag(argv, Args), last(Args, Arg),
-   (Arg = 'gazebo' ->
+loadEnv(Environment) :-
+	(Environment = 'gazebo' ->
 		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/gazebo_room.owl', false, false, true);
    		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
-   ; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
-   ).
+   	; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
+   	).
 
 %% Load suturo objects 
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl', false, false, true).
@@ -228,6 +261,7 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
 		(_edible =true, Use=''); 
 		(_edible=false)),
+	_unknown = rdfs_individual_of(ObjectIdentifier, suturo:'UnknownObject'),
 	(rdfs_individual_of(ObjectIdentifier, knowrob:'Box-Container') -> 
 		(rdfs_individual_of(ObjectIdentifier, suturo:'FoodBox') ->
 			(Use = 'storage-for-food';
