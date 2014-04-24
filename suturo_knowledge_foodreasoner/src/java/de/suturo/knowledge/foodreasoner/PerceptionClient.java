@@ -141,7 +141,7 @@ public class PerceptionClient {
 				for (AbstractObject uk : unknownObjects.values()) {
 					if (uk.isSameObject(BASE_FRAME, o)) {
 						o.setIdentifier(uk.getIdentifier());
-						// TODO Reuse instances, replace original and TF data
+						// TODO reuse instances, replace original and TF data
 					}
 				}
 			}
@@ -150,6 +150,7 @@ public class PerceptionClient {
 					if (ao.isSameObject(BASE_FRAME, o)
 							&& !ao.getIdentifier().equals(o.getIdentifier())) {
 						mc.removeObject(ao.getIdentifier());
+						// TODO add quality metric here for better checks
 					}
 				}
 			}
@@ -324,6 +325,7 @@ public class PerceptionClient {
 	 *            Object ID
 	 */
 	public void removeObjectFromPS(String id) {
+		// TODO remove from Maps, too?
 		mc.removeObject(id);
 		mc.publishScene();
 	}
