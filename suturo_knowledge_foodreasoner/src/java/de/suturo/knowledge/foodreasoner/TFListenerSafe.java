@@ -62,7 +62,7 @@ public class TFListenerSafe extends TFListener {
 			if (t != null) {
 				return t;
 			}
-			Time newTime = time.add(new Duration(0.2));
+			Time newTime = time.add(new Duration(WAIT_MSECS / 1000));
 			time.secs = newTime.secs;
 			time.nsecs = newTime.nsecs;
 			try {
