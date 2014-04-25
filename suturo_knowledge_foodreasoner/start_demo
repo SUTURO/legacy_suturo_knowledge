@@ -1,0 +1,14 @@
+Launch Gazebo
+roscd suturo_manipulation_gazebo $./launch_simulation.bash
+Rviz Kram starten und both_hands wegbewegen dann head bewegen
+roslaunch suturo_manipulation_pr2_movit moveit_planning_execution.launch
+Launch Perception Gezebo
+roslaunch suturo_perception_rosnode run_gazebo.launchroslaunch suturo_perception_rosnode run_gazebo.launch
+
+
+
+
+suturo_manipulation_gazebo $optirun ./launch_simulation.bash
+rosrun suturo_knowledge_location localize_gazebo
+roslaunch suturo_perception_rosnode run_gazebo.launch
+optirun roslaunch suturo_manipulation_pr2_movit moveit_planning_execution.launch

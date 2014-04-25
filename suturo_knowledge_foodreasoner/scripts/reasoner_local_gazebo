@@ -1,2 +1,2 @@
 #!/bin/sh
-rosrun rosprolog rosprolog suturo_knowledge_foodreasoner "" gazebo
+rosrun rosprolog rosprolog suturo_knowledge_foodreasoner loadEnv\('gazebo'\)

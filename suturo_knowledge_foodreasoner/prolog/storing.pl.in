@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 %% SUTURO Knowledge - Food reasoning module
 
 :- module(suturo_knowledge_foodreasoner,
@@ -16,16 +14,12 @@
       getDimensions/2,
       getKnowrobDimension/2,
       isOnObject/3,
-      startObjectLearning/0,
-      learnObject/2,
-      abortLearning/0,
-      finishLearning/0,
-      clearPerceived/0,
-      loadEnv/1
+      clearPerceived/0
     ]).
 
 %% Dependencies
 :- use_module(library('knowrob_objects')).
+:- use_module(library('suturo_knowledge_java_interface')).
 :- use_module(library('comp_spatial')).
 
 %% Register owl namespaces
@@ -184,34 +178,6 @@ isInObject(Object1, Object2, Out) :-
 	in_ContGeneric(Object1, Object2), Out = true;
 	Out = false.
 
-%% startObjectLearning
-%%
-%% Initializes learning procedure for unknown objects
-startObjectLearning :-
-	true.
-
-%% learnObject(+ObjectInstanceName, -Out)
-%%
-%% Captures perception data for unknown object denoted by ObjectInstanceName. The perception data is fed into the classifiers from WEKA.
-%% For errors watch values of Out parameter.
-%%
-%%  +ObjectInstanceName (String): Name of unknown object instance
-%%  -Out (Integer): Result of the object recognition
-learnObject(ObjectInstanceName, Out) :-
-	true.
-
-%% abortLearning
-%%
-%% Abort all captured unfinished perceptions for unknown objects
-abortLearning :-
-	true.
-
-%% finishLearning
-%%
-%% Classify all perceived data for unknown objects. This will update the current classifier, all learned objects will be recognized in the future
-finishLearning :-
-	true.
-
 
 %% clearPerceived
 %%
@@ -237,16 +203,18 @@ publishSemanticMap :-
 	forall(aggregateStaticPlanning(Param), jpl_call(PerceptionClient, 'addSemanticPerception', Param, _)).
 
 %% Load semantic map depending on location passed as argument
-loadEnv(Environment) :-
-	(Environment = 'gazebo' ->
+:- current_prolog_flag(argv, Args), last(Args, Arg),
+   (Arg = 'gazebo' ->
 		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/gazebo_room.owl', false, false, true);
    		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
-   	; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
-   	).
+   ; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
+   ).
 
 %% Load suturo objects 
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl', false, false, true).
 
+<<<<<<< HEAD
+=======
 %% Instanciate Java bridges to Perception and Manipulation
 :- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
 %% Instanciate Java object classifier
@@ -263,7 +231,6 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Wi
 	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
 		(_edible =true, Use=''); 
 		(_edible=false)),
-	_unknown = rdfs_individual_of(ObjectIdentifier, suturo:'UnknownObject'),
 	(rdfs_individual_of(ObjectIdentifier, knowrob:'Box-Container') -> 
 		(rdfs_individual_of(ObjectIdentifier, suturo:'FoodBox') ->
 			(Use = 'storage-for-food';
@@ -360,7 +327,15 @@ processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_
 	jpl_get(Matrix_Raw,'m31', M31),
 	jpl_get(Matrix_Raw,'m32', M32),
 	jpl_get(Matrix_Raw,'m33', M33).
+>>>>>>> 09dc09fcd9091a39b47b8ee0294916dcd2f91054
 
+%% getLatestCoordinatesOfObject(+ObjectIdentifier, -X , -Y ,-Z, -FrameID)
+%%
+%% Return the coordinates and the Frame of them of the given Object
+%%
+%% 	+Object (String): Name of object instance 
+%% 	-X,Y,Z (Number): Returns the X,Y, and Z coordinate of the Object
+%% 	-FrameID (String): The id of the frame of the Objects as String
 getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
 	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
@@ -484,4 +459,3 @@ getLatestMatrixOfObject(ObjectIdentifier,  M00, M01, M02, M03, M10, M11, M12, M1
 	strip_literal_type(M32_R , M32),
 	rdf_has(RotationMatrix, knowrob:m33, M33_R),
 	strip_literal_type(M33_R , M33).
->>>>>>> origin/devel

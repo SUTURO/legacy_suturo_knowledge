@@ -10,7 +10,7 @@ import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
  */
 public class RecognizedObject extends AbstractObject {
 
-	private final String identifier;
+	private String identifier;
 
 	/**
 	 * Create a new instance from a perception
@@ -41,6 +41,11 @@ public class RecognizedObject extends AbstractObject {
 	@Override
 	public String getIdentifier() {
 		return identifier;
+	}
+
+	@Override
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 }

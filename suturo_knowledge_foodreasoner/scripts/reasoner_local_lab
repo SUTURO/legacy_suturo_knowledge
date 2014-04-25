@@ -1,2 +1,2 @@
 #!/bin/sh
-rosrun rosprolog rosprolog suturo_knowledge_foodreasoner "" lab
+rosrun rosprolog rosprolog suturo_knowledge_foodreasoner loadEnv\('lab'\)

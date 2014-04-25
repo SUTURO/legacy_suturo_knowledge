@@ -229,6 +229,10 @@
         </rdfs:subClassOf>
     </Class>
 
+    <Class rdf:about="&hierarchy;UnrecognizedObject">
+        <rdfs:subClassOf rdf:resource="&knowrob;SpatialThing-Localized"/>
+    </Class>
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //

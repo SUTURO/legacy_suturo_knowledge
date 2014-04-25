@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export ROS_MASTER_URI=http://pr2a.ai.loc:11311
+export ROS_IP=`/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
