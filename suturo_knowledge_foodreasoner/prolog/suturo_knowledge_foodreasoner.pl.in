@@ -167,7 +167,7 @@ startObjectLearning :-
 %%  +ObjectInstanceName (String): Name of unknown object instance
 %%  -Out (Integer): Result of the object recognition
 learnObject(ObjectInstanceName, Out) :-
-	true.
+	Out is 0.
 
 %% abortLearning
 %%
