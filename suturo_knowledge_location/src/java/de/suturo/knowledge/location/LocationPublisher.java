@@ -33,6 +33,10 @@ public class LocationPublisher {
 	private double rate;
 	private static TFListener tf;
 
+	static {
+		ExceptionHandler.setExcaptionHandler();
+	}
+
 	/**
 	 * Main
 	 * 
