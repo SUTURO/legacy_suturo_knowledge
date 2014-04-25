@@ -70,8 +70,8 @@ getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]):-
 %%  -Out (List): List of objects. An object is also a list consisting of multiple attributes:
 %%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
 onObject(ObjectInstanceName, Out) :-
-	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], [QX, QY, QZ, QW]], (on_Physical(ObjInst, ObjectInstanceName),
-			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ)),Out).
+	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Unknown, Use, [Width, Height, Depth], [QX, QY, QZ, QW]], (on_Physical(ObjInst, ObjectInstanceName),
+			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Unknown, Use, Width, Height, Depth, QW, QX, QY, QZ)),Out).
 
 %% withName(+ObjectInstanceName, -Out)
 %%
@@ -80,8 +80,8 @@ onObject(ObjectInstanceName, Out) :-
 %% 	+ObjectInstanceName (String): Name of object instance
 %%  -Out (List): List of objects. An object is also a list consisting of multiple attributes:
 %%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
-withName(ObjectInstanceName, [_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], [QX, QY, QZ, QW]]) :-
-	grepInfosToPush(ObjectInstanceName, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ).
+withName(ObjectInstanceName, [_edible, _name, [M03, M13, M23], FrameID, NM, Unknown, Use, [Width, Height, Depth], [QX, QY, QZ, QW]]) :-
+	grepInfosToPush(ObjectInstanceName, _edible,_name,M03,M13,M23,FrameID, NM, Unknown, Use, Width, Height, Depth, QW, QX, QY, QZ).
 
 %% graspableOn(+ObjectInstanceName, -Out)
 %%

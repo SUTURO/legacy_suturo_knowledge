@@ -2,7 +2,7 @@
 
 :- module(suturo_knowledge_java_interface,
     [
-      grepInfosToPush/16,
+      grepInfosToPush/17,
       savePerception/2
     ]).
 
@@ -14,11 +14,12 @@
 %% Instanciate Java object classifier
 :- jpl_new('de.suturo.knowledge.foodreasoner.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
 
-grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ) :-
+grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, _unknown, Use, Width, Height, Depth, QW, QX, QY, QZ) :-
   _name = ObjectIdentifier,
   (rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
     (_edible =true, Use=''); 
     (_edible=false)),
+  _unknown = rdfs_individual_of(ObjectIdentifier, suturo:'UnrecognizedObject'),
   (rdfs_individual_of(ObjectIdentifier, knowrob:'Box-Container') -> 
     (rdfs_individual_of(ObjectIdentifier, suturo:'FoodBox') ->
       (Use = 'storage-for-food';
