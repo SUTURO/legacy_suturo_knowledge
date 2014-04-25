@@ -12,7 +12,7 @@
 %% Instanciate Java bridges to Perception and Manipulation
 :- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
 %% Instanciate Java object classifier
-:- jpl_new('de.suturo.knowledge.foodreasoner.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
+:- jpl_new('de.suturo.knowledge.foodreasoner.classifier.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
 
 grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, _unknown, Use, Width, Height, Depth, QW, QX, QY, QZ) :-
   _name = ObjectIdentifier,
