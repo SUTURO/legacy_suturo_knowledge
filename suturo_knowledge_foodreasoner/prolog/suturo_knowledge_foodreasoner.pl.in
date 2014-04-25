@@ -24,6 +24,7 @@
 
 %% Dependencies
 :- use_module(library('knowrob_objects')).
+:- use_module(library('suturo_knowledge_java_interface')).
 :- use_module(library('comp_spatial')).
 
 %% Register owl namespaces
