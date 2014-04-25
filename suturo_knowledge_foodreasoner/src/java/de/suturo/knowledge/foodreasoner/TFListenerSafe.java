@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import ros.communication.Duration;
 import ros.communication.Time;
 import tfjava.StampedTransform;
 import tfjava.TFListener;
@@ -61,6 +62,9 @@ public class TFListenerSafe extends TFListener {
 			if (t != null) {
 				return t;
 			}
+			Time newTime = time.add(new Duration(0.2));
+			time.secs = newTime.secs;
+			time.nsecs = newTime.nsecs;
 			try {
 				Thread.sleep(WAIT_MSECS);
 			} catch (InterruptedException e) {
