@@ -162,7 +162,7 @@ public class PerceptionClient {
 			try {
 				object.transformToFrame(BASE_FRAME);
 			} catch (TFException e) {
-				handle.logWarn("PerceptionClient: " + e.getMessage());
+				handle.logError("PerceptionClient: " + e.getMessage());
 			}
 		}
 	}
