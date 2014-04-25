@@ -3,7 +3,12 @@
 :- module(suturo_knowledge_java_interface,
     [
       grepInfosToPush/17,
-      savePerception/2
+      savePerception/2,
+      aggregateStaticPlanning/1,
+      getSemanticMapObjectInfo/20,
+      getLatestCoordinatesOfObject/5,
+      getLatestMatrixOfObject/17
+
     ]).
 
 %% Register owl namespaces
@@ -140,3 +145,127 @@ saveObjectToFile(ObjectIdentifier) :-
   open('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl',append,Stream),
   rdf_save_subject(Stream, ObjectIdentifier, []),
   close(Stream).
+
+  getSemanticMapObjectInfo(Object, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, Width, Height, Depth) :- 
+  rdf_has(A,'http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn',Object),
+  rdfs_individual_of(A, knowrob:'SemanticMapPerception'),
+  rdf_has(Object, knowrob:heightOfObject, OHeight),
+  strip_literal_type(OHeight, Height_Raw),
+  atom_number(Height_Raw, Height),
+  rdf_has(Object, knowrob:depthOfObject, ODepth),
+  strip_literal_type(ODepth, Depth_Raw),
+  atom_number(Depth_Raw, Depth),
+  rdf_has(Object, knowrob:widthOfObject, OWidth),
+  strip_literal_type(OWidth, Width_Raw),
+  atom_number(Width_Raw, Width),
+  rdf_has(A, knowrob:eventOccursAt,RotationMatrix),
+  rdf_has(RotationMatrix, knowrob:m00, M00_R),
+  strip_literal_type(M00_R , M00_s),
+  atom_number(M00_s, M00),
+  rdf_has(RotationMatrix, knowrob:m01, M01_R),
+  strip_literal_type(M01_R , M01_s),
+  atom_number(M01_s, M01),
+  rdf_has(RotationMatrix, knowrob:m02, M02_R),
+  strip_literal_type(M02_R , M02_s),
+  atom_number(M02_s, M02),
+  rdf_has(RotationMatrix, knowrob:m03, M03_R),
+  strip_literal_type(M03_R , M03_s),
+  atom_number(M03_s, M03),
+  rdf_has(RotationMatrix, knowrob:m10, M10_R),
+  strip_literal_type(M10_R , M10_s),
+  atom_number(M10_s, M10),
+  rdf_has(RotationMatrix, knowrob:m11, M11_R),
+  strip_literal_type(M11_R , M11_s),
+  atom_number(M11_s, M11),
+  rdf_has(RotationMatrix, knowrob:m12, M12_R),
+  strip_literal_type(M12_R , M12_s),
+  atom_number(M12_s, M12),
+  rdf_has(RotationMatrix, knowrob:m13, M13_R),
+  strip_literal_type(M13_R , M13_s),
+  atom_number(M13_s, M13),
+  rdf_has(RotationMatrix, knowrob:m20, M20_R),
+  strip_literal_type(M20_R , M20_s),
+  atom_number(M20_s, M20),
+  rdf_has(RotationMatrix, knowrob:m21, M21_R),
+  strip_literal_type(M21_R , M21_s),
+  atom_number(M21_s, M21),
+  rdf_has(RotationMatrix, knowrob:m22, M22_R),
+  strip_literal_type(M22_R , M22_s),
+  atom_number(M22_s, M22),
+  rdf_has(RotationMatrix, knowrob:m23, M23_R),
+  strip_literal_type(M23_R , M23_s),
+  atom_number(M23_s, M23),
+  rdf_has(RotationMatrix, knowrob:m30, M30_R),
+  strip_literal_type(M30_R , M30_s),
+  atom_number(M30_s, M30),
+  rdf_has(RotationMatrix, knowrob:m31, M31_R),
+  strip_literal_type(M31_R , M31_s),
+  atom_number(M31_s, M31),
+  rdf_has(RotationMatrix, knowrob:m32, M32_R),
+  strip_literal_type(M32_R , M32_s),
+  atom_number(M32_s, M32),
+  rdf_has(RotationMatrix, knowrob:m33, M33_R),
+  strip_literal_type(M33_R , M33_s),
+  atom_number(M33_s, M33).
+  
+getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
+  rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
+  rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
+  strip_literal_type(FrameID_Raw, FrameID),
+  rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
+
+
+  rdf_has(RotationMatrix, knowrob:m03, X_Coord),
+  strip_literal_type(X_Coord , X1),
+  (rdf_has(ObjectIdentifier, suturo:xOffset, X_Offset) ->
+    strip_literal_type(X_Offset , X2S), atom_number(X2S, X2), X is (X1+X2);
+    X is X1),
+
+  rdf_has(RotationMatrix, knowrob:m13, Y_Coord),
+  strip_literal_type(Y_Coord, Y1),
+  (rdf_has(ObjectIdentifier, suturo:yOffset, Y_Offset) ->
+    strip_literal_type(Y_Offset , Y2S), atom_number(Y2S, Y2), Y is (Y1+Y2);
+    Y is Y1),
+  rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
+  strip_literal_type(Z_Coord, Z1),
+  (rdf_has(ObjectIdentifier, suturo:zOffset, Z_Offset) ->
+    strip_literal_type(Z_Offset , Z2S), atom_number(Z2S, Z2), Z is (Z1+Z2);
+    Z is Z1).
+
+
+getLatestMatrixOfObject(ObjectIdentifier,  M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33) :-
+  rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
+  rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
+
+  rdf_has(RotationMatrix, knowrob:m00, M00_R),
+  strip_literal_type(M00_R , M00),
+  rdf_has(RotationMatrix, knowrob:m01, M01_R),
+  strip_literal_type(M01_R , M01),
+  rdf_has(RotationMatrix, knowrob:m02, M02_R),
+  strip_literal_type(M02_R , M02),
+  rdf_has(RotationMatrix, knowrob:m03, M03_R),
+  strip_literal_type(M03_R , M03),
+  rdf_has(RotationMatrix, knowrob:m10, M10_R),
+  strip_literal_type(M10_R , M10),
+  rdf_has(RotationMatrix, knowrob:m11, M11_R),
+  strip_literal_type(M11_R , M11),
+  rdf_has(RotationMatrix, knowrob:m12, M12_R),
+  strip_literal_type(M12_R , M12),
+  rdf_has(RotationMatrix, knowrob:m13, M13_R),
+  strip_literal_type(M13_R , M13),
+  rdf_has(RotationMatrix, knowrob:m20, M20_R),
+  strip_literal_type(M20_R , M20),
+  rdf_has(RotationMatrix, knowrob:m21, M21_R),
+  strip_literal_type(M21_R , M21),
+  rdf_has(RotationMatrix, knowrob:m22, M22_R),
+  strip_literal_type(M22_R , M22),
+  rdf_has(RotationMatrix, knowrob:m23, M23_R),
+  strip_literal_type(M23_R , M23),
+  rdf_has(RotationMatrix, knowrob:m30, M30_R),
+  strip_literal_type(M30_R , M30),
+  rdf_has(RotationMatrix, knowrob:m31, M31_R),
+  strip_literal_type(M31_R , M31),
+  rdf_has(RotationMatrix, knowrob:m32, M32_R),
+  strip_literal_type(M32_R , M32),
+  rdf_has(RotationMatrix, knowrob:m33, M33_R),
+  strip_literal_type(M33_R , M33).
