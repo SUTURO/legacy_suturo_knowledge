@@ -332,24 +332,9 @@ public class PerceptionClient {
 
 	/**
 	 * Utility method to convert prolog list representing a rotation matrix to
-	 * Pose object
+	 * Pose object. Parameters represent m[0..3][0..3] values from knowrob OWL
+	 * class
 	 * 
-	 * @param m00
-	 * @param m01
-	 * @param m02
-	 * @param m03
-	 * @param m10
-	 * @param m11
-	 * @param m12
-	 * @param m13
-	 * @param m20
-	 * @param m21
-	 * @param m22
-	 * @param m23
-	 * @param m30
-	 * @param m31
-	 * @param m32
-	 * @param m33
 	 * @return Pose object
 	 */
 	public static Pose prologMatrix4dToPose(double m00, double m01, double m02,
