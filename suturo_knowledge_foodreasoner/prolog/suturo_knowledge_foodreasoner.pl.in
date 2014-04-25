@@ -2,8 +2,6 @@
 
 :- module(suturo_knowledge_foodreasoner,
     [
-      graspableOn/2,
-      containerOn/2,
       updatePerception/1,
       updatePerception/2,
       publishSemanticMap/0,
@@ -83,19 +81,6 @@ onObject(ObjectInstanceName, Out) :-
 withName(ObjectInstanceName, [_edible, _name, [M03, M13, M23], FrameID, NM, Unknown, Use, [Width, Height, Depth], [QX, QY, QZ, QW]]) :-
 	grepInfosToPush(ObjectInstanceName, _edible,_name,M03,M13,M23,FrameID, NM, Unknown, Use, Width, Height, Depth, QW, QX, QY, QZ).
 
-%% graspableOn(+ObjectInstanceName, -Out)
-%%
-%% Returns graspable objects on given object (eg. table) instance
-%%
-%% 	+ObjectInstanceName (String): Name of object instance
-%%  -Out (List): List of graspable objects. A graspable object is also a list consisting of multiple attributes:
-%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
-graspableOn(ObjectInstanceName, Out) :-
-	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Use, [Width, Height, Depth], QX, QY, QZ, QW], (on_Physical(ObjInst, ObjectInstanceName),
-			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
-			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ)), Out).
-
-
 %% isOnObject(+Object1, +Object2, -Out)
 %%
 %% Is true, if object 1 is on object 2
@@ -105,21 +90,6 @@ graspableOn(ObjectInstanceName, Out) :-
 %% 	-Out (Boolean): True if object instance 1 is on object instance 2
 isOnObject(Object1, Object2, Out) :-
 	Out = on_Physical(Object1, Object2).
-
-%% containerOn(+ObjectInstanceName, -Out)
-%%
-%% DEPRECATED
-%%
-%% Returns containers on given object (eg. table) instance
-%%
-%% 	+ObjectInstanceName (String): Name of object instance
-%%  -Out (List): List of containers. A container is also a list consisting of multiple attributes:
-%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use],[...]]
-containerOn(ObjectInstanceName, Out) :-
-	findall(ObjectInfos, (on_Physical(ObjInst, ObjectInstanceName),
-			grepInfosToPush(ObjInst, OutObj),
-			(storagePlaceFor(ObjInst, knowrob:'FoodOrDrink')->
-			append(OutObj, [0,'storage-for-food'], ObjectInfos);append(OutObj, [0,'storage-for-stuff'], ObjectInfos))),Out).
 
 %% updatePerception(-Out)
 %%
