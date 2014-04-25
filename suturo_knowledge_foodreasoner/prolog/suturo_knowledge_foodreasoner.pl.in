@@ -211,7 +211,5 @@ loadEnv(Environment) :-
 		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/gazebo_room.owl', false, false, true);
    		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
    	; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
-   	).
-
-
-
+   	),
+   	owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl', false, false, true).
