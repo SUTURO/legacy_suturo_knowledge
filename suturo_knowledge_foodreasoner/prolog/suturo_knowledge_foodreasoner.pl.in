@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 %% SUTURO Knowledge - Food reasoning module
 
 :- module(suturo_knowledge_foodreasoner,
@@ -244,122 +242,6 @@ loadEnv(Environment) :-
    	; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
    	).
 
-%% Load suturo objects 
-:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl', false, false, true).
-
-%% Instanciate Java bridges to Perception and Manipulation
-:- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
-%% Instanciate Java object classifier
-:- jpl_new('de.suturo.knowledge.foodreasoner.classifier.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
-
-%% Constants
-shape(0, 'NONE').
-shape(1, 'Box').
-shape(2, 'Cylinder').
-shape(3, 'Sphere').
-
-grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, Use, Width, Height, Depth, QW, QX, QY, QZ) :-
-	_name = ObjectIdentifier,
-	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
-		(_edible =true, Use=''); 
-		(_edible=false)),
-	_unknown = rdfs_individual_of(ObjectIdentifier, suturo:'UnknownObject'),
-	(rdfs_individual_of(ObjectIdentifier, knowrob:'Box-Container') -> 
-		(rdfs_individual_of(ObjectIdentifier, suturo:'FoodBox') ->
-			(Use = 'storage-for-food';
-			Use = 'storage-for-stuff'));
-		Use =''),
-	rdf_has(ObjectIdentifier, knowrob:heightOfObject, OHeight),
-	strip_literal_type(OHeight, Height_Raw),
-	atom_number(Height_Raw, Height),
-	rdf_has(ObjectIdentifier, knowrob:depthOfObject, ODepth),
-	strip_literal_type(ODepth, Depth_Raw),
-	atom_number(Depth_Raw, Depth),
-	rdf_has(ObjectIdentifier, knowrob:widthOfObject, OWidth),
-	strip_literal_type(OWidth, Width_Raw),
-	atom_number(Width_Raw, Width),
-	rdf_has(ObjectIdentifier, suturo:newtonMeter, NM_Raw),
-	strip_literal_type(NM_Raw, NM_String),
-	atom_number(NM_String, NM),
-	getLatestMatrixOfObject(ObjectIdentifier, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
-	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
-	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
-	strip_literal_type(FrameID_Raw, FrameID),
-	fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, _, _, _).
-
-aggregateStaticPlanning([ObjectIdentifier, '/map', Depth, Width, Height, Pose]) :-
-	getSemanticMapObjectInfo(ObjectIdentifier, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, Width, Height, Depth),
-	perception(PrologBridge),
-	jpl_call(PrologBridge, 'prologMatrix4dToPose', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Pose).
-
-
-%% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
-savePerception(SurfaceInstanceName, ObjectInst) :-
-	getPerceivedObjectsInfos(SurfaceInstanceName, DataList),
-	findall(Instance,(member(Object, DataList),
-		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).
-
-createPerceptionInstanceToObject([Identifier, Map_FrameId, _, _, _,
- M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
-	Identifier) :-
-	once(create_perception_instance(['VisualPerception'], Perception)),
-    set_object_perception(Identifier, Perception),
-    set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]),
-    rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Map_FrameId))).
-
-fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z) :-
-	perception(PrologBridge),
-	jpl_call(PrologBridge, 'prologMatrix4dToPose', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Out_raw),
-	jpl_get(Out_raw, 'orientation', Orientation),
-	jpl_get(Orientation, 'w', QW),
-	jpl_get(Orientation, 'x', QX),
-	jpl_get(Orientation, 'y', QY),
-	jpl_get(Orientation, 'z', QZ),
-	jpl_get(Out_raw, 'position', Position),
-	jpl_get(Position, 'x', X),
-	jpl_get(Position, 'y', Y),
-	jpl_get(Position, 'z', Z).
-
-getPerceivedObjectsInfos(SurfaceInstanceName, PODataList) :-
-	(nonvar(SurfaceInstanceName),aggregateStaticPlanning([SurfaceInstanceName, _, _, _, Height, Pose]);var(SurfaceInstanceName), Pose = @(null), Height = 0),
-	perception(PrologBridge),
-	jpl_call(PrologBridge, 'perceive', [Pose, Height], Out_raw),
-	jpl_get(Out_raw,'length',Length),
-	is(Indizees, Length-1),
-	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
-
-processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_Coord, Z_Coord,
- M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
-	perception(PrologBridge),
-	numlist(0,Indizees,IndexList),
-	member(Index, IndexList),
-	jpl_get(Out_raw,Index,Perceived_object),
-	Identifier = Perceived_object,
-	jpl_call(PrologBridge, 'getMapCoords', [Perceived_object], MapCoords_Raw),
-	jpl_call(PrologBridge, 'getCuboidMatrix', [Perceived_object], Cuboid_Raw),
-	jpl_call(MapCoords_Raw, 'getData', [], Point_Raw),
-	jpl_get(Point_Raw,'x', X_Coord),
-	jpl_get(Point_Raw,'y', Y_Coord),
-	jpl_get(Point_Raw,'z', Z_Coord),
-	jpl_get(MapCoords_Raw,'frameID', Map_FrameId),
-	jpl_call(Cuboid_Raw, 'getData', [], Matrix_Raw),
-
-	jpl_get(Matrix_Raw,'m00', M00),
-	jpl_get(Matrix_Raw,'m01', M01),
-	jpl_get(Matrix_Raw,'m02', M02),
-	jpl_get(Matrix_Raw,'m03', M03),
-	jpl_get(Matrix_Raw,'m10', M10),
-	jpl_get(Matrix_Raw,'m11', M11),
-	jpl_get(Matrix_Raw,'m12', M12),
-	jpl_get(Matrix_Raw,'m13', M13),
-	jpl_get(Matrix_Raw,'m20', M20),
-	jpl_get(Matrix_Raw,'m21', M21),
-	jpl_get(Matrix_Raw,'m22', M22),
-	jpl_get(Matrix_Raw,'m23', M23),
-	jpl_get(Matrix_Raw,'m30', M30),
-	jpl_get(Matrix_Raw,'m31', M31),
-	jpl_get(Matrix_Raw,'m32', M32),
-	jpl_get(Matrix_Raw,'m33', M33).
 
 getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
 	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
@@ -484,4 +366,3 @@ getLatestMatrixOfObject(ObjectIdentifier,  M00, M01, M02, M03, M10, M11, M12, M1
 	strip_literal_type(M32_R , M32),
 	rdf_has(RotationMatrix, knowrob:m33, M33_R),
 	strip_literal_type(M33_R , M33).
->>>>>>> origin/devel
