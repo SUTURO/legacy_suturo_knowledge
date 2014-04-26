@@ -11,9 +11,6 @@
 
     ]).
 
-%% Register owl namespaces
-:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 %% Instanciate Java bridges to Perception and Manipulation
 :- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
 %% Instanciate Java object classifier

@@ -26,7 +26,7 @@ import weka.core.SerializationHelper;
 public class WekaClassifier implements ObjectClassifier {
 	private static final String ARFF_FILE = "/arff/milestone4.arff";
 	private static final String CLASSIFIER_PATH = "/classifier.model";
-	private static final String OWL_NS = "http://www.suturo.de/ontology/hierarchy#";
+	private static final String OWL_NS = "http://www.suturo.de/ontology/suturo#";
 	private final Classifier classifier;
 	private final List<Attribute> attributes;
 	private final Instances dataSet;

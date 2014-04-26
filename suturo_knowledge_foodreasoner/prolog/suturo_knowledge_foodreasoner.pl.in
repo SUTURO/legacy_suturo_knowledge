@@ -20,15 +20,6 @@
       loadEnv/1
     ]).
 
-%% Dependencies
-:- use_module(library('knowrob_objects')).
-:- use_module(library('suturo_knowledge_java_interface')).
-:- use_module(library('comp_spatial')).
-
-%% Register owl namespaces
-:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
-
 %% getDimensions(+ObjectInstanceName, -Out)
 %%
 %% Returns dimensions for a given perceived object instance.
