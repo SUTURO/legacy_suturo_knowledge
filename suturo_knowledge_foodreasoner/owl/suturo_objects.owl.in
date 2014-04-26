@@ -229,7 +229,7 @@
         </rdfs:subClassOf>
     </Class>
 
-    <Class rdf:about="&hierarchy;UnrecognizedObject">
+    <Class rdf:about="&suturo;UnrecognizedObject">
         <rdfs:subClassOf rdf:resource="&knowrob;SpatialThing-Localized"/>
     </Class>
 
