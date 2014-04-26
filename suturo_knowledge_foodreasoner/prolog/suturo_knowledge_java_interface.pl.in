@@ -1,0 +1,271 @@
+%% SUTURO Knowledge - intern java interface module
+
+:- module(suturo_knowledge_java_interface,
+    [
+      grepInfosToPush/17,
+      savePerception/2,
+      aggregateStaticPlanning/1,
+      getSemanticMapObjectInfo/20,
+      getLatestCoordinatesOfObject/5,
+      getLatestMatrixOfObject/17
+
+    ]).
+
+%% Register owl namespaces
+:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+%% Instanciate Java bridges to Perception and Manipulation
+:- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
+%% Instanciate Java object classifier
+:- jpl_new('de.suturo.knowledge.foodreasoner.classifier.ProbabilityClassifier', [], ProbabilityClassifier), assert(probabilityclassifier(ProbabilityClassifier)).
+
+grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, _unknown, Use, Width, Height, Depth, QW, QX, QY, QZ) :-
+  _name = ObjectIdentifier,
+  (rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
+    (_edible =true, Use=''); 
+    (_edible=false)),
+  (rdfs_individual_of('http://www.suturo.de/ontology/suturo#corny', suturo:'UnrecognizedObject') ->
+    _unknown = true;
+    _unknown = false),
+  (rdfs_individual_of(ObjectIdentifier, knowrob:'Box-Container') -> 
+    (rdfs_individual_of(ObjectIdentifier, suturo:'FoodBox') ->
+      (Use = 'storage-for-food';
+      Use = 'storage-for-stuff'));
+    Use =''),
+  rdf_has(ObjectIdentifier, knowrob:heightOfObject, OHeight),
+  strip_literal_type(OHeight, Height_Raw),
+  atom_number(Height_Raw, Height),
+  rdf_has(ObjectIdentifier, knowrob:depthOfObject, ODepth),
+  strip_literal_type(ODepth, Depth_Raw),
+  atom_number(Depth_Raw, Depth),
+  rdf_has(ObjectIdentifier, knowrob:widthOfObject, OWidth),
+  strip_literal_type(OWidth, Width_Raw),
+  atom_number(Width_Raw, Width),
+  NM is 15, % Legacy value, remove in next release!
+  getLatestMatrixOfObject(ObjectIdentifier, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+  rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
+  rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
+  strip_literal_type(FrameID_Raw, FrameID),
+  fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, _, _, _).
+
+aggregateStaticPlanning([ObjectIdentifier, '/map', Depth, Width, Height, Pose]) :-
+  getSemanticMapObjectInfo(ObjectIdentifier, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, Width, Height, Depth),
+  perception(PrologBridge),
+  jpl_call(PrologBridge, 'prologMatrix4dToPose', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Pose).
+
+
+%% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
+savePerception(SurfaceInstanceName, ObjectInst) :-
+  getPerceivedObjectsInfos(SurfaceInstanceName, DataList),
+  findall(Instance,(member(Object, DataList),
+    createPerceptionInstanceToObject(Object, Instance)), ObjectInst).
+
+createPerceptionInstanceToObject([Identifier, Map_FrameId, _, _, _,
+ M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
+  Identifier) :-
+  once(create_perception_instance(['VisualPerception'], Perception)),
+    set_object_perception(Identifier, Perception),
+    set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]),
+    rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Map_FrameId))).
+
+fromRotationMatrixToQuaternion(M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, QW, QX, QY, QZ, X, Y ,Z) :-
+  perception(PrologBridge),
+  jpl_call(PrologBridge, 'prologMatrix4dToPose', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Out_raw),
+  jpl_get(Out_raw, 'orientation', Orientation),
+  jpl_get(Orientation, 'w', QW),
+  jpl_get(Orientation, 'x', QX),
+  jpl_get(Orientation, 'y', QY),
+  jpl_get(Orientation, 'z', QZ),
+  jpl_get(Out_raw, 'position', Position),
+  jpl_get(Position, 'x', X),
+  jpl_get(Position, 'y', Y),
+  jpl_get(Position, 'z', Z).
+
+getPerceivedObjectsInfos(SurfaceInstanceName, PODataList) :-
+  (nonvar(SurfaceInstanceName),aggregateStaticPlanning([SurfaceInstanceName, _, _, _, Height, Pose]);var(SurfaceInstanceName), Pose = @(null), Height = 0),
+  perception(PrologBridge),
+  jpl_call(PrologBridge, 'perceive', [Pose, Height], Out_raw),
+  jpl_get(Out_raw,'length',Length),
+  is(Indizees, Length-1),
+  findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
+
+processPerceivedObjects(Out_raw, Indizees, [Identifier, Map_FrameId, X_Coord, Y_Coord, Z_Coord,
+ M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
+  perception(PrologBridge),
+  numlist(0,Indizees,IndexList),
+  member(Index, IndexList),
+  jpl_get(Out_raw,Index,Perceived_object),
+  Identifier = Perceived_object,
+  jpl_call(PrologBridge, 'getMapCoords', [Perceived_object], MapCoords_Raw),
+  jpl_call(PrologBridge, 'getCuboidMatrix', [Perceived_object], Cuboid_Raw),
+  jpl_call(MapCoords_Raw, 'getData', [], Point_Raw),
+  jpl_get(Point_Raw,'x', X_Coord),
+  jpl_get(Point_Raw,'y', Y_Coord),
+  jpl_get(Point_Raw,'z', Z_Coord),
+  jpl_get(MapCoords_Raw,'frameID', Map_FrameId),
+  jpl_call(Cuboid_Raw, 'getData', [], Matrix_Raw),
+  jpl_get(Matrix_Raw,'m00', M00),
+  jpl_get(Matrix_Raw,'m01', M01),
+  jpl_get(Matrix_Raw,'m02', M02),
+  jpl_get(Matrix_Raw,'m03', M03),
+  jpl_get(Matrix_Raw,'m10', M10),
+  jpl_get(Matrix_Raw,'m11', M11),
+  jpl_get(Matrix_Raw,'m12', M12),
+  jpl_get(Matrix_Raw,'m13', M13),
+  jpl_get(Matrix_Raw,'m20', M20),
+  jpl_get(Matrix_Raw,'m21', M21),
+  jpl_get(Matrix_Raw,'m22', M22),
+  jpl_get(Matrix_Raw,'m23', M23),
+  jpl_get(Matrix_Raw,'m30', M30),
+  jpl_get(Matrix_Raw,'m31', M31),
+  jpl_get(Matrix_Raw,'m32', M32),
+  jpl_get(Matrix_Raw,'m33', M33).
+
+assertObject(ObjectIdentifier, Shape, Art, Volume, Width, Height, Depth, LengthRel1, LengthRel2, H, S, V, R, G, B) :-
+  rdf_assert(ObjectIdentifier, rdf:type, owl:'NamedIndividual'),
+  rdf_assert(ObjectIdentifier, rdf:type, Shape),
+  rdf_assert(ObjectIdentifier, rdf:type, Art),
+  rdf_assert(ObjectIdentifier, knowrob:volumeOfObject, literal(type(xsd:float,Volume))),
+  rdf_assert(ObjectIdentifier, knowrob:heightOfObject, literal(type(xsd:double,Height))),
+  rdf_assert(ObjectIdentifier, knowrob:widthOfObject, literal(type(xsd:double,Width))),
+  rdf_assert(ObjectIdentifier, knowrob:depthOfObject, literal(type(xsd:double,Depth))),
+  rdf_assert(ObjectIdentifier, suturo:lengthrelation1, literal(type(xsd:float,LengthRel1))),
+  rdf_assert(ObjectIdentifier, suturo:lengthrelation2, literal(type(xsd:float,LengthRel2))),
+  rdf_assert(ObjectIdentifier, rdf:type, suturo:'HSVAverageColor'),
+  rdf_assert(ObjectIdentifier, suturo:hColorValue, literal(type(xsd:int,H))),
+  rdf_assert(ObjectIdentifier, suturo:sColorValue, literal(type(xsd:float,S))),
+  rdf_assert(ObjectIdentifier, suturo:vColorValue, literal(type(xsd:float,V))),
+  rdf_assert(ObjectIdentifier, rdf:type, suturo:'RGBAvergaeColor'),
+  rdf_assert(ObjectIdentifier, suturo:rColorValue, literal(type(xsd:byte,R))),
+  rdf_assert(ObjectIdentifier, suturo:gColorValue, literal(type(xsd:byte,G))),
+  rdf_assert(ObjectIdentifier, suturo:bColorValue, literal(type(xsd:byte,B))).
+
+
+saveObjectToFile(ObjectIdentifier) :-
+  open('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl',append,Stream),
+  rdf_save_subject(Stream, ObjectIdentifier, []),
+  close(Stream).
+
+  getSemanticMapObjectInfo(Object, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, Width, Height, Depth) :- 
+  rdf_has(A,'http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn',Object),
+  rdfs_individual_of(A, knowrob:'SemanticMapPerception'),
+  rdf_has(Object, knowrob:heightOfObject, OHeight),
+  strip_literal_type(OHeight, Height_Raw),
+  atom_number(Height_Raw, Height),
+  rdf_has(Object, knowrob:depthOfObject, ODepth),
+  strip_literal_type(ODepth, Depth_Raw),
+  atom_number(Depth_Raw, Depth),
+  rdf_has(Object, knowrob:widthOfObject, OWidth),
+  strip_literal_type(OWidth, Width_Raw),
+  atom_number(Width_Raw, Width),
+  rdf_has(A, knowrob:eventOccursAt,RotationMatrix),
+  rdf_has(RotationMatrix, knowrob:m00, M00_R),
+  strip_literal_type(M00_R , M00_s),
+  atom_number(M00_s, M00),
+  rdf_has(RotationMatrix, knowrob:m01, M01_R),
+  strip_literal_type(M01_R , M01_s),
+  atom_number(M01_s, M01),
+  rdf_has(RotationMatrix, knowrob:m02, M02_R),
+  strip_literal_type(M02_R , M02_s),
+  atom_number(M02_s, M02),
+  rdf_has(RotationMatrix, knowrob:m03, M03_R),
+  strip_literal_type(M03_R , M03_s),
+  atom_number(M03_s, M03),
+  rdf_has(RotationMatrix, knowrob:m10, M10_R),
+  strip_literal_type(M10_R , M10_s),
+  atom_number(M10_s, M10),
+  rdf_has(RotationMatrix, knowrob:m11, M11_R),
+  strip_literal_type(M11_R , M11_s),
+  atom_number(M11_s, M11),
+  rdf_has(RotationMatrix, knowrob:m12, M12_R),
+  strip_literal_type(M12_R , M12_s),
+  atom_number(M12_s, M12),
+  rdf_has(RotationMatrix, knowrob:m13, M13_R),
+  strip_literal_type(M13_R , M13_s),
+  atom_number(M13_s, M13),
+  rdf_has(RotationMatrix, knowrob:m20, M20_R),
+  strip_literal_type(M20_R , M20_s),
+  atom_number(M20_s, M20),
+  rdf_has(RotationMatrix, knowrob:m21, M21_R),
+  strip_literal_type(M21_R , M21_s),
+  atom_number(M21_s, M21),
+  rdf_has(RotationMatrix, knowrob:m22, M22_R),
+  strip_literal_type(M22_R , M22_s),
+  atom_number(M22_s, M22),
+  rdf_has(RotationMatrix, knowrob:m23, M23_R),
+  strip_literal_type(M23_R , M23_s),
+  atom_number(M23_s, M23),
+  rdf_has(RotationMatrix, knowrob:m30, M30_R),
+  strip_literal_type(M30_R , M30_s),
+  atom_number(M30_s, M30),
+  rdf_has(RotationMatrix, knowrob:m31, M31_R),
+  strip_literal_type(M31_R , M31_s),
+  atom_number(M31_s, M31),
+  rdf_has(RotationMatrix, knowrob:m32, M32_R),
+  strip_literal_type(M32_R , M32_s),
+  atom_number(M32_s, M32),
+  rdf_has(RotationMatrix, knowrob:m33, M33_R),
+  strip_literal_type(M33_R , M33_s),
+  atom_number(M33_s, M33).
+  
+getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
+  rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
+  rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
+  strip_literal_type(FrameID_Raw, FrameID),
+  rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
+
+
+  rdf_has(RotationMatrix, knowrob:m03, X_Coord),
+  strip_literal_type(X_Coord , X1),
+  (rdf_has(ObjectIdentifier, suturo:xOffset, X_Offset) ->
+    strip_literal_type(X_Offset , X2S), atom_number(X2S, X2), X is (X1+X2);
+    X is X1),
+
+  rdf_has(RotationMatrix, knowrob:m13, Y_Coord),
+  strip_literal_type(Y_Coord, Y1),
+  (rdf_has(ObjectIdentifier, suturo:yOffset, Y_Offset) ->
+    strip_literal_type(Y_Offset , Y2S), atom_number(Y2S, Y2), Y is (Y1+Y2);
+    Y is Y1),
+  rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
+  strip_literal_type(Z_Coord, Z1),
+  (rdf_has(ObjectIdentifier, suturo:zOffset, Z_Offset) ->
+    strip_literal_type(Z_Offset , Z2S), atom_number(Z2S, Z2), Z is (Z1+Z2);
+    Z is Z1).
+
+
+getLatestMatrixOfObject(ObjectIdentifier,  M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33) :-
+  rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
+  rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
+
+  rdf_has(RotationMatrix, knowrob:m00, M00_R),
+  strip_literal_type(M00_R , M00),
+  rdf_has(RotationMatrix, knowrob:m01, M01_R),
+  strip_literal_type(M01_R , M01),
+  rdf_has(RotationMatrix, knowrob:m02, M02_R),
+  strip_literal_type(M02_R , M02),
+  rdf_has(RotationMatrix, knowrob:m03, M03_R),
+  strip_literal_type(M03_R , M03),
+  rdf_has(RotationMatrix, knowrob:m10, M10_R),
+  strip_literal_type(M10_R , M10),
+  rdf_has(RotationMatrix, knowrob:m11, M11_R),
+  strip_literal_type(M11_R , M11),
+  rdf_has(RotationMatrix, knowrob:m12, M12_R),
+  strip_literal_type(M12_R , M12),
+  rdf_has(RotationMatrix, knowrob:m13, M13_R),
+  strip_literal_type(M13_R , M13),
+  rdf_has(RotationMatrix, knowrob:m20, M20_R),
+  strip_literal_type(M20_R , M20),
+  rdf_has(RotationMatrix, knowrob:m21, M21_R),
+  strip_literal_type(M21_R , M21),
+  rdf_has(RotationMatrix, knowrob:m22, M22_R),
+  strip_literal_type(M22_R , M22),
+  rdf_has(RotationMatrix, knowrob:m23, M23_R),
+  strip_literal_type(M23_R , M23),
+  rdf_has(RotationMatrix, knowrob:m30, M30_R),
+  strip_literal_type(M30_R , M30),
+  rdf_has(RotationMatrix, knowrob:m31, M31_R),
+  strip_literal_type(M31_R , M31),
+  rdf_has(RotationMatrix, knowrob:m32, M32_R),
+  strip_literal_type(M32_R , M32),
+  rdf_has(RotationMatrix, knowrob:m33, M33_R),
+  strip_literal_type(M33_R , M33).

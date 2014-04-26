@@ -1,0 +1,8 @@
+#!/bin/bash
+roslaunch suturo_knowledge_location mapserver_gazebo.launch &
+rosrun SnapMapICP SnapMapICP &
+trap 'kill $(jobs -p)' EXIT
+for job in `jobs -p`
+do
+wait $job
+done

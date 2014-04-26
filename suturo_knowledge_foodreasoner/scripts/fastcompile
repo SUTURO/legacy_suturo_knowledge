@@ -11,6 +11,9 @@ echo \### Switching to fast manifests...
 cd $SCRIPTS/../../suturo_knowledge_ps_export
 mv manifest.xml manifest.xml.original
 mv manifest.xml.fast manifest.xml
+cd $SCRIPTS/../../suturo_java_serviceclients
+mv manifest.xml manifest.xml.original
+mv manifest.xml.fast manifest.xml
 cd $SCRIPTS/../
 mv manifest.xml manifest.xml.original
 mv manifest.xml.fast manifest.xml
@@ -18,6 +21,9 @@ echo \### Building foodreasoner...
 rosmake
 echo \### Switching to original manifests...
 cd $SCRIPTS/../../suturo_knowledge_ps_export
+mv manifest.xml manifest.xml.fast
+mv manifest.xml.original manifest.xml
+cd $SCRIPTS/../../suturo_java_serviceclients
 mv manifest.xml manifest.xml.fast
 mv manifest.xml.original manifest.xml
 cd $SCRIPTS/../

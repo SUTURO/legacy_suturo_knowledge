@@ -2,392 +2,209 @@
 
 :- module(suturo_knowledge_foodreasoner,
     [
-      getPerceivedObjectsInfos/1,
-      savePerception/1,
-      graspableOn/2,
-      containerOn/2,
       updatePerception/1,
+      updatePerception/2,
+      publishSemanticMap/0,
       placedObjectInBox/3,
-      clearPerceived/0
+      onObject/2,
+      isInObject/3,
+      withName/2,
+      getDimensions/2,
+      getKnowrobDimension/2,
+      isOnObject/3,
+      startObjectLearning/0,
+      learnObject/2,
+      abortLearning/0,
+      finishLearning/0,
+      clearPerceived/0,
+      loadEnv/1
     ]).
 
-%% Dependencies
-:- use_module(library('knowrob_objects')).
-:- use_module(library('comp_spatial')).
 %% Register owl namespaces
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
-%% Constants for value tolerance. Feel free to change this.
-rgbColorVariance(A) :- A is round(0.2 * 255).
-hColorVariance(A) :- A is round(0.2 * 359).
-svColorVariance(A) :- A is 0.2.
-volumeVariance(0.1).
 
-%% Returns edible objects on table ids
-graspableOn(TableInstanceName, Out) :-
-	findall(ObjectInfos, (on_Physical(ObjInst, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'),
-			not(rdfs_individual_of(ObjInst, knowrob:'Box-Container')),
-			grepInfosToPush(ObjInst, OutObj),
-			rdf_has(ObjInst, suturo:'newtonMeter', NM_Raw),
-			strip_literal_type(NM_Raw, NM_String),
-			atom_number(NM_String, NM),
-			append(OutObj, [NM,''], ObjectInfos)), Out).
-
-grepInfosToPush(ObjectIdentifier, [_edible,_name,[_centroid_x,_centroid_y,_centroid_z],_frameid]) :-
-	_name = ObjectIdentifier,
-	(rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
-		_edible =true; _edible=false),
-	getLatestCoordinatesOfObject(ObjectIdentifier, _centroid_x,_centroid_y,_centroid_z, _frameid).
-
-%% Returns containers on table ids
-containerOn(TableInstanceName, Out) :-
-	findall(ObjectInfos, (on_Physical(ObjInst, 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top'),
-			rdfs_individual_of(ObjInst, knowrob:'Box-Container'),
-			grepInfosToPush(ObjInst, OutObj),
-			(storagePlaceFor(ObjInst, knowrob:'FoodOrDrink')->
-			append(OutObj, [0,'storage-for-food'], ObjectInfos);append(OutObj, [0,'storage-for-stuff'], ObjectInfos))), Out).
-
-
-%% Die Perception wird abgefragt und die Semantic Map aktualisiert
-updatePerception(Out) :-
-	once((savePerception(ObjectList),
-	length(ObjectList, Out),
-	hackCreateTable(ObjectList),
-	sendPlanningScene(ObjectList);Out is 0)).
-
-
-list_min([L|Ls], Min) :- foldl(num_num_min, Ls, L, Min).
-
-num_num_min(X, Y, Min) :- Min is min(X, Y).
-
-hackCreateTable(ObjectList) :-
-	%%findall(Y,(member(ObjectIdentifier,ObjectList),getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID)),Y_Coords),
-	%%list_min(Y_Coords, Min_Y),
-	headElement( ObjectList, Object),
-	getLatestCoordinatesOfObject(Object, X , Y ,Z, FrameID),
-	rdf_has(Object, knowrob:heightOfObject, OHeight),
-	strip_literal_type(OHeight, Height_Raw),
-	atom_number(Height_Raw, Height),
-	Z_Table is Z - Height,
-	createPerceptionInstanceToObject([_, _, _, _,
- 'kitchen_island_counter_top', _, _, _, _, _, _, _, _, _, 
- X, Y, Z_Table, FrameID], 'http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island_counter_top').
-
-
-%% This removes the given Object from the PlanningScene
-placedObjectInBox(Object, _, Out) :-
-	mapconverter(MapConverter),
-	jpl_call(MapConverter, 'removeObject', [Object], _),
-	jpl_call(MapConverter, 'publishScene', [], _),
-	rdf_retractall(Object, knowrob:'latestDetectionOfObject',_),
-	Out = [].
-
-%% Clears the database of perceived objects and removes all objects from the Planning Scene
-clearPerceived :-
-	mapconverter(MapConverter),
-	forall(rdf_has(Objects, knowrob:'latestDetectionOfObject',_),
-		   (jpl_call(MapConverter, 'removeObject', [Objects], _),
-		   jpl_call(MapConverter, 'removeAttachedObject', [Objects], _))),
-	jpl_call(MapConverter, 'publishScene', [], _),
-	rdf_retractall(_, knowrob:'latestDetectionOfObject',_).
-
-
-
-%% Load lab room semantic map
-:- owl_parser:owl_parse('@IAI_MAPS_PACKAGE_PATH@/owl/room.owl', false, false, true).
-%% Load suturo objects (either defaultlab_hierarchy.owl, or load OWL file given as argument)
-:- current_prolog_flag(argv, Args), last(Args, Arg),
-   string_concat('@LOCAL_PACKAGE_PATH@/owl/', Arg, File),
-   (string_concat(_, '.owl', File) ->
-   		owl_parser:owl_parse(File, false, false, true);
-   		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/lab_hierarchy.owl', false, false, true)).
-
-
-
-%% Instanciate Java bridges to Perception and Manipulation
-:- jpl_new('de.suturo.knowledge.foodreasoner.PerceptionClient',[], PerceptionClient), assert(perception(PerceptionClient)).
-:- jpl_new('de.suturo.knowledge.psexport.MapConverter',[], Instance), assert(mapconverter(Instance)).
-
-%% Constants
-shape(0, 'NONE').
-shape(1, 'Box').
-shape(2, 'Cylinder').
-shape(3, 'Sphere').
-
-%$ Accessor predicate for perceived objects
-perceived_object([ID, Label, Volume, Shape], ID, Label, Volume, Shape).
-
-%% This parses float strings from LISP (1.23456789d-123) to prolog float
-dfloatToFloat(StringDoubleFloat, Float) :-
-	atomic_list_concat(List, 'd', StringDoubleFloat),
-	atomic_list_concat(List, 'e', FloatString),
-	atom_number(FloatString, Float).
-
-%% Accessor predicate for containers
-containerObject(ContainerFor, Name, Type,[Centroid_x, Centroid_y, Centroid_z], FrameId).
-
-%% Retrieves objects from perception and recognizes them. All recognized objects are then saved to the database
-savePerception(ObjectInst) :-
-	getPerceivedObjectsInfos(DataList),
-	findall(Instance,(member(Object, DataList),
-		once(recognizedObject(Object, Instance)),
-		createPerceptionInstanceToObject(Object, Instance)), ObjectInst).%
-			%createObjectPerception(Object, [], ['VisualPerception'], ObjectInst))).
-
-createPerceptionInstanceToObject([_c_id, _c_centroid, _c_volume, _frame_id,
- _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
- _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
- X_Coord, Y_Coord, Z_Coord, Odom_FrameId], ObjInst) :-
-	once(create_perception_instance(['VisualPerception'], Perception)),
-    set_object_perception(ObjInst, Perception),
-    set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
-    rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
-
-createObjectPerception([_c_id, _c_centroid, _c_volume, _frame_id,
- _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
- _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, 
- X_Coord, Y_Coord, Z_Coord, Odom_FrameId],
-  ObjPose, PerceptionTypes, ObjInst) :-
-
-	%% if shape != 0 
-	(_c_shape =\= 0 ->
-		shape(_c_shape, ShapeString),
-		atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Type),
-		atom_concat('Got Type Shape ', Type , Log),
-		writeln(Log);
-    	%%else 
-    	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', 'Thing', Type),
-    	atom_concat('Got Type Thing ', Type , Log),
-		writeln(Log)),
-    (_recognition_label_2d \= '' ->
-    	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', _recognition_label_2d, ObjInst),
-    	rdf_assert(ObjInst, rdf:type, Type); 
-    	rdf_instance_from_class(Type, ObjInst)),
-    assertRGBColors(ObjInst, _c_color_average_r, _c_color_average_g, _c_color_average_b),
-    assertRGBColors(ObjInst, _c_color_average_h, _c_color_average_s, _c_color_average_v),
-   	rdf_assert(ObjInst, knowrob:'volumeOfObject', literal(type('http://www.w3.org/2001/XMLSchema#int',_c_volume))),
-    create_perception_instance(PerceptionTypes, Perception),
-    set_object_perception(ObjInst, Perception),
-    set_perception_pose(Perception, [1,0,0,X_Coord,0,1,0,Y_Coord,0,0,1,Z_Coord,0,0,0,0]),
-    rdf_assert(Perception, suturo:'frameID', literal(type('http://www.w3.org/2001/XMLSchema#string',Odom_FrameId))).
-
-assertRGBColors(ObjInst, R_Color, G_Color, B_Color) :-
-	rdf_assert(ObjInst, rdf:type, knowrob:'RGBAverageColor'),
-	rdf_assert(ObjInst, suturo:'rColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',R_Color))),
-	rdf_assert(ObjInst, suturo:'gColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',G_Color))),
-	rdf_assert(ObjInst, suturo:'bColorValue', literal(type('http://www.w3.org/2001/XMLSchema#byte',B_Color))).
-
-assertRGBColors(ObjInst, H_Color, S_Color, V_Color) :-
-	rdf_assert(ObjInst, rdf:type, knowrob:'HSVAverageColor'),
-	rdf_assert(ObjInst, suturo:'HColorValue', literal(type('http://www.w3.org/2001/XMLSchema#int',H_Color))),
-	rdf_assert(ObjInst, suturo:'SColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',S_Color))),
-	rdf_assert(ObjInst, suturo:'VColorValue', literal(type('http://www.w3.org/2001/XMLSchema#float',V_Color))).
-
-
-recognizedObject([_c_id, _c_centroid, _c_volume, _frame_id,
- _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
- _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _, _, _, _], ObjectIdentifier) :-
-	writeln('First recognition_label rgb and hsv'),
-	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v);
-
-	writeln('Seond Test recognition_label volume and rgb'),
-	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
-
-	writeln('Third Test recognition_label volume and hsv'),
-	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v);
-
-	writeln('Fourth Test shape rgb and hsv'),
-	shapeIsFitting(ObjectIdentifier, _c_shape) , 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b) ,
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Fifth Test volume rgb and hsv'),
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v) ; 
-	writeln('Sixth Test volume shape and hsv'),
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	shapeIsFitting(ObjectIdentifier, _c_shape), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	 
-	writeln('Seventh Test recognition_label shape and hsv'),
-	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	shapeIsFitting(ObjectIdentifier, _c_shape), 
-	hsvIsFitting(ObjectIdentifier, _c_color_average_h, _c_color_average_s, _c_color_average_v); 
-	writeln('Eighth Test recognition_label shape and rgb'),
-	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	shapeIsFitting(ObjectIdentifier, _c_shape), 
-	rgbIsFitting(ObjectIdentifier, _c_color_average_r, _c_color_average_g, _c_color_average_b);
-	
-	writeln('Nineth Test recognition_label volume and shape'),
-	recognitionLabelExisting(ObjectIdentifier, _recognition_label_2d), 
-	volumeInRange(ObjectIdentifier, _c_volume), 
-	shapeIsFitting(ObjectIdentifier, _c_shape).
-
-
-recognitionLabelExisting(ObjectIdentifier, Label) :-
-	atom_concat('http://www.suturo.de/ontology/hierarchy#', Label, ObjectIdentifier),
-	rdf_has(ObjectIdentifier, _ , _).
-
-shapeIsFitting(ObjectIdentifier, Shape_Raw) :-
-	shape(Shape_Raw, ShapeString),
-	atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', ShapeString, Shape),
-	rdf_has(ObjectIdentifier, rdf:type ,Shape).
-
-volumeInRange(ObjectIdentifier, Volume) :-
-	rdf_has(ObjectIdentifier , knowrob:'volumeOfObject', Obj_Vol),
-	strip_literal_type(Obj_Vol, VOL_Raw),
-	atom_number(VOL_Raw, VOL),
-	volumeVariance(Var),
-	Min is VOL * (1 - Var),
-	Max is VOL * (1 + Var),
-	Min =< Volume,
-	Max >= Volume.
-
-rgbIsFitting(ObjectIdentifier, R_Color, G_Color, B_Color) :-
-	rdf_has(ObjectIdentifier, suturo:rColorValue , Obj_R_Color),
-	rgbColorVariance(RGBVariance),
-	strip_literal_type(Obj_R_Color, R_Raw),
-	atom_number(R_Raw, R),
-	MinR is R - RGBVariance,
-	MaxR is R + RGBVariance,
-	MinR =< R_Color,
-	MaxR >= R_Color,
-	rdf_has(ObjectIdentifier, suturo:gColorValue , Obj_G_Color),
-	strip_literal_type(Obj_G_Color, G_Raw),
-	atom_number(G_Raw, G),
-	MinG is G - RGBVariance,
-	MaxG is G + RGBVariance,
-	MinG =< G_Color,
-	MaxG >= G_Color,
-	rdf_has(ObjectIdentifier, suturo:bColorValue , Obj_B_Color),
-	strip_literal_type(Obj_B_Color, B_Raw),
-	atom_number(B_Raw, B),	
-	MinB is B - RGBVariance,
-	MaxB is B + RGBVariance,
-	MinB =< B_Color,
-	MaxB >= B_Color.
-
-
-hsvIsFitting(ObjectIdentifier, H_Value, S_Value, V_Value) :-
-	rdf_has(ObjectIdentifier, suturo:hColorValue , Obj_H_Value),
-	hColorVariance(HVariance),
-	strip_literal_type(Obj_H_Value, H_Raw),
-	atom_number(H_Raw, H),
-	MinH is (H - HVariance) mod 360,
-	MaxH is (H + HVariance) mod 360,
-	(((H - HVariance) < 0; (H + HVariance) >359) -> 
-		(MinH =< H_Value; MaxH >= H_Value);
-		((MinH =< H_Value), (MaxH >= H_Value)) ),
-	rdf_has(ObjectIdentifier, suturo:sColorValue , Obj_S_Value),
-	svColorVariance(SVVariance),
-	strip_literal_type(Obj_S_Value, S_Raw),
-	atom_number(S_Raw, S),
-	MinS is S - SVVariance,
-	MaxS is S + SVVariance,
-	MinS =< S_Value,
-	MaxS >= S_Value,
-	rdf_has(ObjectIdentifier, suturo:vColorValue , Obj_V_Value),
-	strip_literal_type(Obj_V_Value, V_Raw),
-	atom_number(V_Raw, V),
-	MinV is V - SVVariance,
-	MaxV is V + SVVariance,
-	MinV =< V_Value,
-	MaxV >= V_Value.
-
-headElement([Head| _], Head). 
-%% This is a test for JNI integration
-getPerceivedObjectsInfos(PODataList) :-
-	perception(PrologBridge),
-	jpl_call(PrologBridge, 'updatePerception', [], Out_raw),
-	jpl_get(Out_raw,'length',Length),
-	is(Indizees, Length-1),
-	findall(POData,processPerceivedObjects(Out_raw, Indizees, POData), PODataList).
-
-processPerceivedObjects(Out_raw, Indizees, Result) :-
-	perception(PrologBridge),
-	numlist(0,Indizees,IndexList),
-	member(Index, IndexList),
-	jpl_get(Out_raw,Index,Perceived_object),
-	getPerceivedObjectInfos(Perceived_object, POData),
-	headElement(POData, _c_id),
-	jpl_call(PrologBridge, 'getOdomCoords', [_c_id], Odom_Raw),
-	jpl_call(Odom_Raw, 'getData', [], Point_Raw),
-	jpl_get(Point_Raw,'x', X_Coord),
-	jpl_get(Point_Raw,'y', Y_Coord),
-	jpl_get(Point_Raw,'z', Z_Coord),
-	jpl_get(Odom_Raw,'frameID', Odom_FrameId),
-	append(POData,[X_Coord, Y_Coord, Z_Coord, Odom_FrameId], Result).
-
-
-%% getPerceivedObjectInfos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
-%%  _recognition_label_2d, _recognition_label_3d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
-%%  _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality, _c_roi_origin, _c_roi_width,
-%%  _c_roi_height ]):-
-getPerceivedObjectInfos(Obj_id, [_c_id, _c_centroid, _c_volume, _frame_id,
- _recognition_label_2d, _c_shape, _c_color_average_r, _c_color_average_g, _c_color_average_b,
- _c_color_average_h, _c_color_average_s, _c_color_average_v, _c_hue_histogram, _c_hue_histogram_quality]) :-
-	jpl_get(Obj_id, 'c_id', _c_id),
-	jpl_get(Obj_id, 'c_centroid', _c_centroid),
-	jpl_get(Obj_id, 'c_volume', _c_volume),
-	jpl_get(Obj_id, 'frame_id', _frame_id),
-	jpl_get(Obj_id, 'recognition_label_2d', _recognition_label_2d),
-%%	jpl_get(Obj_id, 'recognition_label_3d', _recognition_label_3d),
-	jpl_get(Obj_id, 'c_shape', _c_shape),
-	jpl_get(Obj_id, 'c_color_average_r', _c_color_average_r),
-	jpl_get(Obj_id, 'c_color_average_g', _c_color_average_g),
-	jpl_get(Obj_id, 'c_color_average_b', _c_color_average_b),
-	jpl_get(Obj_id, 'c_color_average_h', _c_color_average_h),
-	jpl_get(Obj_id, 'c_color_average_s', _c_color_average_s),
-	jpl_get(Obj_id, 'c_color_average_v', _c_color_average_v),
-	jpl_get(Obj_id, 'c_hue_histogram', _c_hue_histogram),
-	jpl_get(Obj_id, 'c_hue_histogram_quality', _c_hue_histogram_quality).
-%%	jpl_get(Obj_id, 'c_roi_origin', _c_roi_origin),
-%%	jpl_get(Obj_id, 'c_roi_width', _c_roi_width),
-%%	jpl_get(Obj_id, 'c_roi_height', _c_roi_height).
-
-sendPlanningScene(ObjectList) :-
-	mapconverter(MapConverter),
-	foreach(member(Object, ObjectList), sendSingleObject(Object)),
-	jpl_call(MapConverter, 'publishScene', [], _).
-
-getLatestCoordinatesOfObject(ObjectIdentifier, X , Y ,Z, FrameID) :-
-	rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
+%% getDimensions(+ObjectInstanceName, -Out)
+%%
+%% Returns dimensions for a given perceived object instance.
+%%
+%% 	+ObjectInstanceName (String): Name of object instance
+%%  -Out (List): A list consisting of a frame id, the x y z coordinates as list and the dimensions as list.
+%%               Example: ['/map', [0.4, 0.5, 0.6], [0.25, 0.21, 0.22]]
+getDimensions(ObjectInstanceName, [FrameID, [M03, M13, M23], [Height, Depth, Width]]) :-
+	getLatestMatrixOfObject(ObjectInstanceName, _, _, _, M03, _, _, _, M13, _, _, _, M23, _, _, _, _),
+	rdf_has(ObjectInstanceName, knowrob:latestDetectionOfObject, ObjectDetection),
 	rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),
 	strip_literal_type(FrameID_Raw, FrameID),
-	rdf_has(ObjectDetection, knowrob:eventOccursAt, RotationMatrix),
-	rdf_has(RotationMatrix, knowrob:m03, X_Coord),
-	strip_literal_type(X_Coord , X1),
-	(rdf_has(ObjectIdentifier, suturo:xOffset, X_Offset) ->
-		strip_literal_type(X_Offset , X2S), atom_number(X2S, X2), X is (X1+X2);
-		X is X1),
-	rdf_has(RotationMatrix, knowrob:m13, Y_Coord),
-	strip_literal_type(Y_Coord, Y1),
-	(rdf_has(ObjectIdentifier, suturo:yOffset, Y_Offset) ->
-		strip_literal_type(Y_Offset , Y2S), atom_number(Y2S, Y2), Y is (Y1+Y2);
-		Y is Y1),
-	rdf_has(RotationMatrix, knowrob:m23, Z_Coord),
-	strip_literal_type(Z_Coord, Z1),
-	(rdf_has(ObjectIdentifier, suturo:zOffset, Z_Offset) ->
-		strip_literal_type(Z_Offset , Z2S), atom_number(Z2S, Z2), Z is (Z1+Z2);
-		Z is Z1).
-
-
-sendSingleObject(ObjectIdentifier) :-
-	mapconverter(MapConverter),
-	rdf_has(ObjectIdentifier, knowrob:heightOfObject, OHeight),
+	rdf_has(ObjectInstanceName, knowrob:heightOfObject, OHeight),
 	strip_literal_type(OHeight, Height_Raw),
 	atom_number(Height_Raw, Height),
-	rdf_has(ObjectIdentifier, knowrob:depthOfObject, ODepth),
+	rdf_has(ObjectInstanceName, knowrob:depthOfObject, ODepth),
 	strip_literal_type(ODepth, Depth_Raw),
 	atom_number(Depth_Raw, Depth),
-	rdf_has(ObjectIdentifier, knowrob:widthOfObject, OWidth),
+	rdf_has(ObjectInstanceName, knowrob:widthOfObject, OWidth),
 	strip_literal_type(OWidth, Width_Raw),
-	atom_number(Width_Raw, Width),
-	getLatestCoordinatesOfObject(ObjectIdentifier, X_Coord, Y_Coord, Z_Coord, FrameID),
-	jpl_call(MapConverter, 'addBox', [ObjectIdentifier, Depth, Width, Height, X_Coord, Y_Coord, Z_Coord, FrameID], _).
+	atom_number(Width_Raw, Width).
+
+%% getKnowrobDimension(+ObjectInstanceName, -Out)
+%%
+%% Returns dimensions for a static object instance from the semantic map
+%%
+%% 	+ObjectInstanceName (String): Name of object instance
+%%  -Out (List): A list consisting of a frame id, the x y z coordinates as list and the dimensions as list.
+getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]):-
+	getSemanticMapObjectInfo(Object, _, _, _, M03, _, _, _, M13, _, _, _, M23, _, _, _, _, Width, Height, Depth).
+
+%% onObject(+ObjectInstanceName, -Out)
+%%
+%% Returns all objects on given object (eg. table) instance.
+%%
+%% 	+ObjectInstanceName (String): Name of object instance
+%%  -Out (List): List of objects. An object is also a list consisting of multiple attributes:
+%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force, unknown, use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
+onObject(ObjectInstanceName, Out) :-
+	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Unknown, Use, [Width, Height, Depth], [QX, QY, QZ, QW]], (on_Physical(ObjInst, ObjectInstanceName),
+			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Unknown, Use, Width, Height, Depth, QW, QX, QY, QZ)),Out).
+
+%% withName(+ObjectInstanceName, -Out)
+%%
+%% Returns all objects on given object (eg. table) instance.
+%%
+%% 	+ObjectInstanceName (String): Name of object instance
+%%  -Out (List): List of objects. An object is also a list consisting of multiple attributes:
+%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force, unknown, use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
+withName(ObjectInstanceName, [_edible, _name, [M03, M13, M23], FrameID, NM, Unknown, Use, [Width, Height, Depth], [QX, QY, QZ, QW]]) :-
+	grepInfosToPush(ObjectInstanceName, _edible,_name,M03,M13,M23,FrameID, NM, Unknown, Use, Width, Height, Depth, QW, QX, QY, QZ).
+
+%% isOnObject(+Object1, +Object2, -Out)
+%%
+%% Is true, if object 1 is on object 2
+%%
+%% 	+Object1 (String): Name of object instance 1
+%% 	+Object2 (String): Name of object instance 2
+%% 	-Out (Boolean): True if object instance 1 is on object instance 2
+isOnObject(Object1, Object2, Out) :-
+	Out = on_Physical(Object1, Object2).
+
+%% updatePerception(-Out)
+%%
+%% Calls the perception service and runs the recognition on the results.
+%% Furthermore, a new PlanningScene is published to the manipulation node.
+%%
+%%  -Out (Number): Number of recognized objects (Note: These are CURRENTLY recognized objects and
+%%                 not the amount of recognized objects in the knowledge base)
+updatePerception(Out) :-
+	once(
+		(savePerception(_, ObjectList),
+		 length(ObjectList, Out);
+		 Out is 0)
+		).
+
+%% updatePerception(+SurfaceInstanceName, -Out)
+%%
+%% Calls the perception service and runs the recognition on the results.
+%% Furthermore, a new PlanningScene is published to the manipulation node.
+%% The recognized objects are placed right on the given surface with a collision prevention margin of 1 cm
+%%
+%% 	+SurfaceInstanceName (String): Name of surface whose z-Axis in map is used for object placement
+%%  -Out (Number): Number of recognized objects (Note: These are CURRENTLY recognized objects and
+%%                 not the amount of recognized objects in the knowledge base)
+updatePerception(SurfaceInstanceName, Out) :-
+	once(
+		(savePerception(SurfaceInstanceName, ObjectList),
+		 length(ObjectList, Out);
+		 Out is 0)
+		).
+
+%% placedObjectInBox(+Object, +Container, -Out)
+%%
+%% This removes the given Object from the PlanningScene
+%%
+%%  +Object (String): Name of object instance
+%%  +Container (String): Name of container instance
+%%  -Out (Number): Empty list (for planning convenience)
+placedObjectInBox(Object, Container, Out) :-
+	rdf_assert(Object, knowrob:'insideOf', Container),
+	%getLatestMatrixOfObject(Container, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
+	%rdf_has(Container, suturo:frameID, FrameID_Raw),
+	%strip_literal_type(FrameID_Raw, Map_FrameId),
+	%createPerceptionInstanceToObject([Object, Map_FrameId, M03, M13, M13,
+ 	%M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
+	%Container),
+	suturo_knowledge_java_interface:perception(PerceptionClient),
+	jpl_call(PerceptionClient, 'removeObjectFromPS', [Object],_),
+	%rdf_retractall(Object, knowrob:'latestDetectionOfObject',_),
+	Out = [].
+
+%% isInObject(+Object1, +Object2, -Out)
+%%
+%% Is true, if object 1 is inside of object 2
+%%
+%% 	+Object1 (String): Name of object instance 1
+%% 	+Object2 (String): Name of object instance 2
+%% 	-Out (Boolean): True if object instance 1 is inside of object instance 2
+isInObject(Object1, Object2, Out) :-
+	rdf_has(Object1, knowrob:'insideOf', Object2), Out = true;
+	in_ContGeneric(Object1, Object2), Out = true;
+	Out = false.
+
+%% startObjectLearning
+%%
+%% Initializes learning procedure for unknown objects
+startObjectLearning :-
+	true.
+
+%% learnObject(+ObjectInstanceName, -Out)
+%%
+%% Captures perception data for unknown object denoted by ObjectInstanceName. The perception data is fed into the classifiers from WEKA.
+%% For errors watch values of Out parameter.
+%%
+%%  +ObjectInstanceName (String): Name of unknown object instance
+%%  -Out (Integer): Result of the object recognition
+learnObject(ObjectInstanceName, Out) :-
+	Out is 0.
+
+%% abortLearning
+%%
+%% Abort all captured unfinished perceptions for unknown objects
+abortLearning :-
+	true.
+
+%% finishLearning
+%%
+%% Classify all perceived data for unknown objects. This will update the current classifier, all learned objects will be recognized in the future
+finishLearning :-
+	true.
+
+
+%% clearPerceived
+%%
+%% Clears the database of perceived objects and removes all objects from the Planning Scene
+clearPerceived :-
+	suturo_knowledge_java_interface:perception(PerceptionClient),
+ 	jpl_call(PerceptionClient, 'clearPlanningScene', [], _),
+ 	rdf_retractall(_, knowrob:'latestDetectionOfObject', _),
+ 	rdf_retractall(_, knowrob:'previousDetectionOfObject', _),
+ 	rdf_transaction(
+ 		(forall(rdf_has(Perceptions, rdf:type, knowrob:'VisualPerception'),
+ 			(rdf_retractall(Perceptions, _, _),
+ 		 	 rdf_retractall(_, _, Perceptions)
+ 			))
+ 		)
+ 	).
+
+%% publishSemanticMap
+%%
+%% Publishes all objects from the semantic map to the Planning Scene
+publishSemanticMap :-
+	suturo_knowledge_java_interface:perception(PerceptionClient),
+	forall(aggregateStaticPlanning(Param), jpl_call(PerceptionClient, 'addSemanticPerception', Param, _)).
+
+%% Load semantic map depending on location passed as argument
+loadEnv(Environment) :-
+	(Environment = 'gazebo' ->
+		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/gazebo_room.owl', false, false, true);
+   		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
+   	; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
+   	),
+   	owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl', false, false, true).

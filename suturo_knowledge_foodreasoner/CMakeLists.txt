@@ -18,6 +18,7 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 # ROS packages
 rosbuild_find_ros_package(json_prolog)
+rosbuild_find_ros_package(suturo_java_serviceclients)
 rosbuild_find_ros_package(suturo_knowledge_ps_export)
 rosbuild_find_ros_package(ias_knowledge_base)
 rosbuild_find_ros_package(knowrob_objects)
@@ -32,20 +33,35 @@ add_ld_preload(/usr/lib/libpl.so)
 add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 add_classpath(${tfjava_PACKAGE_PATH}/bin)
+add_classpath(${suturo_java_serviceclients_PACKAGE_PATH}/bin)
 add_classpath(${suturo_knowledge_ps_export_PACKAGE_PATH}/bin)
+add_classpath(${PROJECT_SOURCE_DIR}/lib/weka.jar)
+add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/weka.jar)
+
+# Add java dependencies
+configure_file(raw_data/milestone4improved.arff ${JAVA_OUTPUT_DIR}/arff/milestone4.arff COPYONLY)
+configure_file(raw_data/j48.model ${JAVA_OUTPUT_DIR}/classifier.model COPYONLY)
 
 # build java
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/bin)
 add_java_source_dir( ${PROJECT_SOURCE_DIR}/src/java )
+rospack_add_java_executable( ClassificationTest de.suturo.knowledge.foodreasoner.ClassificationTest )
 
 # replace path to local owl files
-set( OWL_PATH_PREFIX ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )
+set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
 fix_ros_destination_path(OWL_PATH_PREFIX)
 set( KNOWROB_PATH_PREFIX ${knowrob_objects_PACKAGE_PATH} )
 fix_ros_destination_path(KNOWROB_PATH_PREFIX)
 
 file(GLOB inputs owl/*.in)
+foreach( _in ${inputs} )
+  string(REPLACE ".in" "" _out ${_in})
+  configure_file( ${_in} ${_out} )
+endforeach( _in )
 
+# replace library owl paths
+
+file(GLOB inputs lib/iai_maps/owl/*.in)
 foreach( _in ${inputs} )
   string(REPLACE ".in" "" _out ${_in})
   configure_file( ${_in} ${_out} )
@@ -54,11 +70,10 @@ endforeach( _in )
 # replace path to local prolog files
 rosbuild_find_ros_package(suturo_knowledge_foodreasoner)
 set( LOCAL_PACKAGE_PATH ${suturo_knowledge_foodreasoner_PACKAGE_PATH} )
-rosbuild_find_ros_package(iai_maps)
-set( IAI_MAPS_PACKAGE_PATH ${iai_maps_PACKAGE_PATH} )
 fix_ros_destination_path(LOCAL_PACKAGE_PATH)
-fix_ros_destination_path(IAI_MAPS_PACKAGE_PATH)
-
+rosbuild_find_ros_package(ias_semantic_map)
+set( IAS_SEMANTIC_MAP_PACKAGE_PATH ${ias_semantic_map_PACKAGE_PATH} )
+fix_ros_destination_path(IAS_SEMANTIC_MAP_PACKAGE_PATH)
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )

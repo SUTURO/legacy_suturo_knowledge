@@ -12,10 +12,11 @@
 
   <depend package="rosjava_jni"/> <!-- Java in ROS -->
   <depend package="suturo_knowledge_ps_export"/> <!-- Planning scene export -->
+  <depend package="suturo_java_serviceclients"/>
   <depend package="knowrob_common"/>
 
   <export>
-    <java classpath="${prefix}/bin"/>
+    <java classpath="${prefix}/bin:${prefix}/lib/weka.jar"/>
   </export>
 
 </package>

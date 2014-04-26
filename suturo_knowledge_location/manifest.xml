@@ -1,0 +1,21 @@
+<package>
+  <description brief="suturo_knowledge_location">
+
+     Localization utils for SUTURO project.
+
+  </description>
+  <author>Moritz Horstmann</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.suturo.de</url>
+
+  <depend package="SnapMapICP" />
+  <depend package="rosjava_jni"/> <!-- Java in ROS -->
+  <depend package="tfjava"/> <!-- Java in ROS -->
+  <depend package="geometry_msgs" />
+
+  <export>
+    <java classpath="${prefix}/bin"/>
+  </export>
+
+</package>

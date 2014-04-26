@@ -1,2 +1,2 @@
 #!/bin/sh
-rosrun rosprolog rosprolog suturo_knowledge_foodreasoner "" gazebo_hierarchy.owl
+rosrun rosprolog rosprolog suturo_knowledge_foodreasoner loadEnv\('gazebo'\)

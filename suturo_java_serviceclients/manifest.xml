@@ -1,0 +1,20 @@
+<package>
+  <description brief="suturo_java_serviceclients">
+
+     Holds a collection of java wrapped ROS service clients.
+
+  </description>
+  <author>Moritz Horstmann</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.suturo.de</url>
+
+  <depend package="rosjava_jni"/> <!-- Java in ROS -->
+  <depend package="suturo_perception_msgs"/> <!-- Communication with perception -->
+  <depend package="geometry_msgs" /> <!-- Dependency of perception_msg, so rosjava can build msg classes -->
+
+  <export>
+    <java classpath="${prefix}/bin"/>
+  </export>
+
+</package>
