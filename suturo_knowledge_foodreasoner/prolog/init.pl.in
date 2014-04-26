@@ -10,7 +10,3 @@
 :- use_module(library('comp_spatial')).
 :- use_module(library('suturo_knowledge_java_interface')).
 :- use_module(library('suturo_knowledge_foodreasoner')).
-
-%% Register owl namespaces
-:- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
