@@ -57,6 +57,7 @@ public class PerceptionClient {
 	 */
 	public PerceptionClient() {
 		checkInitialized();
+		TFListenerSafe.getInstance(); // Init to collect TF data
 		try {
 			classifier = new WekaClassifier();
 		} catch (Exception e) {
@@ -162,7 +163,7 @@ public class PerceptionClient {
 			try {
 				object.transformToFrame(BASE_FRAME);
 			} catch (TFException e) {
-				handle.logWarn("PerceptionClient: " + e.getMessage());
+				handle.logError("PerceptionClient: " + e.getMessage());
 			}
 		}
 	}

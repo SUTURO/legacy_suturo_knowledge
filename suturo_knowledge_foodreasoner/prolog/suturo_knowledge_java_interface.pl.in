@@ -24,7 +24,9 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, _unknow
   (rdfs_individual_of(ObjectIdentifier, knowrob:'FoodOrDrink') ->
     (_edible =true, Use=''); 
     (_edible=false)),
-  _unknown = rdfs_individual_of(ObjectIdentifier, suturo:'UnrecognizedObject'),
+  (rdfs_individual_of('http://www.suturo.de/ontology/suturo#corny', suturo:'UnrecognizedObject') ->
+    _unknown = true;
+    _unknown = false),
   (rdfs_individual_of(ObjectIdentifier, knowrob:'Box-Container') -> 
     (rdfs_individual_of(ObjectIdentifier, suturo:'FoodBox') ->
       (Use = 'storage-for-food';
@@ -39,9 +41,7 @@ grepInfosToPush(ObjectIdentifier, _edible,_name,M03,M13,M23,FrameID, NM, _unknow
   rdf_has(ObjectIdentifier, knowrob:widthOfObject, OWidth),
   strip_literal_type(OWidth, Width_Raw),
   atom_number(Width_Raw, Width),
-  rdf_has(ObjectIdentifier, suturo:newtonMeter, NM_Raw),
-  strip_literal_type(NM_Raw, NM_String),
-  atom_number(NM_String, NM),
+  NM is 15, % Legacy value, remove in next release!
   getLatestMatrixOfObject(ObjectIdentifier, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33),
   rdf_has(ObjectIdentifier, knowrob:latestDetectionOfObject, ObjectDetection),
   rdf_has(ObjectDetection, suturo:frameID, FrameID_Raw),

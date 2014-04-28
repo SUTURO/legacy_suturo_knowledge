@@ -20,11 +20,6 @@
       loadEnv/1
     ]).
 
-%% Dependencies
-:- use_module(library('knowrob_objects')).
-:- use_module(library('suturo_knowledge_java_interface')).
-:- use_module(library('comp_spatial')).
-
 %% Register owl namespaces
 :- rdf_db:rdf_register_ns(suturo, 'http://www.suturo.de/ontology/hierarchy#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
@@ -66,7 +61,7 @@ getKnowrobDimension(Object, [[M03, M13, M23], [Height, Depth, Width]]):-
 %%
 %% 	+ObjectInstanceName (String): Name of object instance
 %%  -Out (List): List of objects. An object is also a list consisting of multiple attributes:
-%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
+%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force, unknown, use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
 onObject(ObjectInstanceName, Out) :-
 	findall([_edible, _name, [M03, M13, M23], FrameID, NM, Unknown, Use, [Width, Height, Depth], [QX, QY, QZ, QW]], (on_Physical(ObjInst, ObjectInstanceName),
 			grepInfosToPush(ObjInst, _edible,_name,M03,M13,M23,FrameID, NM, Unknown, Use, Width, Height, Depth, QW, QX, QY, QZ)),Out).
@@ -77,7 +72,7 @@ onObject(ObjectInstanceName, Out) :-
 %%
 %% 	+ObjectInstanceName (String): Name of object instance
 %%  -Out (List): List of objects. An object is also a list consisting of multiple attributes:
-%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force,use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
+%%               [[edible,name,[centroid_x,centroid_y,centroid_z],frameid,grip-force, unknown, use, [Width, Heigth, Depth], [PoseX, PoseY, PoseZ, PoseW]],[...]]
 withName(ObjectInstanceName, [_edible, _name, [M03, M13, M23], FrameID, NM, Unknown, Use, [Width, Height, Depth], [QX, QY, QZ, QW]]) :-
 	grepInfosToPush(ObjectInstanceName, _edible,_name,M03,M13,M23,FrameID, NM, Unknown, Use, Width, Height, Depth, QW, QX, QY, QZ).
 
@@ -167,7 +162,7 @@ startObjectLearning :-
 %%  +ObjectInstanceName (String): Name of unknown object instance
 %%  -Out (Integer): Result of the object recognition
 learnObject(ObjectInstanceName, Out) :-
-	true.
+	Out is 0.
 
 %% abortLearning
 %%
@@ -211,7 +206,5 @@ loadEnv(Environment) :-
 		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/gazebo_room.owl', false, false, true);
    		owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
    	; owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/lib/iai_maps/owl/room.owl', false, false, true)
-   	).
-
-
-
+   	),
+   	owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl', false, false, true).

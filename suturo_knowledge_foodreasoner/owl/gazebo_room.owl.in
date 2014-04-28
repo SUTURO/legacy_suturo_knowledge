@@ -2826,7 +2826,7 @@
 	<owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#kitchen_island">
 		<rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"/>
 		<knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6</knowrob:depthOfObject>
-		<knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.55</knowrob:heightOfObject>
+		<knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.575</knowrob:heightOfObject>
 		<knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.25</knowrob:widthOfObject>
 		<knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#SemanticEnvironmentMap_PM580j"/>
 		<knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#drawer_island_left_upper"/>
@@ -3005,7 +3005,7 @@
 		<knowrob:m20 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m20>
 		<knowrob:m02 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m02>
 		<knowrob:m31 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m31>
-		<knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.27</knowrob:m23>
+		<knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.2825</knowrob:m23>
 		<knowrob:m33 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m33>
 		<knowrob:m22 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m22>
 		<knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.48</knowrob:m13>
@@ -3028,7 +3028,7 @@
 		<knowrob:m20 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m20>
 		<knowrob:m02 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m02>
 		<knowrob:m31 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m31>
-		<knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.575</knowrob:m23>
+		<knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.60</knowrob:m23>
 		<knowrob:m33 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m33>
 		<knowrob:m22 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m22>
 		<knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.48</knowrob:m13>
@@ -3134,7 +3134,7 @@
 		<knowrob:m12 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m12>
 		<knowrob:m01 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m01>
 		<knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.38</knowrob:m13>
-		<knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.6425</knowrob:m23>
+		<knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.67</knowrob:m23>
 		<knowrob:m22 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m22>
 		<knowrob:m00 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m00>
 		<knowrob:m11 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m11>

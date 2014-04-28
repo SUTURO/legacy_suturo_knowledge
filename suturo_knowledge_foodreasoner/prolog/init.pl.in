@@ -6,4 +6,7 @@
 :- register_ros_package(comp_spatial).
 :- consult('@IAS_SEMANTIC_MAP_PACKAGE_PATH@/prolog/semantic_map_utils.pl').
 :- register_ros_package(suturo_knowledge_foodreasoner).
+:- use_module(library('knowrob_objects')).
+:- use_module(library('comp_spatial')).
+:- use_module(library('suturo_knowledge_java_interface')).
 :- use_module(library('suturo_knowledge_foodreasoner')).

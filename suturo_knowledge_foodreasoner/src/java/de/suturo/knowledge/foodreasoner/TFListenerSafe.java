@@ -8,7 +8,8 @@ import tfjava.TFListener;
 
 /**
  * This provides a TFListener which will work in rosjava environments used in
- * rosprolog environments that are launched with json_prolog
+ * rosprolog environments that are launched with json_prolog.<br/>
+ * Also, it tries to add robustness to some TF calls.
  * 
  * @author Moritz
  * 
@@ -45,4 +46,5 @@ public class TFListenerSafe extends TFListener {
 		}
 		super.spinInSeperateThread();
 	}
+
 }

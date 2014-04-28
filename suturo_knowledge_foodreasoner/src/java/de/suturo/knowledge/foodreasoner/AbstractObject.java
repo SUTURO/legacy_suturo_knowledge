@@ -170,6 +170,10 @@ public abstract class AbstractObject {
 	 * @return True if object could be me
 	 */
 	public boolean isSameObject(String targetFrame, AbstractObject obj) {
+		if (getTransformedPose(targetFrame) == null
+				|| obj.getTransformedPose(targetFrame) == null) {
+			return false;
+		}
 		double range = Math.max(obj.getCuboidDim().x,
 				Math.max(obj.getCuboidDim().y, obj.getCuboidDim().z)) / 2;
 		Point myPos = getTransformedPose(targetFrame).getData().position;
