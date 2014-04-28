@@ -143,8 +143,17 @@ assertObject(ObjectIdentifier, Shape, Art, Volume, Width, Height, Depth, LengthR
 
 saveObjectToFile(ObjectIdentifier) :-
   open('@LOCAL_PACKAGE_PATH@/owl/suturo_objects.owl',append,Stream),
+  stream_property(Stream, position(Pos0)),
+  set_line(Pos0, 20, Pos),
+  set_stream_position(Stream, Pos),
   rdf_save_subject(Stream, ObjectIdentifier, []),
   close(Stream).
+set_line('$stream_position'(CharC, _, LinePos, ByteC),
+   Line,
+   '$stream_position'(CharC, Line, LinePos, ByteC)).
+  
+  
+
 
   getSemanticMapObjectInfo(Object, M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33, Width, Height, Depth) :- 
   rdf_has(A,'http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn',Object),
