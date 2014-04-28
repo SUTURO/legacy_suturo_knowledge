@@ -83,12 +83,28 @@ public class WekaClassifier implements ObjectClassifier {
 		}
 		inst.setClassMissing();
 		try {
-			double index = classifier.classifyInstance(inst);
-			return OWL_NS + inst.classAttribute().value((int) index);
+			// double index = classifier.classifyInstance(inst);
+			double[] dist = classifier.distributionForInstance(inst);
+			for (int i = 0; i < dist.length; i++) {
+				System.out.println("Class " + inst.classAttribute().value(i)
+						+ " has probability " + dist[i]);
+			}
+			int index = getMaxDistIndex(dist);
+			return OWL_NS + inst.classAttribute().value(index);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	private static int getMaxDistIndex(double[] probs) {
+		int index = 0;
+		for (int i = 0; i < probs.length; i++) {
+			if (probs[i] > probs[index]) {
+				index = i;
+			}
+		}
+		return index;
 	}
 
 	private static void setPOValue(PerceivedObject po, Instance inst,
