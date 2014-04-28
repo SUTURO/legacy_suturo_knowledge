@@ -83,9 +83,6 @@ public class WekaClassifier implements ObjectClassifier {
 		}
 		try {
 			inst.setClassMissing();
-			System.out.println("Class by clsInst: "
-					+ inst.classAttribute().value(
-							(int) classifier.classifyInstance(inst)));
 			double[] dist = classifier.distributionForInstance(inst);
 			for (int i = 0; i < dist.length; i++) {
 				System.out.println("Class " + inst.classAttribute().value(i)
@@ -148,12 +145,12 @@ public class WekaClassifier implements ObjectClassifier {
 			inst.setValue(att, maxLen / middleLen);
 		else if ("cuboid_length_relation_2".equals(name))
 			inst.setValue(att, maxLen / minLen);
-		else if ("label_2d".equals(name)) {
-			if (po.recognition_label_2d.isEmpty())
-				inst.setMissing(att);
-			else
-				inst.setValue(att, po.recognition_label_2d);
-		} else if ("shape".equals(name))
-			inst.setValue(att, po.c_shape);
+		// else if ("label_2d".equals(name)) {
+		// if (po.recognition_label_2d.isEmpty())
+		// inst.setMissing(att);
+		// else
+		// inst.setValue(att, po.recognition_label_2d);
+		// } else if ("shape".equals(name))
+		// inst.setValue(att, po.c_shape);
 	}
 }
