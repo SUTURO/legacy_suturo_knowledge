@@ -81,9 +81,11 @@ public class WekaClassifier implements ObjectClassifier {
 		for (Attribute att : attributes) {
 			setPOValue(po, inst, att);
 		}
-		inst.setClassMissing();
 		try {
-			// double index = classifier.classifyInstance(inst);
+			inst.setClassMissing();
+			System.out.println("Class by clsInst: "
+					+ inst.classAttribute().value(
+							(int) classifier.classifyInstance(inst)));
 			double[] dist = classifier.distributionForInstance(inst);
 			for (int i = 0; i < dist.length; i++) {
 				System.out.println("Class " + inst.classAttribute().value(i)
