@@ -223,8 +223,7 @@ public class PerceptionClient {
      */
     private void publishPlanningScenes(Pose pose, double height) {
 	for (Entry<String, AbstractObject> entry : allObjects.entrySet()) {
-	    String frame = entry.getValue().getOriginalFrameID();
-	    Stamped<Pose> objectPose = entry.getValue().getTransformedPose(frame);
+	    Stamped<Pose> objectPose = entry.getValue().getTransformedPose(BASE_FRAME);
 	    if (objectPose == null) {
 		handle.logWarn("PerceptionClient: No transformed cuboid available for object " + entry.getKey());
 		continue;
@@ -236,7 +235,7 @@ public class PerceptionClient {
 	    if (pose != null) {
 		pos.z = pose.position.z + (height / 2) + (dim.y / 2) + 0.01;
 	    }
-	    mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z, or, frame);
+	    mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z, or, BASE_FRAME);
 	}
 	mc.publishScene();
     }
