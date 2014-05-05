@@ -21,184 +21,176 @@ import de.suturo.knowledge.foodreasoner.exception.TFException;
  * 
  */
 public abstract class AbstractObject {
-	private final Map<String, Stamped<Point3d>> transformedCentroids = new HashMap<String, Stamped<Point3d>>();
-	private final Map<String, Stamped<Matrix4d>> transformedMatrix = new HashMap<String, Stamped<Matrix4d>>();
-	private final Map<String, Stamped<Pose>> transformedPose = new HashMap<String, Stamped<Pose>>();
-	private final Stamped<Point3d> centroid;
-	private final Stamped<Matrix4d> pose;
-	private final Vector3d cuboidDim;
-	private final static TFListener tf = TFListenerSafe.getInstance();
+    private final Map<String, Stamped<Point3d>> transformedCentroids = new HashMap<String, Stamped<Point3d>>();
+    private final Map<String, Stamped<Matrix4d>> transformedMatrix = new HashMap<String, Stamped<Matrix4d>>();
+    private final Map<String, Stamped<Pose>> transformedPose = new HashMap<String, Stamped<Pose>>();
+    private final Stamped<Point3d> centroid;
+    private final Stamped<Matrix4d> pose;
+    private final Vector3d cuboidDim;
+    private final static TFListener tf = TFListenerSafe.getInstance();
 
-	/**
-	 * Construct an object from a PerceivedObject
-	 * 
-	 * @param po
-	 *            The perceived object
-	 */
-	public AbstractObject(PerceivedObject po) {
-		centroid = TransformUtils.getStamped3DPoint(po);
-		pose = TransformUtils.getStamped4DPose(po);
-		cuboidDim = new Vector3d(po.matched_cuboid.length1,
-				po.matched_cuboid.length2, po.matched_cuboid.length3);
+    /**
+     * Construct an object from a PerceivedObject
+     * 
+     * @param po
+     *            The perceived object
+     */
+    public AbstractObject(PerceivedObject po) {
+	centroid = TransformUtils.getStamped3DPoint(po);
+	pose = TransformUtils.getStamped4DPose(po);
+	cuboidDim = new Vector3d(po.matched_cuboid.length1, po.matched_cuboid.length2, po.matched_cuboid.length3);
+    }
+
+    /**
+     * Copy constructor
+     * 
+     * @param po
+     *            The perceived object
+     */
+    protected AbstractObject(AbstractObject object) {
+	transformedCentroids.putAll(object.transformedCentroids);
+	transformedMatrix.putAll(object.transformedMatrix);
+	transformedPose.putAll(object.transformedPose);
+	centroid = object.centroid;
+	pose = object.pose;
+	cuboidDim = object.cuboidDim;
+    }
+
+    /**
+     * @return the transformedCentroids
+     */
+    public Stamped<Point3d> getTransformedCentroid(String frame) {
+	return transformedCentroids.get(frame);
+    }
+
+    /**
+     * @return the transformedCuboid
+     */
+    public Stamped<Matrix4d> getTransformedMatrix(String frame) {
+	return transformedMatrix.get(frame);
+    }
+
+    /**
+     * @return the transformedPose
+     */
+    public Stamped<Pose> getTransformedPose(String frame) {
+	return transformedPose.get(frame);
+    }
+
+    /**
+     * @return the cuboidDim
+     */
+    public Vector3d getCuboidDim() {
+	return cuboidDim;
+    }
+
+    /**
+     * Execute and save TF transformation to given target frame
+     * 
+     * @param frame
+     *            Target frame
+     * @throws TFException
+     */
+    public void transformToFrame(String frame) throws TFException {
+	addTransformPoint(frame);
+	addTransformPose(frame);
+    }
+
+    /**
+     * Transform stamped point to a point in TF frame denoted by target parameter
+     * 
+     * @param target
+     *            Target TF frame ID
+     * @param poPose
+     *            Input Point
+     * @param map
+     *            Map to write pose in
+     * @param cID
+     *            ID assigned by perception
+     */
+    private void addTransformPoint(String target) throws TFException {
+	try {
+	    if (tf.lookupTransform(target, centroid.frameID, centroid.timeStamp) == null) {
+		throw new TFException(target);
+	    }
+	    Stamped<Point3d> out = new Stamped<Point3d>();
+	    out.setData(new Point3d());
+	    tf.transformPoint(target, centroid, out);
+	    transformedCentroids.put(target, out);
+	} catch (RuntimeException e) {
+	    throw e;
+	} catch (Exception e) {
+	    throw new TFException(centroid.frameID, target, e);
 	}
+    }
 
-	/**
-	 * Copy constructor
-	 * 
-	 * @param po
-	 *            The perceived object
-	 */
-	protected AbstractObject(AbstractObject object) {
-		transformedCentroids.putAll(object.transformedCentroids);
-		transformedMatrix.putAll(object.transformedMatrix);
-		transformedPose.putAll(object.transformedPose);
-		centroid = object.centroid;
-		pose = object.pose;
-		cuboidDim = object.cuboidDim;
+    /**
+     * Transform stamped pose to a pose in TF frame denoted by target parameter
+     * 
+     * @param target
+     *            Target TF frame ID
+     * @param poPose
+     *            Input Pose
+     * @param map
+     *            Map to write pose in
+     * @param cID
+     *            ID assigned by perception
+     * @throws TFException
+     */
+    private void addTransformPose(String target) throws TFException {
+	try {
+	    if (tf.lookupTransform(target, pose.frameID, pose.timeStamp) == null) {
+		throw new TFException(target);
+	    }
+	    Stamped<Matrix4d> out = new Stamped<Matrix4d>();
+	    out.setData(new Matrix4d());
+	    tf.transformPose(target, pose, out);
+	    transformedMatrix.put(target, out);
+	    Stamped<Pose> sPose = new Stamped<Pose>(TransformUtils.matrix4dToPose(out.getData()), out.frameID,
+		    out.timeStamp);
+	    transformedPose.put(target, sPose);
+	} catch (RuntimeException e) {
+	    throw e;
+	} catch (Exception e) {
+	    throw new TFException(centroid.frameID, target, e);
 	}
+    }
 
-	/**
-	 * @return the transformedCentroids
-	 */
-	public Stamped<Point3d> getTransformedCentroid(String frame) {
-		return transformedCentroids.get(frame);
+    /**
+     * Check if object is the same as the given object by comparing centroid distances
+     * 
+     * @param targetFrame
+     *            TF frame to compare
+     * @param obj
+     *            Object to check against
+     * @return True if object could be me
+     */
+    public boolean isSameObject(String targetFrame, AbstractObject obj) {
+	if (getTransformedPose(targetFrame) == null || obj.getTransformedPose(targetFrame) == null) {
+	    return false;
 	}
+	double range = Math.max(obj.getCuboidDim().x, Math.max(obj.getCuboidDim().y, obj.getCuboidDim().z)) / 2;
+	Point myPos = getTransformedPose(targetFrame).getData().position;
+	Point theirPos = obj.getTransformedPose(targetFrame).getData().position;
+	return Math.abs(myPos.x - theirPos.x) < range && Math.abs(myPos.y - theirPos.y) < range
+		&& Math.abs(myPos.z - theirPos.z) < range;
+    }
 
-	/**
-	 * @return the transformedCuboid
-	 */
-	public Stamped<Matrix4d> getTransformedMatrix(String frame) {
-		return transformedMatrix.get(frame);
-	}
+    @Override
+    public String toString() {
+	return getIdentifier() != null ? getIdentifier() : super.toString();
+    }
 
-	/**
-	 * @return the transformedPose
-	 */
-	public Stamped<Pose> getTransformedPose(String frame) {
-		return transformedPose.get(frame);
-	}
+    /**
+     * Return identifier of object. This is shared with manipulation and planning.
+     */
+    public abstract String getIdentifier();
 
-	/**
-	 * @return the cuboidDim
-	 */
-	public Vector3d getCuboidDim() {
-		return cuboidDim;
-	}
-
-	/**
-	 * Execute and save TF transformation to given target frame
-	 * 
-	 * @param frame
-	 *            Target frame
-	 * @throws TFException
-	 */
-	public void transformToFrame(String frame) throws TFException {
-		addTransformPoint(frame);
-		addTransformPose(frame);
-	}
-
-	/**
-	 * Transform stamped point to a point in TF frame denoted by target
-	 * parameter
-	 * 
-	 * @param target
-	 *            Target TF frame ID
-	 * @param poPose
-	 *            Input Point
-	 * @param map
-	 *            Map to write pose in
-	 * @param cID
-	 *            ID assigned by perception
-	 */
-	private void addTransformPoint(String target) throws TFException {
-		try {
-			if (tf.lookupTransform(target, centroid.frameID, centroid.timeStamp) == null) {
-				throw new TFException(target);
-			}
-			Stamped<Point3d> out = new Stamped<Point3d>();
-			out.setData(new Point3d());
-			tf.transformPoint(target, centroid, out);
-			transformedCentroids.put(target, out);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new TFException(centroid.frameID, target, e);
-		}
-	}
-
-	/**
-	 * Transform stamped pose to a pose in TF frame denoted by target parameter
-	 * 
-	 * @param target
-	 *            Target TF frame ID
-	 * @param poPose
-	 *            Input Pose
-	 * @param map
-	 *            Map to write pose in
-	 * @param cID
-	 *            ID assigned by perception
-	 * @throws TFException
-	 */
-	private void addTransformPose(String target) throws TFException {
-		try {
-			if (tf.lookupTransform(target, pose.frameID, pose.timeStamp) == null) {
-				throw new TFException(target);
-			}
-			Stamped<Matrix4d> out = new Stamped<Matrix4d>();
-			out.setData(new Matrix4d());
-			tf.transformPose(target, pose, out);
-			transformedMatrix.put(target, out);
-			Stamped<Pose> sPose = new Stamped<Pose>(
-					TransformUtils.matrix4dToPose(out.getData()), out.frameID,
-					out.timeStamp);
-			transformedPose.put(target, sPose);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new TFException(centroid.frameID, target, e);
-		}
-	}
-
-	/**
-	 * Check if object is the same as the given object by comparing centroid
-	 * distances
-	 * 
-	 * @param targetFrame
-	 *            TF frame to compare
-	 * @param obj
-	 *            Object to check against
-	 * @return True if object could be me
-	 */
-	public boolean isSameObject(String targetFrame, AbstractObject obj) {
-		if (getTransformedPose(targetFrame) == null
-				|| obj.getTransformedPose(targetFrame) == null) {
-			return false;
-		}
-		double range = Math.max(obj.getCuboidDim().x,
-				Math.max(obj.getCuboidDim().y, obj.getCuboidDim().z)) / 2;
-		Point myPos = getTransformedPose(targetFrame).getData().position;
-		Point theirPos = obj.getTransformedPose(targetFrame).getData().position;
-		return Math.abs(myPos.x - theirPos.x) < range
-				&& Math.abs(myPos.y - theirPos.y) < range
-				&& Math.abs(myPos.z - theirPos.z) < range;
-	}
-
-	@Override
-	public String toString() {
-		return getIdentifier() != null ? getIdentifier() : super.toString();
-	}
-
-	/**
-	 * Return identifier of object. This is shared with manipulation and
-	 * planning.
-	 */
-	public abstract String getIdentifier();
-
-	/**
-	 * Replace identifier of object.
-	 * 
-	 * @param identifier
-	 *            Identifier to replace
-	 */
-	public abstract void setIdentifier(String identifier);
+    /**
+     * Replace identifier of object.
+     * 
+     * @param identifier
+     *            Identifier to replace
+     */
+    public abstract void setIdentifier(String identifier);
 }
