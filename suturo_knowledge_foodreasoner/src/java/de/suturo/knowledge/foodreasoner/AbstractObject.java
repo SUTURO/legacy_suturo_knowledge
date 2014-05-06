@@ -7,6 +7,7 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import ros.communication.Time;
 import ros.pkg.geometry_msgs.msg.Point;
 import ros.pkg.geometry_msgs.msg.Pose;
 import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
@@ -24,6 +25,7 @@ public abstract class AbstractObject {
     private final Map<String, Stamped<Point3d>> transformedCentroids = new HashMap<String, Stamped<Point3d>>();
     private final Map<String, Stamped<Matrix4d>> transformedMatrix = new HashMap<String, Stamped<Matrix4d>>();
     private final Map<String, Stamped<Pose>> transformedPose = new HashMap<String, Stamped<Pose>>();
+    private final String originalFrameID;
     private final Stamped<Point3d> centroid;
     private final Stamped<Matrix4d> pose;
     private final Vector3d cuboidDim;
@@ -39,6 +41,21 @@ public abstract class AbstractObject {
 	centroid = TransformUtils.getStamped3DPoint(po);
 	pose = TransformUtils.getStamped4DPose(po);
 	cuboidDim = new Vector3d(po.matched_cuboid.length1, po.matched_cuboid.length2, po.matched_cuboid.length3);
+	originalFrameID = po.frame_id;
+	addOriginalFrame(po);
+
+    }
+
+    /**
+     * Add data from original perception frame to frame map.
+     * 
+     * @param po
+     *            PerceivedObject containing original perception data
+     */
+    private void addOriginalFrame(PerceivedObject po) {
+	transformedCentroids.put(originalFrameID, centroid);
+	transformedMatrix.put(originalFrameID, pose);
+	transformedPose.put(originalFrameID, new Stamped<Pose>(po.matched_cuboid.pose, originalFrameID, Time.now()));
     }
 
     /**
@@ -54,6 +71,7 @@ public abstract class AbstractObject {
 	centroid = object.centroid;
 	pose = object.pose;
 	cuboidDim = object.cuboidDim;
+	originalFrameID = object.originalFrameID;
     }
 
     /**
@@ -174,6 +192,13 @@ public abstract class AbstractObject {
 	Point theirPos = obj.getTransformedPose(targetFrame).getData().position;
 	return Math.abs(myPos.x - theirPos.x) < range && Math.abs(myPos.y - theirPos.y) < range
 		&& Math.abs(myPos.z - theirPos.z) < range;
+    }
+
+    /**
+     * The frame ID of the perception origin (eg. kinect)
+     */
+    public String getOriginalFrameID() {
+	return this.originalFrameID;
     }
 
     @Override
