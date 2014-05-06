@@ -36,6 +36,7 @@ public class PerceptionClient {
     private static final String NODE_NAME = "suturo_knowledge_perceptionclient";
     private static final int DEFAULT_TIMEOUT_MS = 10000;
     private static final String BASE_FRAME = "/map";
+    private static final String GRASP_FRAME = "/odom_combined";
 
     private static Ros ros;
     private static NodeHandle handle;
@@ -158,6 +159,7 @@ public class PerceptionClient {
 	for (AbstractObject object : objs) {
 	    try {
 		object.transformToFrame(BASE_FRAME);
+		object.transformToFrame(GRASP_FRAME);
 	    } catch (TFException e) {
 		handle.logError("PerceptionClient: " + e.getMessage());
 	    }
@@ -223,8 +225,7 @@ public class PerceptionClient {
      */
     private void publishPlanningScenes(Pose pose, double height) {
 	for (Entry<String, AbstractObject> entry : allObjects.entrySet()) {
-	    String frame = entry.getValue().getOriginalFrameID();
-	    Stamped<Pose> objectPose = entry.getValue().getTransformedPose(frame);
+	    Stamped<Pose> objectPose = entry.getValue().getTransformedPose(GRASP_FRAME);
 	    if (objectPose == null) {
 		handle.logWarn("PerceptionClient: No transformed cuboid available for object " + entry.getKey());
 		continue;
@@ -236,7 +237,7 @@ public class PerceptionClient {
 	    if (pose != null) {
 		pos.z = pose.position.z + (height / 2) + (dim.y / 2) + 0.01;
 	    }
-	    mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z, or, frame);
+	    mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z, or, GRASP_FRAME);
 	}
 	mc.publishScene();
     }
