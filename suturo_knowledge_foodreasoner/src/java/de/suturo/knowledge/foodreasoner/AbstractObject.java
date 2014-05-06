@@ -29,7 +29,7 @@ public abstract class AbstractObject {
     private final Stamped<Point3d> centroid;
     private final Stamped<Matrix4d> pose;
     private final Vector3d cuboidDim;
-    private final static TFListener tf = TFListenerSafe.getInstance();
+    private final static TFListener tf = TFListener.getInstance();
 
     /**
      * Construct an object from a PerceivedObject
