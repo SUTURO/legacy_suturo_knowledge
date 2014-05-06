@@ -18,7 +18,6 @@ import ros.pkg.geometry_msgs.msg.Pose;
 import ros.pkg.geometry_msgs.msg.Quaternion;
 import ros.pkg.suturo_perception_msgs.msg.PerceivedObject;
 import tfjava.Stamped;
-import tfjava.TFListener;
 import de.suturo.java.serviceclient.GetClustersService;
 import de.suturo.knowledge.foodreasoner.classifier.ObjectClassifier;
 import de.suturo.knowledge.foodreasoner.classifier.ProbabilityClassifier;
@@ -59,7 +58,7 @@ public class PerceptionClient {
      */
     public PerceptionClient() {
 	checkInitialized();
-	TFListener.getInstance(); // Init to collect TF data
+	TFListenerSafe.getInstance(); // Init to collect TF data
 	try {
 	    classifier = new WekaClassifier();
 	} catch (Exception e) {
