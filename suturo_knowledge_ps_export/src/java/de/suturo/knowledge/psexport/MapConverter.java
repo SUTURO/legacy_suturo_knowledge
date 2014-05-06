@@ -28,11 +28,10 @@ public class MapConverter {
     private static Ros ros;
     private NodeHandle handle;
     private Publisher<CollisionObject> publisher;
+    private static final Time ZEROTIME = new Time(0, 0);
 
     private Map<String, CollisionObjectWrapper> presentObjects;
-
     private Map<String, CollisionObjectWrapper> pendingObjects;
-
     private AttachedObjectClearer aoc;
 
     /**
@@ -104,7 +103,7 @@ public class MapConverter {
      */
     public void addBox(String id, double dimX, double dimY, double dimZ, double x, double y, double z, String frameID) {
 	CollisionObjectWrapper co = new CollisionObjectWrapper(id, Operation.ADD);
-	co.setFrame(frameID, Time.now());
+	co.setFrame(frameID, ZEROTIME);
 	co.addPrimitiveBox(dimX, dimY, dimZ);
 	co.addPose(x, y, z, 0, 0, 0);
 	addCollisionObject(co);
@@ -128,7 +127,7 @@ public class MapConverter {
     public void addBox(String id, double dimX, double dimY, double dimZ, double x, double y, double z, Quaternion quat,
 	    String frameID) {
 	CollisionObjectWrapper co = new CollisionObjectWrapper(id, Operation.ADD);
-	co.setFrame(frameID, Time.now());
+	co.setFrame(frameID, ZEROTIME);
 	co.addPrimitiveBox(dimX, dimY, dimZ);
 	co.addPose(x, y, z, quat);
 	addCollisionObject(co);
@@ -152,7 +151,7 @@ public class MapConverter {
     public void addStaticBox(String id, double dimX, double dimY, double dimZ, double x, double y, double z,
 	    Quaternion quat, String frameID) {
 	CollisionObjectWrapper co = new CollisionObjectWrapper(id, Operation.ADD);
-	co.setFrame(frameID, Time.now());
+	co.setFrame(frameID, ZEROTIME);
 	co.addPrimitiveBox(dimX, dimY, dimZ);
 	co.addPose(x, y, z, quat);
 	publisher.publish(co.toCollisionObject());
