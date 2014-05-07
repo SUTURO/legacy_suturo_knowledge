@@ -1,6 +1,7 @@
 package de.suturo.knowledge.foodreasoner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +36,16 @@ public class PerceptionClient {
 
     private static final String NODE_NAME = "suturo_knowledge_perceptionclient";
     private static final int DEFAULT_TIMEOUT_MS = 10000;
+
+    // Frames in which we can place objects directly on the table
+    private static final String[] CORRECTABLE_FRAMES = new String[] { "/map", "/odom_combined", "/base_link" };
+
+    // Frame used in prolog for reasoning
     private static final String BASE_FRAME = "/map";
-    private static final String GRASP_FRAME = "/odom_combined";
+
+    // Frame used in PlanningScene for grasping
+    // Set to null to use original frame
+    private static final String GRASP_FRAME = null;
 
     private static Ros ros;
     private static NodeHandle handle;
@@ -159,7 +168,9 @@ public class PerceptionClient {
 	for (AbstractObject object : objs) {
 	    try {
 		object.transformToFrame(BASE_FRAME);
-		object.transformToFrame(GRASP_FRAME);
+		if (GRASP_FRAME != null) {
+		    object.transformToFrame(GRASP_FRAME);
+		}
 	    } catch (TFException e) {
 		handle.logError("PerceptionClient: " + e.getMessage());
 	    }
@@ -225,7 +236,8 @@ public class PerceptionClient {
      */
     private void publishPlanningScenes(Pose pose, double height) {
 	for (Entry<String, AbstractObject> entry : allObjects.entrySet()) {
-	    Stamped<Pose> objectPose = entry.getValue().getTransformedPose(GRASP_FRAME);
+	    String frame = GRASP_FRAME == null ? entry.getValue().getOriginalFrameID() : GRASP_FRAME;
+	    Stamped<Pose> objectPose = entry.getValue().getTransformedPose(frame);
 	    if (objectPose == null) {
 		handle.logWarn("PerceptionClient: No transformed cuboid available for object " + entry.getKey());
 		continue;
@@ -234,10 +246,10 @@ public class PerceptionClient {
 	    Quaternion or = objectPose.getData().orientation;
 	    Vector3d dim = entry.getValue().getCuboidDim();
 	    // TODO outsource object correction
-	    if (pose != null) {
+	    if (pose != null && Arrays.asList(CORRECTABLE_FRAMES).contains(frame)) {
 		pos.z = pose.position.z + (height / 2) + (dim.y / 2) + 0.01;
 	    }
-	    mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z, or, GRASP_FRAME);
+	    mc.addBox(entry.getKey(), dim.x, dim.y, dim.z, pos.x, pos.y, pos.z, or, frame);
 	}
 	mc.publishScene();
     }
